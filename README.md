@@ -1,5 +1,7 @@
 # STS2026
 
+**English** | [简体中文](README.zh-CN.md) | [Deutsch](README.de.md) | [Français](README.fr.md)
+
 Team coursework project exploring a compact VITS-style speech model and its evaluation.
 
 **Status:** an initial notebook baseline and planning material. Full training, end-to-end inference quality and reproducible evaluation have not been validated as part of repository preparation.
@@ -34,6 +36,9 @@ These are development starting points, not evidence of a completed full VITS imp
 STS2026/
   vits-light_v1.ipynb              Original baseline notebook
   README.md                      Project entry point
+  README.zh-CN.md                Chinese overview
+  README.de.md                   German overview
+  README.fr.md                   French overview
   CONTRIBUTING.md                Team workflow and review rules
   requirements-notebook.txt       Non-PyTorch notebook dependencies
   requirements-docs.txt           PDF generation/checking dependencies
