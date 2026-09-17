@@ -1,0 +1,8 @@
+# Initial dependency inventory from notebook imports; NOT a tested lockfile.
+# Install a matching torch + torchaudio pair for your target platform first.
+# See docs/SETUP.md. Do not infer validated versions from this unpinned list.
+numpy
+pandas
+tqdm
+ipython
+jupyterlab

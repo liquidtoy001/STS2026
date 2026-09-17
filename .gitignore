@@ -1,0 +1,49 @@
+# Machine-specific files and local settings
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+.codex/
+.agents/
+
+# Credentials (placeholder examples may be reviewed and committed)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+.cache/
+
+# Local data and actual notebook artifact directories
+/data/
+/datasets/
+/LJSpeech-1.1/
+/checkpoints/
+/model_weight*/
+/generated_samples*/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+/wandb/
+/runs/
+
+# Scratch files and PDF render/QA images
+/tmp/
+
+# Only the two reviewed handouts are release artifacts for now.
+/output/*
+!/output/pdf/
+/output/pdf/*
+!/output/pdf/STS2026_GitHub_Team_Handbook.pdf
+!/output/pdf/ASR_VITS_Evaluation_Guide.pdf
