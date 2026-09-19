@@ -2,7 +2,7 @@
 
 
 def populate(page, p, h, step, code, note, table, diagram, branch_diagram):
-    page('GitHub team handbook', 'ENGLISH / macOS + WEBSITE FIRST / VERSION 2.0 / 17 SEPTEMBER 2026')
+    page('GitHub team handbook', 'ENGLISH / macOS + WEBSITE FIRST / VERSION 2.1 / 19 SEPTEMBER 2026')
     p('STS2026<br/>One team.<br/>One shared project.', 'cover')
     p('Start in Safari or Chrome on your Mac. Accept your invitation, create a branch, edit a file and open a pull request on GitHub. Use a local development environment when you need to run code.')
     diagram(['Branch', 'Edit + commit', 'Pull request', 'Merge'], ['Your task', 'On GitHub', 'Team review', 'Into main'])
@@ -147,7 +147,7 @@ def populate(page, p, h, step, code, note, table, diagram, branch_diagram):
     p('In macOS Terminal, ~ means your home directory. Teammates may choose another local folder; never use the maintainer\'s Windows drive path on your Mac.', 'small')
 
     page('Notebooks and experiments', 'WEBSITE FOR REVIEW / A real execution environment for running code.')
-    p('The project includes vits-light_v1.ipynb. GitHub can display notebook content, but its repository page does not run notebook cells. Editing notebook JSON in a text editor is fragile; use a notebook-aware local or team environment.')
+    p('The project notebook is notebooks/vits-light_v1.ipynb. GitHub displays its content but does not run cells. Follow docs/SETUP.md for the kernel working directory and relative output paths; use a notebook-aware environment for edits.')
     step(1, 'Agree a primary editor for each notebook task. Coordinate before anyone else modifies the same notebook; whole-file uploads can overwrite another person\'s changes.')
     step(2, 'Start from the latest intended branch. Run a small documented check before changing code. For substantive notebook work, prefer a local clone so you can inspect and commit the actual diff.')
     step(3, 'Before committing, inspect cell outputs, metadata and paths. Remove disposable bulk output and secrets while preserving the evidence needed for the report.')
@@ -161,7 +161,7 @@ def populate(page, p, h, step, code, note, table, diagram, branch_diagram):
     h('Suggested .gitignore starting point')
     code('.DS_Store\n.env\n.venv/\nvenv/\n__pycache__/\n.ipynb_checkpoints/\ntmp/\ndata/\ndatasets/\ncheckpoints/\n*.pt\n*.pth\n*.ckpt')
     note('Web uploads still need manual review', '.gitignore guides local Git file selection; do not rely on it to prevent manually selected website uploads. It also does not remove already tracked files or erase previous commits.')
-    p('Do not ignore all of output/ automatically. A selected report figure or this PDF may belong in Git; large temporary artifacts should have a separate location. On macOS, .DS_Store stores Finder metadata and should normally be excluded.')
+    p('Keep reviewed handouts in docs/guides/ and translations in docs/translations/. Handbook source tools live in tools/handbook/. Runtime output/ and tmp/ are ignored; save curated report evidence in a reviewed documentation folder. Ignore macOS .DS_Store metadata.')
     p('Share datasets and checkpoints through team-agreed storage with access instructions and versions. Git LFS requires deliberate configuration and storage planning; adding it later does not automatically clean old Git history.', 'small')
 
     page('Access and upload problems', 'WEBSITE FIRST / Identify the account, repository and branch before retrying.')

@@ -6,8 +6,8 @@ import pdfplumber
 from PIL import Image, ImageDraw
 from pypdf import PdfReader
 
-ROOT = Path(__file__).resolve().parents[1]
-PDF = ROOT / 'output/pdf/STS2026_GitHub_Team_Handbook.pdf'
+ROOT = Path(__file__).resolve().parents[2]
+PDF = ROOT / 'docs/guides/STS2026_GitHub_Team_Handbook.pdf'
 QA = ROOT / 'tmp/pdfs/handbook-qa'
 
 reader = PdfReader(PDF)
