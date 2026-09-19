@@ -16,8 +16,8 @@ from reportlab.platypus import (
     Flowable, Preformatted,
 )
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'output' / 'pdf' / 'STS2026_GitHub_Team_Handbook.pdf'
+ROOT = Path(__file__).resolve().parents[2]
+OUT = ROOT / 'docs' / 'guides' / 'STS2026_GitHub_Team_Handbook.pdf'
 NAVY = colors.HexColor('#142B43')
 TEAL = colors.HexColor('#007F82')
 GRAY = colors.HexColor('#526273')
@@ -168,31 +168,6 @@ def page(title, subtitle):
     story.append(Spacer(1, 7))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 from handbook_web_content import populate
 
 populate(
@@ -213,7 +188,7 @@ def decorate(canvas, doc):
     canvas.line(46, A4[1] - 32, A4[0] - 46, A4[1] - 32)
     canvas.setFont('Body', 8)
     canvas.setFillColor(GRAY)
-    canvas.drawString(46, 27, 'STS2026  /  WEB + macOS  /  v2.0')
+    canvas.drawString(46, 27, 'STS2026  /  WEB + macOS  /  v2.1')
     canvas.drawRightString(A4[0] - 46, 27, f'{n:02d} / {len(chapters):02d}')
     if n <= len(chapters):
         canvas.bookmarkPage(f'bookmark{n}')

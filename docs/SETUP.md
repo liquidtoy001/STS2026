@@ -26,13 +26,19 @@ Install **matching PyTorch and TorchAudio versions** supported by the chosen Pyt
 Then install the remaining notebook dependencies:
 
 ```sh
-python -m pip install -r requirements-notebook.txt
+python -m pip install -r requirements/notebook.txt
 python -c "import torch, torchaudio; print(torch.__version__, torchaudio.__version__)"
 python -m pip check
-python -m jupyterlab
+python -m jupyterlab --notebook-dir=notebooks
 ```
 
 An import check verifies only imports. This dependency inventory is deliberately unpinned until the team validates an environment and records its exact versions. Do not treat it as a reproducible lockfile.
+
+## Notebook location and working directory
+
+Run the setup commands from the repository root, then open `notebooks/vits-light_v1.ipynb` in JupyterLab. Check the kernel working directory with `%pwd` before training; it should be the repository's `notebooks/` directory for this workflow. If your editor uses a different directory, set it explicitly before executing cells.
+
+Model definitions are preserved; the final training cells now use the shared reconstruction evaluator. Local experiment artifacts go to `output/eval/` with a unique run directory. For the bundled Kaggle entry, see [evaluation instructions](EVALUATION.md). Dataset paths remain explicitly configured in the notebook.
 
 ## Dataset configuration
 
@@ -59,18 +65,18 @@ The current loader uses `NUM_WORKERS = 4`. If multiprocessing fails in a macOS/J
 
 1. Verify the data path, metadata and a real audio sample can be loaded.
 2. Run the data-loading and component cells in order, reviewing shapes and errors.
-3. Inspect the training configuration before executing the final cells. The current call starts 1,500 fixed-batch overfit steps; do not start it merely to test installation.
+3. Inspect the training configuration before executing the final cells. The current call starts 2,000 fixed-batch overfit steps; do not start it merely to test installation.
 4. Record the chosen environment, data identity, configuration and code revision.
 
-Actual output directories are `model_weight_no_gan/` and `generated_samples_no_gan/`; trainer defaults also mention `model_weight/` and `generated_samples/`. These directory families are ignored by Git. Share necessary artifacts through agreed external storage and record their location.
+The evaluation entry stores checkpoints, metrics and samples inside its unique run directory under `output/eval/` locally, or `/kaggle/working/sts2026-eval-runs/` in the export. These outputs are not committed. Share necessary artifacts through agreed external storage and record their location.
 
 ## Current limitations
 
 - The active run disables duration and KL losses and calls the fixed-batch overfit routine.
 - GAN loss is a zero placeholder and `Discriminator` is incomplete.
-- `evaluate(outputs, batch)` is a `pass` placeholder.
+- Fixed-crop reconstruction evaluation and one local LJSpeech training-batch baseline are available; see [measured results](LOCAL_BASELINE_RESULT.zh-CN.md).
 - The current dataset loader uses the metadata as its training set; a held-out split/protocol must be designed before reporting generalization.
-- Dependency versions, audio backends and end-to-end execution have not been validated during repository organization.
+- Local CUDA reconstruction training was exercised with PyTorch/TorchAudio 2.7.1+cu118. This is not validation of every platform or full TTS inference.
 - The final cells contain reconstruction inspection code; neither that code nor the planning PDF establishes measured TTS/VC quality.
 
-Complete and review these items as explicit project tasks. The original notebook is retained unchanged during repository preparation.
+Complete and review these items as explicit project tasks. See the evaluation walkthrough for the modified training cells and preserved model definitions.

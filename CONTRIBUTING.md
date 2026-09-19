@@ -33,4 +33,4 @@ If a credential is uploaded, revoke/rotate it first and notify the maintainer wi
 
 ## Handbook
 
-The [23-page handbook](output/pdf/STS2026_GitHub_Team_Handbook.pdf) covers invitations (page 5), normal website operations (pages 6–10), conflict/recovery scenarios (pages 14–18), a practice PR (page 19), a checklist (page 22), and optional Mac setup (page 23).
+The [23-page handbook](docs/guides/STS2026_GitHub_Team_Handbook.pdf) covers invitations (page 5), normal website operations (pages 6–10), conflict/recovery scenarios (pages 14–18), a practice PR (page 19), a checklist (page 22), and optional Mac setup (page 23).

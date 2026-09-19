@@ -29,8 +29,8 @@ __pycache__/
 /datasets/
 /LJSpeech-1.1/
 /checkpoints/
-/model_weight*/
-/generated_samples*/
+model_weight*/
+generated_samples*/
 *.pt
 *.pth
 *.ckpt
@@ -41,9 +41,5 @@ __pycache__/
 # Scratch files and PDF render/QA images
 /tmp/
 
-# Only the two reviewed handouts are release artifacts for now.
-/output/*
-!/output/pdf/
-/output/pdf/*
-!/output/pdf/STS2026_GitHub_Team_Handbook.pdf
-!/output/pdf/ASR_VITS_Evaluation_Guide.pdf
+# Runtime output is local; curated PDFs live in docs/guides/.
+/output/
