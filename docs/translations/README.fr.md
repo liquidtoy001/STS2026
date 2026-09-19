@@ -4,7 +4,7 @@
 
 Projet de cours en équipe consacré à un modèle vocal compact inspiré de VITS et à son évaluation.
 
-**État actuel :** une évaluation de reconstruction partagée et une référence mesurée localement sont disponibles : 2 000 itérations, 1 988 mises à jour de l’optimiseur. Voir le [compte rendu](../LOCAL_BASELINE_RESULT.zh-CN.md). La généralisation, la qualité TTS complète et la comparaison avec le nouveau modèle restent à vérifier.
+**État actuel :** une évaluation de reconstruction partagée et une référence mesurée localement sont disponibles : 2 000 itérations, 1 988 mises à jour de l’optimiseur. Voir le [compte rendu](../LOCAL_BASELINE_RESULT.md). La généralisation, la qualité TTS complète et la comparaison avec le nouveau modèle restent à vérifier.
 
 ## Pour commencer
 
@@ -73,6 +73,6 @@ Voir les [règles de contribution](../../CONTRIBUTING.md) et la [documentation](
 
 ## Validation et réutilisation
 
-Huit tests de comportement et d’export ainsi que les contrôles de schéma du notebook ont réussi. La configuration originale du modèle a également été exécutée localement sur de vraies données vocales. La généralisation, la reproductibilité entre machines et la qualité perceptive restent à vérifier. Voir le [compte rendu de validation](../EVALUATION_VALIDATION.md).
+Onze tests de comportement, de rapport et d’export ainsi que les contrôles de schéma du notebook ont réussi. La configuration originale du modèle a également été exécutée localement sur de vraies données vocales. La généralisation, la reproductibilité entre machines et la qualité perceptive restent à vérifier. Voir le [compte rendu de validation](../EVALUATION_VALIDATION.md).
 
 Aucune licence logicielle n’a encore été choisie. Avant toute publication ou réutilisation, vérifiez les règles du cours, la provenance du code et les conditions relatives aux contenus tiers et aux données. Le choix d’une licence relève de l’équipe.

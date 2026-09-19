@@ -6,6 +6,7 @@ is needed. Inputs use the original notebook's six-tensor batch format.
 """
 
 from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -212,6 +213,11 @@ class ReconstructionEvaluator:
                             encoding="PCM_F", bits_per_sample=32)
         self.history.extend(summaries)
         _write_json(self.output_dir / "evaluation_history.json", self.history)
+        _write_json(step_dir / "completion.json", {
+            "status": "completed", "step": step,
+            "completed_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "completion_time_source": "runtime_clock",
+        })
         self._last_step = step
         return summaries
 

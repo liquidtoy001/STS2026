@@ -6,6 +6,7 @@ mirror's LFS SHA256, not claimed to be independently checked against upstream.
 """
 
 import hashlib
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 import urllib.request
@@ -55,6 +56,8 @@ def main():
     if not set(IDS).issubset(rows):
         raise ValueError("Fixed IDs missing from metadata.")
     (destination / "download_manifest.json").write_text(json.dumps({
+        "completed_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "completion_time_source": "runtime_clock",
         "upstream": "https://keithito.com/LJ-Speech-Dataset/",
         "mirror": REPOSITORY, "revision": revision, "files": records,
     }, indent=2), encoding="utf-8")

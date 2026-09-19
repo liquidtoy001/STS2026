@@ -7,6 +7,7 @@ This is an explicitly trusted repository notebook, not a general notebook loader
 
 import argparse
 import ast
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -105,6 +106,8 @@ def main():
         }
         import hashlib
         report = {"status": "checkpoint_evaluated", "step": step,
+                  "completed_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                  "completion_time_source": "runtime_clock",
                   "checkpoint": str(checkpoint_path),
                   "checkpoint_sha256": hashlib.sha256(checkpoint_path.read_bytes()).hexdigest(),
                   "absolute_summary_differences": differences,
@@ -129,6 +132,7 @@ def main():
         hook.remove()
         torch.cuda.synchronize()
         measurement = {
+            "recorded_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "steps_requested": args.steps, "steps_completed": trainer.step,
             "actual_optimizer_updates": len(optimizer_updates),
             "amp_skipped_updates": trainer.step - len(optimizer_updates),

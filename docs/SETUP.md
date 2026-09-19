@@ -74,7 +74,7 @@ The evaluation entry stores checkpoints, metrics and samples inside its unique r
 
 - The active run disables duration and KL losses and calls the fixed-batch overfit routine.
 - GAN loss is a zero placeholder and `Discriminator` is incomplete.
-- Fixed-crop reconstruction evaluation and one local LJSpeech training-batch baseline are available; see [measured results](LOCAL_BASELINE_RESULT.zh-CN.md).
+- Fixed-crop reconstruction evaluation and one local LJSpeech training-batch baseline are available; see [measured results](LOCAL_BASELINE_RESULT.md).
 - The current dataset loader uses the metadata as its training set; a held-out split/protocol must be designed before reporting generalization.
 - Local CUDA reconstruction training was exercised with PyTorch/TorchAudio 2.7.1+cu118. This is not validation of every platform or full TTS inference.
 - The final cells contain reconstruction inspection code; neither that code nor the planning PDF establishes measured TTS/VC quality.

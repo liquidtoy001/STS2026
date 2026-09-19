@@ -4,7 +4,7 @@
 
 Team coursework project exploring a compact VITS-style speech model and its evaluation.
 
-**Status:** shared posterior-reconstruction evaluation and a measured old-model baseline are available. A local eight-utterance run completed 2,000 iterations (1,988 optimizer updates); same-checkpoint rescoring reproduced all measured metrics exactly on the same machine. See the [baseline record](docs/LOCAL_BASELINE_RESULT.zh-CN.md). Held-out performance, full TTS quality and the new-model comparison remain untested.
+**Status:** shared posterior-reconstruction evaluation and a measured old-model baseline are available. A local eight-utterance run completed 2,000 iterations (1,988 optimizer updates); same-checkpoint rescoring reproduced all measured metrics exactly on the same machine. See the [baseline record](docs/LOCAL_BASELINE_RESULT.md). Held-out performance, full TTS quality and the new-model comparison remain untested.
 
 ## Start here
 
@@ -75,6 +75,6 @@ See [Contributing](CONTRIBUTING.md) and [documentation](docs/README.md).
 
 ## Validation and reuse
 
-Eight behavioral/export tests and notebook schema checks passed. The local baseline additionally exercised the original model configuration on real LJSpeech data. These checks do not establish generalization, cross-machine reproducibility or audible quality. See [validation](docs/EVALUATION_VALIDATION.md) and [local reproduction instructions](docs/LOCAL_EVALUATION.zh-CN.md).
+Eleven behavioral/report/export tests and notebook schema checks passed. The local baseline additionally exercised the original model configuration on real LJSpeech data. These checks do not establish generalization, cross-machine reproducibility or audible quality. See [validation](docs/EVALUATION_VALIDATION.md) and [local reproduction instructions](docs/LOCAL_EVALUATION.md).
 
 No software license has been selected. Confirm course publication rules, code provenance and third-party/data terms before public release or reuse; adding a license is a team decision.
