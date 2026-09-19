@@ -33,7 +33,7 @@ for each comparison run and use a fresh model/optimizer; checkpoint resume is
 deliberately rejected for these comparison runs.
 
 For the local GPU command-line runner and downloading only the eight required
-audio files, see [local instructions](LOCAL_EVALUATION.zh-CN.md). The runner can
+audio files, see [local instructions](LOCAL_EVALUATION.md). The runner can
 also reload a checkpoint and compare its metrics with the saved reference,
 without training again.
 
@@ -102,5 +102,5 @@ definitions with synthetic tones: identity/degradation metrics, crop padding,
 mode and RNG restoration (including failure), CUDA RNG, a real optimizer update,
 checkpoint/audio export and plotting. Synthetic checks are not speech results.
 A local real-data baseline has completed: 2,000 iterations, 1,988 actual updates,
-and exact same-machine checkpoint rescoring. See the [measured baseline](LOCAL_BASELINE_RESULT.zh-CN.md).
+and exact same-machine checkpoint rescoring. See the [measured baseline](LOCAL_BASELINE_RESULT.md).
 Kaggle execution, held-out quality and the new-model comparison remain untested.

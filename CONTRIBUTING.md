@@ -27,6 +27,14 @@ Keep experiment evidence in small reviewed records: code commit (plus uncommitte
 
 ## Files and credentials
 
+Write all experiment logs, measured-result records and generated experiment
+reports in English. Record completion as an ISO 8601 UTC timestamp with its
+source. Keep report-generation time separate from experiment-completion time.
+For legacy records, label reconstructed times as approximate and state the
+evidence; never invent an exact completion time. Failed/interrupted runs record
+an end time, not a successful completion time. Personal learning walkthroughs
+stay under ignored `output/learning/` and must not be committed.
+
 Use `.gitignore` for local files, but inspect manually selected website uploads too. Never upload `.git`, `.env`, virtual environments, raw datasets, checkpoints or bulk generated audio. Small curated report figures and metrics can be added deliberately with suitable paths and ignore rules.
 
 If a credential is uploaded, revoke/rotate it first and notify the maintainer without reposting its value. A later file deletion does not erase Git history.

@@ -4,7 +4,7 @@
 
 Ein studentisches Teamprojekt zur Untersuchung eines kompakten Sprachmodells nach dem VITS-Prinzip und seiner Evaluation.
 
-**Status:** Eine gemeinsame Rekonstruktionsevaluation und eine lokal gemessene Baseline sind verfügbar: 2.000 Iterationen, 1.988 Optimizer-Updates. Siehe [Messprotokoll](../LOCAL_BASELINE_RESULT.zh-CN.md). Generalisierung, vollständige TTS-Qualität und der Vergleich mit dem neuen Modell sind noch nicht geprüft.
+**Status:** Eine gemeinsame Rekonstruktionsevaluation und eine lokal gemessene Baseline sind verfügbar: 2.000 Iterationen, 1.988 Optimizer-Updates. Siehe [Messprotokoll](../LOCAL_BASELINE_RESULT.md). Generalisierung, vollständige TTS-Qualität und der Vergleich mit dem neuen Modell sind noch nicht geprüft.
 
 ## Einstieg
 
@@ -73,6 +73,6 @@ Siehe [Beitragsrichtlinien](../../CONTRIBUTING.md) und [Dokumentation](../README
 
 ## Validierung und Weiterverwendung
 
-Acht Verhaltens- und Exporttests sowie Notebook-Schemaprüfungen wurden bestanden. Zusätzlich wurde die ursprüngliche Modellkonfiguration lokal mit echten Sprachdaten ausgeführt. Generalisierung, plattformübergreifende Reproduzierbarkeit und Hörqualität bleiben ungeprüft. Siehe [Validierungsprotokoll](../EVALUATION_VALIDATION.md).
+Elf Verhaltens-, Berichts- und Exporttests sowie Notebook-Schemaprüfungen wurden bestanden. Zusätzlich wurde die ursprüngliche Modellkonfiguration lokal mit echten Sprachdaten ausgeführt. Generalisierung, plattformübergreifende Reproduzierbarkeit und Hörqualität bleiben ungeprüft. Siehe [Validierungsprotokoll](../EVALUATION_VALIDATION.md).
 
 Es wurde noch keine Softwarelizenz gewählt. Vor Veröffentlichung oder Weiterverwendung sind Kursvorgaben, Codeherkunft sowie Bedingungen für Drittinhalte und Daten zu prüfen. Über eine Lizenz entscheidet das Team gemeinsam.
