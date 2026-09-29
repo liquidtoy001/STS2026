@@ -6,6 +6,11 @@ Projet de cours en équipe consacré à un modèle vocal compact inspiré de VIT
 
 **État actuel :** une évaluation de reconstruction partagée et une référence mesurée localement sont disponibles : 2 000 itérations, 1 988 mises à jour de l’optimiseur. Voir le [compte rendu](../LOCAL_BASELINE_RESULT.md). La généralisation, la qualité TTS complète et la comparaison avec le nouveau modèle restent à vérifier.
 
+## Documentation et fichiers partagés
+
+- **[Site de documentation](../site/index.html)** : versions (prototype v0, référence évaluée v1, améliorations v2+), schémas d’architecture, résultats mesurés et tableau comparatif, en anglais, chinois, allemand et français. GitHub affiche le HTML comme du code source : clonez le dépôt et ouvrez `docs/site/index.html` dans un navigateur.
+- **[Google Drive partagé](https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU)** : checkpoints du modèle, dossiers d’exécution et rapports d’expérience détaillés. Les checkpoints et l’audio généré restent hors de Git ; déposez-les ici et indiquez le chemin du dossier dans la PR et dans `docs/site/assets/results.js`.
+
 ## Pour commencer
 
 Les membres de l’équipe utilisent principalement **macOS et le site web GitHub**. Il est possible d’accepter une invitation, de modifier la documentation et de relire des pull requests (PR) sans installer Git.

@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>v1 Original + Eval · STS2026 Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-menu aria-expanded="false" aria-label="Open navigation">Menu</button>
+  <a class="brand" href="index.html">
+    <svg class="brand-mark" viewBox="0 0 30 22" aria-hidden="true"><path d="M1 11h3l2-7 3 14 3-16 3 18 3-13 3 8 2-4h5" style="fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round"/></svg>
+    <span class="brand-name">STS2026</span>
+    <span class="brand-sub">vits-light docs</span>
+  </a>
+  <span class="topbar-spacer"></span>
+  <a class="plain" href="https://github.com/liquidtoy001/STS2026">GitHub</a>
+  <button class="icon-btn" type="button" data-theme-toggle>Dark</button>
+</header>
+
+<div class="shell">
+  <aside class="sidenav" data-sidenav></aside>
+
+  <main>
+    <article class="article">
+      <span data-i18n="v1.001" class="eyebrow" style="color:var(--baseline)">Version v1 · baseline</span>
+      <h1 data-i18n="v1.002">Original model with shared evaluation</h1>
+      <p data-i18n="v1.003" class="lede">
+        v1 keeps every model definition from v0 and adds a fixed, repeatable way to train and score it.
+        Its measured run is the reference that all later changes are compared against.
+        The GAN loss is still zero.
+      </p>
+      <div class="meta-row">
+        <span data-i18n="v1.004" class="chip base"><span class="dot"></span>Frozen baseline</span>
+        <span data-i18n="v1.005" class="chip">c9f258c (PR #1) · 9fba268 (PR #2)</span>
+        <span data-i18n="v1.006" class="chip">run 2026-09-19 ≈15:27 UTC</span>
+        <span data-i18n="v1.007" class="chip">RTX 4070 Ti SUPER</span>
+        <span class="chip warn" data-open-slots>open team sections</span>
+      </div>
+
+      <h2 data-i18n="v1.008" id="changes">What changed from v0</h2>
+      <ul class="diff">
+        <li data-i18n="v1.009" class="add"><span><code>sts_eval/reconstruction.py</code>: <code>ReconstructionEvaluator</code>, metric functions, <code>plot_history</code>, provenance helpers.</span></li>
+        <li data-i18n="v1.010" class="chg"><span>Training batch fixed to <code>LJ001-0001</code> … <code>LJ001-0008</code> in that order, instead of the first shuffled batch.</span></li>
+        <li data-i18n="v1.011" class="chg"><span>Seeds fixed: training 2026, evaluation 1234. cuDNN deterministic, benchmark off.</span></li>
+        <li data-i18n="v1.012" class="chg"><span>Budget raised to 2,000 iterations. Evaluation at 0, 500, 1000, 1500, 2000.</span></li>
+        <li data-i18n="v1.013" class="add"><span>Optimizer hook counts actual updates, separate from attempted iterations.</span></li>
+        <li data-i18n="v1.014" class="add"><span>Per-run directory with <code>run_config.json</code>, <code>status.json</code>, training history, checkpoints and scored WAVs.</span></li>
+        <li data-i18n="v1.015" class="add"><span>Local runner, report generator, subset downloader, Kaggle export, checkpoint rescoring.</span></li>
+        <li data-i18n="v1.016" class="add"><span>11 tests covering metrics, crop padding, RNG restoration, a real optimizer update and export.</span></li>
+        <li data-i18n="v1.017" class="del"><span>The empty <code>evaluate()</code> stub and the clamped listening cell.</span></li>
+      </ul>
+
+      <h2 data-i18n="v1.018" id="protocol">Evaluation protocol</h2>
+      <p data-i18n="v1.019">The evaluator measures <code>spectrogram → posterior encoder → decoder → waveform</code> on the same eight utterances used for training.</p>
+      <figure>
+        <div class="figure-box">
+          <svg class="diagram" viewBox="0 0 880 232" role="img" aria-label="Evaluation pipeline">
+            <defs>
+              <marker id="eh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="arrow on"/></marker>
+            </defs>
+            <rect class="node data" x="20" y="88" width="140" height="56" rx="6"/>
+            <text data-i18n="v1.020" x="90" y="112" text-anchor="middle" class="t-title">Fixed batch</text>
+            <text data-i18n="v1.021" x="90" y="130" text-anchor="middle" class="t-sub">LJ001-0001…0008</text>
+
+            <rect class="node on" x="200" y="88" width="150" height="56" rx="6"/>
+            <text data-i18n="v1.022" x="275" y="112" text-anchor="middle" class="t-title">Posterior encoder</text>
+            <text data-i18n="v1.023" x="275" y="130" text-anchor="middle" class="t-sub">full spectrogram</text>
+
+            <rect class="node base" x="390" y="28" width="160" height="56" rx="6"/>
+            <text data-i18n="v1.024" x="470" y="52" text-anchor="middle" class="t-title">mode: mean</text>
+            <text x="470" y="70" text-anchor="middle" class="t-sub">z = μq</text>
+
+            <rect class="node base" x="390" y="148" width="160" height="56" rx="6"/>
+            <text data-i18n="v1.025" x="470" y="172" text-anchor="middle" class="t-title">mode: sample</text>
+            <text data-i18n="v1.026" x="470" y="190" text-anchor="middle" class="t-sub">μq + ε·exp(log σq)</text>
+
+            <rect class="node on" x="590" y="88" width="140" height="56" rx="6"/>
+            <text data-i18n="v1.027" x="660" y="112" text-anchor="middle" class="t-title">Crop → decoder</text>
+            <text data-i18n="v1.028" x="660" y="130" text-anchor="middle" class="t-sub">central 32 fr</text>
+
+            <rect class="node data" x="770" y="88" width="100" height="56" rx="6"/>
+            <text data-i18n="v1.029" x="820" y="112" text-anchor="middle" class="t-title">Metrics</text>
+            <text data-i18n="v1.030" x="820" y="130" text-anchor="middle" class="t-sub">per utterance</text>
+
+            <path class="edge on" d="M160 116H196" marker-end="url(#eh)"/>
+            <path class="edge on" d="M350 116H370V56H386" marker-end="url(#eh)"/>
+            <path class="edge on" d="M350 116H370V176H386" marker-end="url(#eh)"/>
+            <path class="edge on" d="M550 56H570V108H586" marker-end="url(#eh)"/>
+            <path class="edge on" d="M550 176H570V124H586" marker-end="url(#eh)"/>
+            <path class="edge on" d="M730 116H766" marker-end="url(#eh)"/>
+            <text x="748" y="108" text-anchor="middle" class="lbl">8,192</text>
+            <text data-i18n="v1.031" x="560" y="222" class="lbl">ε from its own generator, seed 1234</text>
+          </svg>
+        </div>
+        <figcaption data-i18n="v1.032">The two modes are scored and reported separately. The random latent returned by the encoder is deliberately not used; the evaluator draws its own noise.</figcaption>
+      </figure>
+
+      <h3 data-i18n="v1.033" id="fixed">Held fixed across every comparison</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th data-i18n="v1.034">Variable</th><th data-i18n="v1.035">Value</th></tr></thead>
+          <tbody>
+            <tr><td data-i18n="v1.036">Samples and order</td><td data-i18n="v1.037">LJ001-0001 to LJ001-0008, batch of 8</td></tr>
+            <tr><td data-i18n="v1.038">Audio</td><td data-i18n="v1.039">22,050 Hz, <code>n_fft</code> 1024, hop 256, win 1024</td></tr>
+            <tr><td data-i18n="v1.040">Crop</td><td data-i18n="v1.041">deterministic central 32 frames = 8,192 samples. Short utterances are padded for decoding; only real samples are scored. Crops under 1,025 valid samples fail loudly.</td></tr>
+            <tr><td data-i18n="v1.042">Seeds</td><td data-i18n="v1.043">train 2026, eval noise 1234; CPU/CUDA RNG state and module train flags are restored after evaluation</td></tr>
+            <tr><td data-i18n="v1.044">Budget</td><td data-i18n="v1.045">2,000 training iterations, eval every 500, log every 50</td></tr>
+            <tr><td data-i18n="v1.046">Optimizer</td><td data-i18n="v1.047">AdamW lr 1e-4, betas (0.8, 0.99), eps 1e-9, wd 0.01, clip 1.0</td></tr>
+            <tr><td data-i18n="v1.048">Loss weights</td><td data-i18n="v1.049">mel 10, STFT 1, wave 10, duration 0, KL 0</td></tr>
+            <tr><td data-i18n="v1.050">Precision</td><td data-i18n="v1.051">AMP on, single GPU</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 data-i18n="v1.052" id="metrics">Metrics</h3>
+      <p data-i18n="v1.053">All metrics are computed per utterance and averaged arithmetically, with no padding in the reduction. Lower is better. They are errors, not accuracy percentages.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th data-i18n="v1.054">Metric</th><th data-i18n="v1.055">Definition</th></tr></thead>
+          <tbody>
+            <tr><td data-i18n="v1.056"><strong>Log-mel L1</strong></td><td data-i18n="v1.057">80 bands, magnitude mel, HTK scale, no normalization, natural log, floor 1e-5</td></tr>
+            <tr><td data-i18n="v1.058"><strong>STFT spectral convergence</strong></td><td data-i18n="v1.059">‖|S| − |Ŝ|‖<sub>F</sub> / ‖|S|‖<sub>F</sub>, averaged over the three resolutions</td></tr>
+            <tr><td data-i18n="v1.060"><strong>STFT log-magnitude</strong></td><td data-i18n="v1.061">L1 of log magnitudes, floor 1e-7, same three resolutions</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p data-i18n="v1.062" class="small muted">STFT resolutions (FFT, hop, window): (512, 128, 512), (1024, 256, 1024), (2048, 512, 2048); Hann, centered, reflect padding. These match the training loss, so the metrics overlap with the objective.</p>
+
+      <h2 data-i18n="v1.063" id="results">Measured baseline</h2>
+      <div class="stat-row">
+        <div class="stat"><div data-i18n="v1.064" class="k">Iterations / updates</div><div class="v">2,000 / 1,988</div><div data-i18n="v1.065" class="s">12 skipped by AMP</div></div>
+        <div class="stat"><div data-i18n="v1.066" class="k">Wall time</div><div class="v">640.9 s</div><div data-i18n="v1.067" class="s">train + eval + save</div></div>
+        <div class="stat"><div data-i18n="v1.068" class="k">Peak allocated</div><div class="v">0.789 GiB</div><div data-i18n="v1.069" class="s">reserved 0.830 GiB</div></div>
+        <div class="stat"><div data-i18n="v1.070" class="k">Parameters</div><div class="v">12.14 M</div><div class="s">12,141,186</div></div>
+      </div>
+
+      <div class="chart-grid figure-box" style="margin:0 0 22px">
+        <div><div data-i18n="v1.071" class="chart-title">Log-mel L1 at each evaluation</div><div id="ch-mel"></div></div>
+        <div><div data-i18n="v1.072" class="chart-title">STFT spectral convergence at each evaluation</div><div id="ch-sc"></div></div>
+      </div>
+      <figure>
+        <div class="figure-box">
+          <div data-i18n="v1.073" class="chart-title">Training losses, unweighted (random crops, logged every 50 iterations)</div>
+          <div id="ch-train"></div>
+        </div>
+        <figcaption data-i18n="v1.074">Training losses use random crops and the pre-update forward pass; they are not the fixed-crop evaluation. Weighted total fell from 17.29 at iteration 50 to 9.00 at 2,000.</figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th data-i18n="v1.075">Mode</th><th data-i18n="v1.076">Metric</th><th data-i18n="v1.077" class="num">Iter 0</th><th data-i18n="v1.078" class="num">Iter 2,000</th><th data-i18n="v1.079" class="num">Change</th></tr></thead>
+          <tbody>
+            <tr><td data-i18n="v1.080">mean</td><td data-i18n="v1.081">Log-mel L1</td><td class="num">3.340485</td><td class="num">0.560088</td><td class="num delta-good">−83.2%</td></tr>
+            <tr><td data-i18n="v1.082">mean</td><td data-i18n="v1.083">STFT SC</td><td class="num">2.202136</td><td class="num">0.862740</td><td class="num delta-good">−60.8%</td></tr>
+            <tr><td data-i18n="v1.084">mean</td><td data-i18n="v1.085">STFT log-mag</td><td class="num">3.585402</td><td class="num">1.160106</td><td class="num delta-good">−67.6%</td></tr>
+            <tr><td data-i18n="v1.086">sample</td><td data-i18n="v1.087">Log-mel L1</td><td class="num">1.961753</td><td class="num">0.557840</td><td class="num delta-good">−71.6%</td></tr>
+            <tr><td data-i18n="v1.088">sample</td><td data-i18n="v1.089">STFT SC</td><td class="num">2.196269</td><td class="num">0.861846</td><td class="num delta-good">−60.8%</td></tr>
+            <tr><td data-i18n="v1.090">sample</td><td data-i18n="v1.091">STFT log-mag</td><td class="num">2.008696</td><td class="num">1.105923</td><td class="num delta-good">−44.9%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <div data-i18n="v1.092" class="callout-title">What this does and does not show</div>
+        <p data-i18n="v1.093">Reconstruction error on the training batch went down. This does not establish convergence, acceptable perceptual quality, or performance on unseen utterances. One seed was run, so training variation is unknown.</p>
+      </div>
+
+      <h3 data-i18n="v1.094" id="reproducibility">Reproducibility check</h3>
+      <p data-i18n="v1.095">
+        The final checkpoint was reloaded strictly in a fresh Python process after checking the data fingerprint and protocol, then rescored.
+        Across 8 samples × 2 modes × 3 metrics, the largest per-sample absolute difference was <strong>0</strong>.
+        This confirms same-machine, same-environment rescoring only.
+      </p>
+      <pre><code><span class="c-com"># final checkpoint SHA256</span>
+4cfbd3c87bcb84d456038a30f99cf50fb64c7dc35ab0be023878c08b853022d4</code></pre>
+
+      <h2 data-i18n="v1.096" id="artifacts">Run artifacts</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th data-i18n="v1.097">File</th><th data-i18n="v1.098">Contents</th></tr></thead>
+          <tbody>
+            <tr><td data-i18n="v1.099"><code>run_config.json</code></td><td data-i18n="v1.100">model repr, optimizer, loss weights, seeds, data and code hashes, git revision and dirty state, device</td></tr>
+            <tr><td data-i18n="v1.101"><code>status.json</code></td><td data-i18n="v1.102">completed or failed, final step, UTC completion time and its source, actual updates, AMP skips</td></tr>
+            <tr><td data-i18n="v1.103"><code>training_history.json</code></td><td data-i18n="v1.104">losses every 50 iterations with the update count at that point</td></tr>
+            <tr><td data-i18n="v1.105"><code>evaluation/manifest.json</code></td><td data-i18n="v1.106">batch tensor hash, sample IDs, crop starts, valid sample counts, metric config</td></tr>
+            <tr><td data-i18n="v1.107"><code>evaluation/step_*/</code></td><td data-i18n="v1.108"><code>summary.json</code>, <code>per_sample.json</code>, <code>completion.json</code>; final step also has target/mean/sample float WAVs</td></tr>
+            <tr><td data-i18n="v1.109"><code>curves.png</code>, <code>checkpoints/</code></td><td data-i18n="v1.110">plot and weights; kept out of Git</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 data-i18n="v1.111" id="run">Running v1</h2>
+      <h4 data-i18n="v1.112">Local GPU</h4>
+<pre><code>python tools/prepare_ljspeech_subset.py
+python tools/run_local_eval.py --data-dir data/LJSpeech-1.1 --steps 20 --eval-every 20      <span class="c-com"># smoke test</span>
+python tools/run_local_eval.py --data-dir data/LJSpeech-1.1 --steps 2000 --eval-every 500   <span class="c-com"># full baseline</span>
+python tools/report_local_eval.py output/local-eval/original_&lt;UTC&gt;</code></pre>
+      <h4 data-i18n="v1.113">Rescore an existing checkpoint (no training)</h4>
+<pre><code>python tools/run_local_eval.py --data-dir data/LJSpeech-1.1 \
+  --checkpoint output/local-eval/original_&lt;UTC&gt;/checkpoints/vits_step_2000.pt</code></pre>
+      <h4 data-i18n="v1.114">Kaggle</h4>
+<pre><code>python tools/build_kaggle_eval.py   <span class="c-com"># writes output/kaggle/vits-light_v1_eval.ipynb</span></code></pre>
+      <p data-i18n="v1.115">Upload the export, attach LJSpeech-1.1, enable a GPU and check <code>DATA_DIR</code>. Restart the kernel for every comparison run; resuming a checkpoint is rejected for comparison runs.</p>
+
+      <h2 data-i18n="v1.116" id="contract">Integration contract for new models</h2>
+      <p data-i18n="v1.117">Any v2+ model must expose the following so the same evaluator can score it. Add a thin adapter when needed, keeping these meanings.</p>
+<pre><code>model.posterior_encoder(spectrogram, spectrogram_lengths)
+    <span class="c-com"># -&gt; (z, mean, log_scale, mask); log_scale is log σ, not log variance</span>
+model.decoder(z_segment)          <span class="c-com"># [B, latent, 32] -&gt; [B, 1, 8192]</span>
+model.hop_length                  <span class="c-com"># 256</span>
+model.segment_frames              <span class="c-com"># 32</span>
+model.segment_samples             <span class="c-com"># 8192</span></code></pre>
+      <p data-i18n="v1.118">Build new components before the trainer, set <code>MODEL_VARIANT</code>, keep <code>"original"</code> selectable, and confirm batch hashes and crop plans match before comparing.</p>
+
+      <h2 data-i18n="v1.119" id="team-notes">Team analysis</h2>
+      <p data-i18n="v1.120" class="muted">Reserved for the team's discussion of the v1 baseline. Replace the comment inside each <code>slot-body</code> with your text.</p>
+
+      <div class="slot" data-slot="v1.discussion">
+        <div class="slot-head"><span data-i18n="v1.121" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="v1.122" class="slot-title">Technical discussion</span></div>
+        <div data-i18n="v1.123" class="slot-prompt">Suggested content:
+          <ul><li>Why posterior reconstruction was chosen as the first measurable target</li><li>Choice of metrics and their overlap with the training loss</li><li>Why mean and sample modes are scored separately</li></ul>
+        </div>
+        <div class="slot-body"><!-- Write here. --></div>
+      </div>
+
+      <div class="slot" data-slot="v1.results-analysis">
+        <div class="slot-head"><span data-i18n="v1.124" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="v1.125" class="slot-title">Analysis of the measured results</span></div>
+        <div data-i18n="v1.126" class="slot-prompt">Questions the data raises:
+          <ul><li>At iteration 0 the sample mode scores better than the mean mode on log-mel L1 (1.96 vs 3.34); by 2,000 they are almost equal (0.558 vs 0.560). Why?</li><li>After iteration 500, spectral convergence only moves from 0.92 to 0.86 while log-mel L1 falls from 0.86 to 0.56 (mean mode). What does that suggest about the decoder?</li><li>The unweighted KL term rose from about 255 (iteration 50) to 629 (iteration 1,850) with weight 0. Does it matter before the text path is enabled?</li></ul>
+        </div>
+        <div class="slot-body"><!-- Write here. --></div>
+      </div>
+
+      <div class="slot" data-slot="v1.listening">
+        <div class="slot-head"><span data-i18n="v1.127" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="v1.128" class="slot-title">Listening notes on the exported samples</span></div>
+        <div data-i18n="v1.129" class="slot-prompt">Suggested content:
+          <ul><li>Per-sample notes for the final target / mean / sample WAVs</li><li>Artifacts heard, and whether the metrics agree with them</li></ul>
+        </div>
+        <div class="slot-body"><!-- Write here. --></div>
+      </div>
+
+      <div class="slot" data-slot="v1.future">
+        <div class="slot-head"><span data-i18n="v1.130" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="v1.131" class="slot-title">Future optimization directions</span></div>
+        <div data-i18n="v1.132" class="slot-prompt">Suggested content:
+          <ul><li>Protocol extensions: more seeds, a held-out split, longer crops, perceptual or ASR-based metrics</li><li>Model changes to try, in priority order (see the <a href="improvements.html">comparison board</a>)</li></ul>
+        </div>
+        <div class="slot-body"><!-- Write here. --></div>
+      </div>
+
+      <nav class="page-nav" aria-label="Pages">
+        <a data-i18n="v1.133" href="prototype.html"><span class="dir">Previous</span>v0 · Prototype</a>
+        <a data-i18n="v1.134" class="next" href="improvements.html"><span class="dir">Next</span>Comparison board</a>
+      </nav>
+      <footer class="site-foot" data-i18n="v1.foot">Sources: docs/LOCAL_BASELINE_RESULT.md, docs/EVALUATION.md and run output/local-eval/original_20260919T151630615757Z/.</footer>
+    </article>
+  </main>
+
+  <aside class="toc" data-toc></aside>
+</div>
+<script>
+  window.onDocsReady = function (api) {
+    var H = STS.BASELINE_EVAL_HISTORY, steps = [0, 500, 1000, 1500, 2000];
+    function pick(mode, key) { return steps.map(function (s) { return H.filter(function (r) { return r.step === s && r.mode === mode; })[0][key]; }); }
+    [["ch-mel", "log_mel_l1"], ["ch-sc", "stft_sc"]].forEach(function (c) {
+      api.lineChart(document.getElementById(c[0]), {
+        label: c[1] + " by evaluation step", x: steps, xTicks: [0, 1000, 2000], width: 340, height: 230, yMin: 0, xLabel: "iteration",
+        series: [
+          { name: "mean", values: pick("mean", c[1]), color: "var(--accent)", dots: true },
+          { name: "sample", values: pick("sample", c[1]), color: "var(--baseline)", dash: "5 4", dots: true }
+        ]
+      });
+    });
+    var T = STS.BASELINE_TRAIN_HISTORY;
+    api.lineChart(document.getElementById("ch-train"), {
+      label: "training losses", x: T.step, xMin: 0, xTicks: [0, 500, 1000, 1500, 2000], height: 230, yMin: 0, xLabel: "iteration",
+      markers: [500, 1000, 1500],
+      series: [
+        { name: "MR-STFT", values: T.stft, color: "var(--baseline)" },
+        { name: "mel", values: T.mel, color: "var(--accent)" },
+        { name: "waveform L1", values: T.wave, color: "var(--ink-3)", dash: "3 3" }
+      ]
+    });
+  };
+</script>
+<script src="assets/results.js"></script>
+<script src="assets/i18n/zh.js"></script>
+<script src="assets/i18n/de.js"></script>
+<script src="assets/i18n/fr.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

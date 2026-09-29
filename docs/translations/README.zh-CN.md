@@ -6,6 +6,11 @@
 
 **当前状态：** 已实现共享重建评估，并完成旧版八条真实语音的 2,000 次迭代实验（1,988 次有效更新）。同机重载 checkpoint 后评分一致。参见[实测记录](../LOCAL_BASELINE_RESULT.md)。独立测试集、完整 TTS 质量和新版对比仍未验证。
 
+## 文档与共享文件
+
+- **[文档站](../site/index.html)**：各版本（v0 原型、v1 带评估的基准、v2+ 改进）、架构图、实测结果和对比看板，支持 English、简体中文、Deutsch、Français。GitHub 只会显示 HTML 源码，请克隆仓库后用浏览器打开 `docs/site/index.html`。
+- **[共享谷歌云盘](https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU)**：模型检查点、运行目录和详细实验报告。检查点和生成的音频不进入 Git；请上传到这里，并在 PR 和 `docs/site/assets/results.js` 中记录对应的文件夹路径。
+
 ## 从这里开始
 
 团队成员主要使用 **macOS 和 GitHub 网页**。接受邀请、编辑文档和审查 Pull Request（PR）不需要安装 Git。
