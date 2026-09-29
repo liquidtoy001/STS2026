@@ -2,6 +2,7 @@
 
 ## For teammates
 
+- [Documentation site](site/index.html): versions, architecture, measured baseline and the comparison board. Open `docs/site/index.html` in a browser.
 - [Repository overview](../README.md)
 - [Contribution workflow](../CONTRIBUTING.md)
 - [Environment and notebook setup](SETUP.md)

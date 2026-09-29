@@ -6,6 +6,11 @@ Team coursework project exploring a compact VITS-style speech model and its eval
 
 **Status:** shared posterior-reconstruction evaluation and a measured old-model baseline are available. A local eight-utterance run completed 2,000 iterations (1,988 optimizer updates); same-checkpoint rescoring reproduced all measured metrics exactly on the same machine. See the [baseline record](docs/LOCAL_BASELINE_RESULT.md). Held-out performance, full TTS quality and the new-model comparison remain untested.
 
+## Documentation and shared files
+
+- **[Documentation site](docs/site/index.html)**: versions (v0 prototype, v1 evaluated baseline, v2+ improvements), architecture diagrams, measured results and the comparison board. English, 简体中文, Deutsch and Français. GitHub shows HTML as source, so clone the repository and open `docs/site/index.html` in a browser.
+- **[Shared Google Drive](https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU)**: model checkpoints, run folders and detailed experiment reports. Checkpoints and generated audio stay out of Git; upload them here and record the folder path in the PR and in `docs/site/assets/results.js`.
+
 ## Start here
 
 Team members primarily use **macOS and the GitHub website**. You can accept an invitation, edit documentation and review pull requests without installing Git.

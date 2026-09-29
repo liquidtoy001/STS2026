@@ -6,6 +6,11 @@ Ein studentisches Teamprojekt zur Untersuchung eines kompakten Sprachmodells nac
 
 **Status:** Eine gemeinsame Rekonstruktionsevaluation und eine lokal gemessene Baseline sind verfügbar: 2.000 Iterationen, 1.988 Optimizer-Updates. Siehe [Messprotokoll](../LOCAL_BASELINE_RESULT.md). Generalisierung, vollständige TTS-Qualität und der Vergleich mit dem neuen Modell sind noch nicht geprüft.
 
+## Dokumentation und gemeinsame Dateien
+
+- **[Dokumentationsseite](../site/index.html)**: Versionen (v0 Prototyp, v1 evaluierte Baseline, v2+ Verbesserungen), Architekturdiagramme, Messergebnisse und Vergleichstafel, auf Englisch, Chinesisch, Deutsch und Französisch. GitHub zeigt HTML nur als Quelltext; Repository klonen und `docs/site/index.html` im Browser öffnen.
+- **[Gemeinsames Google Drive](https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU)**: Modell-Checkpoints, Laufordner und ausführliche Experimentberichte. Checkpoints und erzeugtes Audio bleiben außerhalb von Git; hier hochladen und den Ordnerpfad im PR und in `docs/site/assets/results.js` angeben.
+
 ## Einstieg
 
 Die Teammitglieder verwenden hauptsächlich **macOS und die GitHub-Weboberfläche**. Einladungen annehmen, Dokumentation bearbeiten und Pull Requests (PRs) prüfen ist ohne Git-Installation möglich.

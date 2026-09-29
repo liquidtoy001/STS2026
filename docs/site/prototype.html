@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>v0 Prototype · STS2026 Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-menu aria-expanded="false" aria-label="Open navigation">Menu</button>
+  <a class="brand" href="index.html">
+    <svg class="brand-mark" viewBox="0 0 30 22" aria-hidden="true"><path d="M1 11h3l2-7 3 14 3-16 3 18 3-13 3 8 2-4h5" style="fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round"/></svg>
+    <span class="brand-name">STS2026</span>
+    <span class="brand-sub">vits-light docs</span>
+  </a>
+  <span class="topbar-spacer"></span>
+  <a class="plain" href="https://github.com/liquidtoy001/STS2026">GitHub</a>
+  <button class="icon-btn" type="button" data-theme-toggle>Dark</button>
+</header>
+
+<div class="shell">
+  <aside class="sidenav" data-sidenav></aside>
+
+  <main>
+    <article class="article">
+      <span data-i18n="v0.001" class="eyebrow">Version v0</span>
+      <h1 data-i18n="v0.002">Prototype: VITS-style model without evaluation</h1>
+      <p data-i18n="v0.003" class="lede">
+        The first published notebook. It contains the complete VITS-style architecture and a working trainer,
+        and it trains the posterior encoder and decoder to reconstruct a small batch of speech.
+        Results were judged by listening. There is no evaluation module and the GAN loss is a zero placeholder.
+      </p>
+      <div class="meta-row">
+        <span data-i18n="v0.004" class="chip">commit 451c635</span>
+        <span class="chip">2026-09-17</span>
+        <span data-i18n="v0.005" class="chip">vits-light_v1.ipynb (repo root)</span>
+        <span data-i18n="v0.006" class="chip warn"><span class="dot"></span>No metrics recorded</span>
+        <span class="chip warn" data-open-slots>open team sections</span>
+      </div>
+
+      <div class="callout note">
+        <div data-i18n="v0.007" class="callout-title">Reading this page</div>
+        <p data-i18n="v0.008">Model definitions in v0 and v1 are identical. A cell-by-cell comparison found that only the trainer, evaluation setup and final run cells changed (cells 41–46). This page therefore focuses on how v0 trained and was inspected. The architecture itself is described on the <a href="index.html#architecture">overview</a>.</p>
+      </div>
+
+      <h2 data-i18n="v0.009" id="scope">Scope</h2>
+      <p data-i18n="v0.010">
+        The notebook's own description calls it an educational, non-adversarial VITS-style implementation.
+        It trains with mel, multi-resolution STFT and waveform losses. The discriminator, adversarial loss and
+        feature-matching loss of full VITS are left out on purpose.
+      </p>
+      <ul class="list">
+        <li data-i18n="v0.011">Data: LJSpeech 1.1 from a hard-coded Kaggle input path, 22,050 Hz, <code>N_FFT = 1024</code>, <code>HOP_LENGTH = 256</code>.</li>
+        <li data-i18n="v0.012">Hardware target: Kaggle <strong>GPU T4 ×2</strong>. The trainer supports <code>nn.DataParallel</code>, but the final build cell passes <code>use_multi_gpu=False</code>.</li>
+        <li data-i18n="v0.013">Task: overfit one batch of 8 utterances to check that encoder and decoder can reconstruct audio at all.</li>
+      </ul>
+
+      <h2 data-i18n="v0.014" id="configuration">Configuration</h2>
+      <div class="grid-2">
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th data-i18n="v0.015">Setting</th><th data-i18n="v0.016" class="num">Value</th></tr></thead>
+            <tbody>
+              <tr><td data-i18n="v0.017">Global batch size</td><td class="num">8</td></tr>
+              <tr><td data-i18n="v0.018">Data loader</td><td data-i18n="v0.019" class="num">shuffle, 4 workers</td></tr>
+              <tr><td data-i18n="v0.020">Training steps</td><td class="num">1,500</td></tr>
+              <tr><td data-i18n="v0.021">Log / save every</td><td class="num">500 / 500</td></tr>
+              <tr><td data-i18n="v0.022">Mixed precision / multi-GPU</td><td data-i18n="v0.023" class="num">fp16 autocast / off</td></tr>
+              <tr><td data-i18n="v0.024">Gradient clip</td><td class="num">1.0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th data-i18n="v0.025">Optimizer / loss</th><th data-i18n="v0.026" class="num">Value</th></tr></thead>
+            <tbody>
+              <tr><td data-i18n="v0.027">AdamW lr</td><td class="num">1e-4</td></tr>
+              <tr><td data-i18n="v0.028">betas, eps</td><td class="num">(0.8, 0.99), 1e-9</td></tr>
+              <tr><td data-i18n="v0.029">weight decay</td><td class="num">0.01</td></tr>
+              <tr><td data-i18n="v0.030">mel / STFT / wave</td><td class="num">10 / 1 / 10</td></tr>
+              <tr><td data-i18n="v0.031">duration / KL</td><td class="num">0 / 0</td></tr>
+              <tr><td data-i18n="v0.032">GAN</td><td data-i18n="v0.033" class="num">10 × 0 (placeholder)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h2 data-i18n="v0.034" id="training-loop">Training loop</h2>
+      <p data-i18n="v0.035"><code>VITSTrainer.overfit_train()</code> repeats one batch. Each iteration:</p>
+      <ol class="list">
+        <li data-i18n="v0.036">Takes the <strong>first batch of the shuffled loader</strong> once, before the loop, and moves it to the device.</li>
+        <li data-i18n="v0.037">Runs the full forward pass under fp16 autocast. The model picks a new random 32-frame start for every utterance.</li>
+        <li data-i18n="v0.038">Slices the target waveform at <code>start_frames × 256</code> and computes losses in float32.</li>
+        <li data-i18n="v0.039">Stops with <code>FloatingPointError</code> on a non-finite loss.</li>
+        <li data-i18n="v0.040">Scales, backpropagates, unscales, clips to norm 1.0, steps the <code>GradScaler</code>.</li>
+        <li data-i18n="v0.041">Every 500 steps shows losses in the progress bar and calls <code>evaluate(outputs, batch)</code>, which is an empty stub.</li>
+        <li data-i18n="v0.042">Every 500 steps saves a checkpoint to <code>./model_weight_no_gan</code>.</li>
+      </ol>
+<pre><code><span class="c-com"># v0 cell 42: the evaluation hook left for the team</span>
+<span class="c-com"># Pick one to two metric to evaluate the model performace (and plot a graph)</span>
+<span class="c-com"># Also create a graph which plotting the loss curve</span>
+<span class="c-key">def</span> evaluate(outputs, batch):
+    <span class="c-key">pass</span>
+
+t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, save_every=<span class="c-num">500</span>, log_every=<span class="c-num">500</span>)</code></pre>
+
+      <h2 data-i18n="v0.043" id="inspection">How results were checked</h2>
+      <p data-i18n="v0.044">The last cell re-encodes the returned batch in <code>inference_mode</code> and plays three clips for the first utterance:</p>
+      <div class="grid-3">
+        <div class="card"><h4 data-i18n="v0.045">Posterior mean</h4><p data-i18n="v0.046">Decoder applied to μq, the noise-free latent (noise scale 0).</p></div>
+        <div class="card"><h4 data-i18n="v0.047">Posterior sample</h4><p data-i18n="v0.048">μq + ε·σq with <code>torch.manual_seed(1234)</code> (noise scale 1).</p></div>
+        <div class="card"><h4 data-i18n="v0.049">Target</h4><p data-i18n="v0.050">The matching slice of the real waveform.</p></div>
+      </div>
+      <p data-i18n="v0.051">It also prints posterior statistics: the standard deviation of the mean segment, the mean/min/max of σq and σq², and the standard deviation of the sampled z. Playback clamps audio to [−1, 1].</p>
+
+      <h2 data-i18n="v0.052" id="gaps">Gaps found in review</h2>
+      <p data-i18n="v0.053">These points were identified while building v1. Each one is addressed on the <a href="original-eval.html#changes">v1 page</a>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th data-i18n="v0.054">Gap</th><th data-i18n="v0.055">Effect</th></tr></thead>
+          <tbody>
+            <tr><td data-i18n="v0.056">Batch taken from a shuffled loader</td><td data-i18n="v0.057">Each run overfits a different, unrecorded set of 8 utterances. Runs cannot be compared.</td></tr>
+            <tr><td data-i18n="v0.058">No metric, only listening</td><td data-i18n="v0.059">Improvement cannot be stated as a number or checked by someone else.</td></tr>
+            <tr><td data-i18n="v0.060">Random crop at inspection time</td><td data-i18n="v0.061">The listened segment changes between runs, even with the same checkpoint.</td></tr>
+            <tr><td data-i18n="v0.062">Iterations counted, updates not</td><td data-i18n="v0.063">AMP can skip optimizer steps. "1,500 steps" may mean fewer real updates.</td></tr>
+            <tr><td data-i18n="v0.064">No run record</td><td data-i18n="v0.065">No saved configuration, seed, data hash or code revision next to the checkpoint.</td></tr>
+            <tr><td data-i18n="v0.066">Clamped playback</td><td data-i18n="v0.067">Clipping hides out-of-range output that a metric should see.</td></tr>
+            <tr><td data-i18n="v0.068">Relative output folders</td><td data-i18n="v0.069">Checkpoints from different runs overwrite each other.</td></tr>
+            <tr><td data-i18n="v0.070">Empty <code>Discriminator</code>, GAN = 0</td><td data-i18n="v0.071">The waveform decoder is trained with regression losses only.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 data-i18n="v0.072" id="team-notes">Team analysis</h2>
+      <p data-i18n="v0.073" class="muted">These sections are reserved for the team's own discussion of v0. Replace the comment inside each <code>slot-body</code> with your text.</p>
+
+      <div class="slot" data-slot="v0.discussion">
+        <div class="slot-head"><span data-i18n="v0.074" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="v0.075" class="slot-title">Technical discussion</span></div>
+        <div data-i18n="v0.076" class="slot-prompt">Suggested content:
+          <ul><li>Why the design follows VITS, and which parts were simplified (additive coupling, NumPy MAS, character tokenizer)</li><li>Choice of transposed convolution vs interpolation + conv in the decoder</li><li>Why duration and KL were switched off for this stage</li></ul>
+        </div>
+        <div class="slot-body"><!-- Write here. --></div>
+      </div>
+
+      <div class="slot" data-slot="v0.observations">
+        <div class="slot-head"><span data-i18n="v0.077" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="v0.078" class="slot-title">Observations from listening and training</span></div>
+        <div data-i18n="v0.079" class="slot-prompt">Suggested content:
+          <ul><li>What the mean and sample reconstructions sounded like (buzz, metallic tone, phase artifacts)</li><li>Posterior statistics you saw, e.g. whether σq collapsed or grew</li><li>Loss behaviour on Kaggle T4 ×2</li></ul>
+        </div>
+        <div class="slot-body"><!-- Write here. --></div>
+      </div>
+
+      <div class="slot" data-slot="v0.analysis">
+        <div class="slot-head"><span data-i18n="v0.080" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="v0.081" class="slot-title">Analysis</span></div>
+        <div data-i18n="v0.082" class="slot-prompt">Suggested content:
+          <ul><li>Which component limits quality most at this stage</li><li>What the gaps above mean for conclusions drawn from v0</li></ul>
+        </div>
+        <div class="slot-body"><!-- Write here. --></div>
+      </div>
+
+      <div class="slot" data-slot="v0.future">
+        <div class="slot-head"><span data-i18n="v0.083" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="v0.084" class="slot-title">Future optimization directions</span></div>
+        <div data-i18n="v0.085" class="slot-prompt">Suggested content:
+          <ul><li>Ideas raised at the time, and whether they moved into v1 or v2+</li><li>Priorities and owners</li></ul>
+        </div>
+        <div class="slot-body"><!-- Write here. --></div>
+      </div>
+
+      <nav class="page-nav" aria-label="Pages">
+        <a data-i18n="v0.086" href="index.html"><span class="dir">Previous</span>Overview</a>
+        <a data-i18n="v0.087" class="next" href="original-eval.html"><span class="dir">Next</span>v1 · Original + eval</a>
+      </nav>
+      <footer class="site-foot" data-i18n="v0.foot">Source: notebook at commit 451c635. Values are read from the notebook code; v0 recorded no measurements.</footer>
+    </article>
+  </main>
+
+  <aside class="toc" data-toc></aside>
+</div>
+<script src="assets/i18n/zh.js"></script>
+<script src="assets/i18n/de.js"></script>
+<script src="assets/i18n/fr.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>
