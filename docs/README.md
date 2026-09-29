@@ -8,6 +8,7 @@
 - [Environment and notebook setup](SETUP.md)
 - [Reconstruction evaluation and Kaggle handoff](EVALUATION.md)
 - [Local GPU run and checkpoint reproduction](LOCAL_EVALUATION.md)
+- [Full training on Kaggle: GAN vs no-GAN](FULL_TRAINING.md)
 - [GitHub handbook: English, macOS and website-first](guides/STS2026_GitHub_Team_Handbook.pdf)
 - [ASR/VITS evaluation planning guide](guides/ASR_VITS_Evaluation_Guide.pdf)
 
