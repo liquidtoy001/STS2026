@@ -13,7 +13,7 @@ from pathlib import Path
 
 SITE = Path(__file__).resolve().parent.parent / "docs" / "site"
 KEY_IN_PAGE = re.compile(r'data-i18n="([^"]+)"')
-KEY_IN_DICT = re.compile(r'^\s*"((?:ov|v0|v1|imp)\.[\w-]+)"\s*:', re.M)
+KEY_IN_DICT = re.compile(r'^\s*"((?:ov|v0|v1|imp|rep)\.[\w.-]+)"\s*:', re.M)
 
 
 def main():

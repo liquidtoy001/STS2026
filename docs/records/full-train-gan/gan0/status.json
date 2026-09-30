@@ -1,0 +1,12 @@
+{
+  "status": "completed",
+  "step": 50000,
+  "total_steps": 50000,
+  "gan_weight": 0.0,
+  "actual_optimizer_updates": 50000,
+  "session_wall_seconds": 16874.4,
+  "resumed": false,
+  "completion_time_source": "runtime_clock",
+  "peak_allocated_GiB": 1.134,
+  "completed_at_utc": "2026-09-29T22:35:50+00:00"
+}

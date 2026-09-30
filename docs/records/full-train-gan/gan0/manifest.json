@@ -1,0 +1,105 @@
+{
+  "protocol": "posterior_fixed_batch_reconstruction_v1",
+  "scope": "training_batch_overfit_not_held_out",
+  "config": {
+    "sample_rate": 22050,
+    "n_fft": 1024,
+    "hop_length": 256,
+    "win_length": 1024,
+    "n_mels": 80,
+    "segment_frames": 32,
+    "seed": 1234,
+    "resolutions": [
+      [
+        512,
+        128,
+        512
+      ],
+      [
+        1024,
+        256,
+        1024
+      ],
+      [
+        2048,
+        512,
+        2048
+      ]
+    ]
+  },
+  "batch_sha256": "b341fc48ebc301f72261c11da91aeb0bbb1e0a2effa073eca8d1993ff0d93f62",
+  "sample_ids": [
+    "LJ001-0001",
+    "LJ001-0002",
+    "LJ001-0003",
+    "LJ001-0004",
+    "LJ001-0005",
+    "LJ001-0006",
+    "LJ001-0007",
+    "LJ001-0008"
+  ],
+  "start_frames": [
+    399,
+    65,
+    400,
+    205,
+    333,
+    228,
+    345,
+    60
+  ],
+  "valid_samples": [
+    8192,
+    8192,
+    8192,
+    8192,
+    8192,
+    8192,
+    8192,
+    8192
+  ],
+  "aggregation": "arithmetic mean over utterances, separately by mode",
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.10.0+cu128",
+    "torchaudio": "2.10.0+cu128"
+  },
+  "provenance": {
+    "variant": "full_gan0",
+    "gan_weight": 0.0,
+    "train_seed": 2026,
+    "total_steps": 50000,
+    "eval_every": 2500,
+    "save_every": 5000,
+    "keep_every": 10000,
+    "log_every": 100,
+    "time_budget_hours": 11.3,
+    "batch_size": 8,
+    "training_clips": 13084,
+    "probe_sample_ids": [
+      "LJ001-0001",
+      "LJ001-0002",
+      "LJ001-0003",
+      "LJ001-0004",
+      "LJ001-0005",
+      "LJ001-0006",
+      "LJ001-0007",
+      "LJ001-0008"
+    ],
+    "data_dir": "/kaggle/input/datasets/dromosys/ljspeech/LJSpeech-1.1",
+    "metadata_sha256": "852bce5c79e5184ba5bf2ea98aad4bcf49a5d787def5fd1f04fa2ab8aa6dc535",
+    "notebook_sha256": "294ebcc78fbe58049ad57bcc6b5939b7263de1730c883081b97669023306c82b",
+    "eval_source_sha256": "92e7cefd38896f8f4c495fee36998d0818b29a45ed216ebd741aaff532c0776a",
+    "repository": {
+      "commit": null,
+      "working_tree": null
+    },
+    "device": "cuda:0",
+    "gpu": "Tesla T4",
+    "torch": "2.10.0+cu128",
+    "torch_cuda": "12.8",
+    "cudnn_deterministic": true,
+    "mas": "row-vectorised NumPy; identical paths to the loop version",
+    "scope": "full LJSpeech training; fixed-crop probe on 8 training utterances; not held-out"
+  }
+}

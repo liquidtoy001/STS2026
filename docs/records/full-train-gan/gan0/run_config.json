@@ -1,0 +1,68 @@
+{
+  "variant": "full_gan0",
+  "gan_weight": 0.0,
+  "train_seed": 2026,
+  "total_steps": 50000,
+  "eval_every": 2500,
+  "save_every": 5000,
+  "keep_every": 10000,
+  "log_every": 100,
+  "time_budget_hours": 11.3,
+  "batch_size": 8,
+  "training_clips": 13084,
+  "probe_sample_ids": [
+    "LJ001-0001",
+    "LJ001-0002",
+    "LJ001-0003",
+    "LJ001-0004",
+    "LJ001-0005",
+    "LJ001-0006",
+    "LJ001-0007",
+    "LJ001-0008"
+  ],
+  "data_dir": "/kaggle/input/datasets/dromosys/ljspeech/LJSpeech-1.1",
+  "metadata_sha256": "852bce5c79e5184ba5bf2ea98aad4bcf49a5d787def5fd1f04fa2ab8aa6dc535",
+  "notebook_sha256": "294ebcc78fbe58049ad57bcc6b5939b7263de1730c883081b97669023306c82b",
+  "eval_source_sha256": "92e7cefd38896f8f4c495fee36998d0818b29a45ed216ebd741aaff532c0776a",
+  "repository": {
+    "commit": null,
+    "working_tree": null
+  },
+  "device": "cuda:0",
+  "gpu": "Tesla T4",
+  "torch": "2.10.0+cu128",
+  "torch_cuda": "12.8",
+  "cudnn_deterministic": true,
+  "mas": "row-vectorised NumPy; identical paths to the loop version",
+  "scope": "full LJSpeech training; fixed-crop probe on 8 training utterances; not held-out",
+  "model": "VITSModel(\n  (text_encoder): TextEncoder(\n    (token_embedding): Embedding(76, 192, padding_idx=0)\n    (position_embedding): Embedding(512, 192)\n    (transformer): TransformerEncoder(\n      (layers): ModuleList(\n        (0-5): 6 x TransformerEncoderLayer(\n          (self_attn): MultiheadAttention(\n            (out_proj): NonDynamicallyQuantizableLinear(in_features=192, out_features=192, bias=True)\n          )\n          (linear1): Linear(in_features=192, out_features=768, bias=True)\n          (dropout): Dropout(p=0.1, inplace=False)\n          (linear2): Linear(in_features=768, out_features=192, bias=True)\n          (norm1): LayerNorm((192,), eps=1e-05, elementwise_affine=True)\n          (norm2): LayerNorm((192,), eps=1e-05, elementwise_affine=True)\n          (dropout1): Dropout(p=0.1, inplace=False)\n          (dropout2): Dropout(p=0.1, inplace=False)\n        )\n      )\n    )\n    (statistics_projection): Linear(in_features=192, out_features=384, bias=True)\n  )\n  (posterior_encoder): PosteriorEncoder(\n    (input_projection): Conv1d(513, 192, kernel_size=(1,), stride=(1,))\n    (conv1): Conv1d(192, 192, kernel_size=(5,), stride=(1,), padding=(2,))\n    (conv2): Conv1d(192, 192, kernel_size=(5,), stride=(1,), padding=(4,), dilation=(2,))\n    (conv3): Conv1d(192, 192, kernel_size=(5,), stride=(1,), padding=(8,), dilation=(4,))\n    (conv4): Conv1d(192, 192, kernel_size=(5,), stride=(1,), padding=(16,), dilation=(8,))\n    (activation): GELU(approximate='none')\n    (dropout): Dropout(p=0.1, inplace=False)\n    (mean_projection): Conv1d(192, 192, kernel_size=(1,), stride=(1,))\n    (log_scale_projection): Conv1d(192, 192, kernel_size=(1,), stride=(1,))\n  )\n  (flow): ResidualCouplingBlock(\n    (coupling_layers): ModuleList(\n      (0-3): 4 x ResidualCouplingLayer(\n        (coupling_network): CouplingNetwork(\n          (input_projection): Conv1d(96, 192, kernel_size=(1,), stride=(1,))\n          (residual_layers): ModuleList(\n            (0-3): 4 x ResidualConvLayer(\n              (conv): Conv1d(192, 192, kernel_size=(5,), stride=(1,), padding=(2,))\n              (norm): ChannelLayerNorm(\n                (norm): LayerNorm((192,), eps=1e-05, elementwise_affine=True)\n              )\n              (dropout): Dropout(p=0.0, inplace=False)\n            )\n          )\n          (output_projection): Conv1d(192, 96, kernel_size=(1,), stride=(1,))\n        )\n      )\n    )\n  )\n  (duration_predictor): DurationPredictor(\n    (conv_block_1): DurationConvBlock(\n      (conv): Conv1d(192, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n      (norm): ChannelLayerNorm(\n        (norm): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n      )\n      (dropout): Dropout(p=0.5, inplace=False)\n    )\n    (conv_block_2): DurationConvBlock(\n      (conv): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n      (norm): ChannelLayerNorm(\n        (norm): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n      )\n      (dropout): Dropout(p=0.5, inplace=False)\n    )\n    (output_projection): Conv1d(256, 1, kernel_size=(1,), stride=(1,))\n  )\n  (decoder): Decoder(\n    (input_projection): Conv1d(192, 512, kernel_size=(7,), stride=(1,), padding=(3,))\n    (upsample1): ConvTranspose1d(512, 256, kernel_size=(16,), stride=(8,), padding=(4,))\n    (resblock1): ResBlock(\n      (layers): ModuleList(\n        (0): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n        (1): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(3,), dilation=(3,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n        (2): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(5,), dilation=(5,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n      )\n    )\n    (upsample2): ConvTranspose1d(256, 128, kernel_size=(16,), stride=(8,), padding=(4,))\n    (resblock2): ResBlock(\n      (layers): ModuleList(\n        (0): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n        (1): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(3,), dilation=(3,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n        (2): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(5,), dilation=(5,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n      )\n    )\n    (upsample3): ConvTranspose1d(128, 64, kernel_size=(4,), stride=(2,), padding=(1,))\n    (resblock3): ResBlock(\n      (layers): ModuleList(\n        (0): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n        (1): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(3,), dilation=(3,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n        (2): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(5,), dilation=(5,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n      )\n    )\n    (upsample4): ConvTranspose1d(64, 32, kernel_size=(4,), stride=(2,), padding=(1,))\n    (resblock4): ResBlock(\n      (layers): ModuleList(\n        (0): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n        (1): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(3,), dilation=(3,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n        (2): Sequential(\n          (0): LeakyReLU(negative_slope=0.1)\n          (1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(5,), dilation=(5,))\n          (2): LeakyReLU(negative_slope=0.1)\n          (3): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,))\n        )\n      )\n    )\n    (output_projection): Conv1d(32, 1, kernel_size=(7,), stride=(1,), padding=(3,))\n  )\n)",
+  "discriminator": "Discriminator(\n  (network): Sequential(\n    (0): Conv1d(1, 32, kernel_size=(15,), stride=(1,), padding=(7,))\n    (1): LeakyReLU(negative_slope=0.2)\n    (2): Conv1d(32, 64, kernel_size=(41,), stride=(4,), padding=(20,))\n    (3): LeakyReLU(negative_slope=0.2)\n    (4): Conv1d(64, 128, kernel_size=(41,), stride=(4,), padding=(20,))\n    (5): LeakyReLU(negative_slope=0.2)\n    (6): Conv1d(128, 256, kernel_size=(41,), stride=(4,), padding=(20,))\n    (7): LeakyReLU(negative_slope=0.2)\n    (8): Conv1d(256, 512, kernel_size=(41,), stride=(4,), padding=(20,))\n    (9): LeakyReLU(negative_slope=0.2)\n    (10): Conv1d(512, 1, kernel_size=(5,), stride=(1,), padding=(2,))\n  )\n)",
+  "parameters": {
+    "generator": 12141186,
+    "discriminator": 7141313
+  },
+  "optimizer": {
+    "lr": 0.0001,
+    "betas": [
+      0.8,
+      0.99
+    ],
+    "eps": 1e-09,
+    "weight_decay": 0.01,
+    "amsgrad": false,
+    "maximize": false,
+    "foreach": null,
+    "capturable": false,
+    "differentiable": false,
+    "fused": null,
+    "decoupled_weight_decay": true
+  },
+  "loss_weights": {
+    "mel_weight": 1.0,
+    "stft_weight": 0.5,
+    "duration_weight": 1.0,
+    "kl_weight": 1.0,
+    "wave_weight": 10.0,
+    "gan_weight": 0.0
+  }
+}

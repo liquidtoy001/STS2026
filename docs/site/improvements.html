@@ -49,14 +49,14 @@
       </p>
       <div class="meta-row">
         <span data-i18n="imp.004" class="chip base"><span class="dot"></span>Reference: v1 original + eval</span>
-        <span data-i18n="imp.005" class="chip gan"><span class="dot"></span>v2 GAN in progress</span>
+        <span data-i18n="imp.005" class="chip gan"><span class="dot"></span>GAN pair measured</span>
         <span data-i18n="imp.006" class="chip">v3 / v4 planned</span>
         <span class="chip warn" data-open-slots>open team sections</span>
       </div>
 
       <h2 data-i18n="imp.007" id="board">Comparison board</h2>
       <div class="board-head">
-        <span data-i18n="imp.075" class="small muted">Final evaluation at iteration 2,000. Lower is better. Green Δ = lower error than baseline.</span>
+        <span data-i18n="imp.075" class="small muted">Final evaluation of each run. Lower is better. Green Δ = lower error than the group's reference run.</span>
         <div class="seg" role="radiogroup" aria-label="Reconstruction mode" data-mode-switch>
           <label><input type="radio" name="mode" id="mode-mean" value="mean" checked><span>mean</span></label>
           <label><input type="radio" name="mode" id="mode-sample" value="sample"><span>sample</span></label>
@@ -101,10 +101,10 @@
       <!-- ================= v2 GAN ================= -->
       <h2 data-i18n="imp.024" id="v2-gan">v2 · Adversarial training (GAN)</h2>
       <div class="exp-head">
-        <span data-i18n="imp.025" class="chip gan"><span class="dot"></span>in progress</span>
+        <span data-i18n="imp.025" class="chip ok"><span class="dot"></span>measured</span>
         <span data-i18n="imp.026" class="chip">branch gan-group</span>
         <span class="chip">07e663d · 2026-09-23</span>
-        <span data-i18n="imp.027" class="chip">not merged · not measured</span>
+        <span data-i18n="imp.027" class="chip">2026-09-29 · <a href="report.html#full-train-gan">report</a></span>
       </div>
       <p data-i18n="imp.028">
         v0 and v1 train the decoder with regression losses only, and the <code>Discriminator</code> class is empty.
@@ -136,7 +136,7 @@
       </div>
       <div class="callout note">
         <div data-i18n="imp.076" class="callout-title">Merged version and the next runs</div>
-        <p data-i18n="imp.077">On 2026-09-24 benlu merged the GAN code with the v1 evaluation in a local notebook and removed DataParallel and autocast (no measured speed benefit). It also switches to full-model training (duration and KL weight 1) with mel 1, STFT 0.5, wave 10, GAN 1. Because the objective changed, these runs are not comparable with the v1 numbers. The next comparison is a pair: 50,000 iterations with <code>gan_weight = 0</code> and with <code>gan_weight = 1</code>, same seed, data and budget. Upload each run folder and report to the <a href="https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU">team Google Drive</a>.</p>
+        <p data-i18n="imp.077">On 2026-09-24 benlu merged the GAN code with the v1 evaluation and removed DataParallel and autocast. The merged trainer was run as a pair on Kaggle on 2026-09-29: 50,000 iterations each with <code>gan_weight = 0</code> and <code>1</code>, full objective (mel 1, STFT 0.5, wave 10, duration 1, KL 1). These results form their own comparison group and are not comparable with v1. Read the <a href="report.html#full-train-gan">experiment report</a>.</p>
       </div>
 
       <div class="slot" data-slot="v2.discussion">

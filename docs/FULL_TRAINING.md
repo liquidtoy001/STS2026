@@ -59,10 +59,54 @@ jupyter nbconvert --to notebook --execute output/kaggle/vits-full-train_gan1.ipy
 `STS_ALLOW_SUBSET=1` is for smoke tests only; without it the notebook refuses to train
 when any LJSpeech clip is missing.
 
-## After both runs
+## After the runs: organise, store, report
 
-- Check each `status.json`: `completed`, step 50,000, and whether it was resumed.
-- Upload both run folders to the [team Google Drive](https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU).
-  Each keeps five 221 MB checkpoints (10k–50k); upload at least the final one.
-- Add the final metrics to `docs/site/assets/results.js` with the no-GAN run as the
-  reference for this pair, and listen to the samples before writing conclusions.
+### Local layout (all Git-ignored)
+
+```text
+checkpoints/full-train/<run>/vits_step_*.pt    # weights
+output/full-train/runs/<run>/                   # run folder without checkpoints
+output/full-train/logs/                         # Kaggle logs
+output/full-train/_archive/                     # downloaded zips until the Drive copy is verified
+```
+
+Check each `status.json` first: `completed`, the expected step, and whether it was resumed.
+Only completed runs are reported.
+
+### What goes where
+
+| Artifact | GitHub | Google Drive | Why |
+|---|---|---|---|
+| `run_config.json`, `status.json` | yes, `docs/records/<id>/<arm>/` | yes | Small provenance; needed to check comparability |
+| `evaluation/evaluation_history.json`, `manifest.json` | yes | yes | Small; the report's numbers |
+| Kaggle log | yes (`kaggle.log`) | yes | 20 KB text evidence of the run |
+| Trimmed metrics for the site | yes, `docs/site/reports/<id>.data.js` | no | Generated; about 100 KB |
+| Checkpoints (`*.pt`, 170–221 MB each) | never | yes | Weights stay out of Git (`.gitignore`) |
+| Audio (`samples/`, `evaluation/step_*/*.wav`) | no | yes | Bulk generated audio stays out of Git |
+| Full `training_history.json`, `per_sample.json`, `curves.png` | no | yes | Complete record; the site uses a trimmed copy |
+| Local listening report (`output/full-train/report/`) | no | yes | References the audio next to it |
+| Kaggle zips, Kaggle source snapshot, duplicate downloads | no | no | Redundant once extracted; the snapshot equals the committed notebook |
+
+Suggested Drive layout, mirroring the local one so the listening report still finds its audio:
+`<experiment-date>/{checkpoints,runs,logs,report}/`.
+
+### Publish the report on the documentation site
+
+```sh
+python tools/build_site_report.py --id <id> --reference <arm> \
+  --run <arm>=output/full-train/runs/<run> --run <arm>=... \
+  --log <arm>=output/full-train/logs/<log> ...
+```
+
+This writes `docs/site/reports/<id>.data.js` and `docs/records/<id>/`. Then:
+
+1. Write `docs/site/reports/<id>.notes.js` (title, conclusion, findings, storage, `changed`
+   settings, team discussion). Copy `full-train-gan.notes.js` as a template; English is required,
+   other languages are optional.
+2. Add the report to `docs/site/reports/index.js` and to the navigation in `docs/site/assets/site.js`.
+3. Add each run to `docs/site/assets/results.js` under its comparison group, with the group's
+   reference run. Runs from different protocols go in different groups.
+4. Run `python tools/check_site_i18n.py`, open `docs/site/report.html#<id>`, and listen to the
+   samples before writing conclusions.
+
+The GAN comparison of 2026-09-29 is published as `report.html#full-train-gan`.

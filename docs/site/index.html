@@ -38,7 +38,7 @@
       </p>
       <div class="meta-row">
         <span data-i18n="ov.004" class="chip ok"><span class="dot"></span>Baseline measured</span>
-        <span data-i18n="ov.005" class="chip gan"><span class="dot"></span>GAN in progress · gan-group</span>
+        <span data-i18n="ov.005" class="chip gan"><span class="dot"></span>GAN comparison measured</span>
         <span data-i18n="ov.006" class="chip">LJSpeech 1.1 · 22,050 Hz</span>
         <span data-i18n="ov.007" class="chip">PyTorch 2.7.1 (measured env)</span>
         <span class="chip warn" data-open-slots>open team sections</span>
@@ -232,6 +232,7 @@
         <li data-i18n="ov.120" class="done"><span class="when">2026-09-20 · 9fba268, PR #2</span><div class="what">English experiment records</div><p>Standardized reports and completion-time attribution. 11 tests pass.</p></li>
         <li data-i18n="ov.121" class="wip"><span class="when">2026-09-22 → 23 · gan-group</span><div class="what">GAN loss and discriminator</div><p>LSGAN losses, separate discriminator optimizer, <code>gan_weight = 1.0</code>. Not yet merged or measured.</p></li>
         <li data-i18n="ov.138" class="wip"><span class="when">2026-09-24 · benlu (local notebook)</span><div class="what">GAN merged with the v1 evaluation</div><p>DataParallel and autocast removed. New loss weights: mel 1, STFT 0.5, wave 10, duration 1, KL 1, GAN 1. Not yet on GitHub. Next: 50,000-iteration runs with and without GAN.</p></li>
+        <li data-i18n="ov.140" class="done"><span class="when">2026-09-29 · Kaggle T4</span><div class="what">GAN vs no-GAN, 50,000 iterations each</div><p>Both runs completed. Spectral probe metrics slightly favour no-GAN; the discriminator overpowers the generator late. See the <a href="report.html#full-train-gan">experiment report</a>.</p></li>
         <li data-i18n="ov.122" class="plan"><span class="when">Next</span><div class="what">New encoder and decoder</div><p>Integrated behind <code>MODEL_VARIANT</code> and compared to v1 under the same protocol.</p></li>
       </ul>
 
