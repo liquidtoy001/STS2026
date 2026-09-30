@@ -36,6 +36,14 @@ Future website changes must synchronize the canonical local source, GitHub
 `Turino`, and this existing GPT Sites site; a GitHub push alone is not a site
 deployment. Keep the existing audience and Site ID. Record publication success
 and verify the deployed routes before reporting synchronization complete.
-The 2026-10-01 English-only revision is being prepared for publication after
-its GitHub merge. Record the deployed version, deployment ID and verification
-results in the publication history below once the update succeeds.
+## Publication history
+
+### 2026-10-01 — English-only site update
+
+- GitHub source merged to `main` in [PR #5](https://github.com/liquidtoy001/STS2026/pull/5), merge commit `ab80068c3f0e4e478640208f2b1187ef50fbd789`.
+- Published successfully at `2026-09-30T16:37:33.885860+00:00` (UTC), Sites version **2**.
+- Deployment ID: `appgdep_6abd3abd8b548191b8893d9ea34b0956`.
+- Saved version: `appgprj_6abd0e861660819185dd81f7ea9ad034~appgver_d2ef0613093081918ba3499a03655d1f`.
+- Sites source commit: `8ada1af613a1d4ae9079689a88195d3dc86c1a1a` (separate from the GitHub repository).
+- The deployment succeeded and `get_site` confirmed version 2 as the latest active version. The existing owner-only audience and live URL were preserved.
+- The published files include the English-only site, Jacques's paired report and Turino's listening improvement proposal. Translation bundles and the language selector are absent.
