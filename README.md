@@ -8,7 +8,8 @@ Team coursework project exploring a compact VITS-style speech model and its eval
 
 ## Documentation and shared files
 
-- **[Documentation site](docs/site/index.html)**: versions (v0 prototype, v1 evaluated baseline, v2+ improvements), architecture diagrams, measured results and the comparison board. English, 简体中文, Deutsch and Français. GitHub shows HTML as source, so clone the repository and open `docs/site/index.html` in a browser.
+- **[Documentation site](docs/site/index.html)**: versions (v0 prototype, v1 evaluated baseline, v2+ improvements), architecture diagrams, measured results and the comparison board. Maintained in English only. GitHub shows HTML as source, so clone the repository and open `docs/site/index.html` in a browser.
+- **[Jacques's encoder/decoder study](docs/JACQUES_EVAL.md)**: two 2,000-iteration reconstruction runs, report-ready analysis and [paired HTML results](docs/site/report.html#jacques-enc-dec). Verification of the changed component source remains pending.
 - **[Shared Google Drive](https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU)**: model checkpoints, run folders and detailed experiment reports. Checkpoints and generated audio stay out of Git; upload them here and record the folder path in the PR and in `docs/site/assets/results.js`.
 
 ## Start here

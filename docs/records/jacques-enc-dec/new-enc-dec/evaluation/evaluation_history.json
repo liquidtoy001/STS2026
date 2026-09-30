@@ -1,0 +1,82 @@
+[
+  {
+    "step": 0,
+    "mode": "mean",
+    "count": 8,
+    "log_mel_l1": 3.5420980751514435,
+    "stft_spectral_convergence": 1.0257127434015274,
+    "stft_log_magnitude": 3.631243407726288
+  },
+  {
+    "step": 0,
+    "mode": "sample",
+    "count": 8,
+    "log_mel_l1": 2.0028477907180786,
+    "stft_spectral_convergence": 1.0223914235830307,
+    "stft_log_magnitude": 2.0361099541187286
+  },
+  {
+    "step": 500,
+    "mode": "mean",
+    "count": 8,
+    "log_mel_l1": 0.9813312068581581,
+    "stft_spectral_convergence": 0.9105100855231285,
+    "stft_log_magnitude": 1.4675607532262802
+  },
+  {
+    "step": 500,
+    "mode": "sample",
+    "count": 8,
+    "log_mel_l1": 0.794364407658577,
+    "stft_spectral_convergence": 0.9071249514818192,
+    "stft_log_magnitude": 1.1922815889120102
+  },
+  {
+    "step": 1000,
+    "mode": "mean",
+    "count": 8,
+    "log_mel_l1": 0.798436813056469,
+    "stft_spectral_convergence": 0.8796888142824173,
+    "stft_log_magnitude": 1.336571365594864
+  },
+  {
+    "step": 1000,
+    "mode": "sample",
+    "count": 8,
+    "log_mel_l1": 0.7113690227270126,
+    "stft_spectral_convergence": 0.87637098133564,
+    "stft_log_magnitude": 1.1372902542352676
+  },
+  {
+    "step": 1500,
+    "mode": "mean",
+    "count": 8,
+    "log_mel_l1": 0.6316337957978249,
+    "stft_spectral_convergence": 0.8612935170531273,
+    "stft_log_magnitude": 1.1833235919475555
+  },
+  {
+    "step": 1500,
+    "mode": "sample",
+    "count": 8,
+    "log_mel_l1": 0.6129671633243561,
+    "stft_spectral_convergence": 0.8578245565295219,
+    "stft_log_magnitude": 1.0636443048715591
+  },
+  {
+    "step": 2000,
+    "mode": "mean",
+    "count": 8,
+    "log_mel_l1": 0.5831247195601463,
+    "stft_spectral_convergence": 0.8329238295555115,
+    "stft_log_magnitude": 1.1529712155461311
+  },
+  {
+    "step": 2000,
+    "mode": "sample",
+    "count": 8,
+    "log_mel_l1": 0.5830249227583408,
+    "stft_spectral_convergence": 0.8286637142300606,
+    "stft_log_magnitude": 1.0644277557730675
+  }
+]

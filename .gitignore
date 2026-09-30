@@ -38,6 +38,9 @@ generated_samples*/
 /wandb/
 /runs/
 
+# Persistent local notebook experiments (shared originals stay in notebooks/)
+/notebooks/local/
+
 # Scratch files and PDF render/QA images
 /tmp/
 

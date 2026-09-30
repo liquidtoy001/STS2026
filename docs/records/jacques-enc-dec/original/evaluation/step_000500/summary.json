@@ -1,0 +1,18 @@
+[
+  {
+    "step": 500,
+    "mode": "mean",
+    "count": 8,
+    "log_mel_l1": 0.9688364118337631,
+    "stft_spectral_convergence": 0.9116110801696777,
+    "stft_log_magnitude": 1.4908874332904816
+  },
+  {
+    "step": 500,
+    "mode": "sample",
+    "count": 8,
+    "log_mel_l1": 0.8151500374078751,
+    "stft_spectral_convergence": 0.9087769240140915,
+    "stft_log_magnitude": 1.203212708234787
+  }
+]

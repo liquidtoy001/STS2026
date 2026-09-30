@@ -24,13 +24,9 @@ STS.GROUPS = [
   {
     id: "v1-overfit",
     title: "v1 protocol: 2,000-iteration overfit on 8 utterances",
-    note: "Reconstruction-only objective (duration and KL weight 0), AMP, measured locally on 2026-09-19.",
+    note: "Reconstruction-only objective (duration and KL weight 0), AMP. Training by tuirno; completed 2026-09-20 Brisbane time (2026-09-19 UTC).",
     reference: "v1-original-eval",
-    i18n: {
-      zh: { title: "v1 协议：在 8 条语音上过拟合 2,000 次迭代", note: "只训练重建（duration 和 KL 权重为 0），开启 AMP，2026-09-19 本地实测。" },
-      de: { title: "v1-Protokoll: 2.000 Iterationen Overfitting auf 8 Äußerungen", note: "Nur Rekonstruktion (duration und KL mit Gewicht 0), AMP, lokal gemessen am 2026-09-19." },
-      fr: { title: "Protocole v1 : 2 000 itérations de surapprentissage sur 8 énoncés", note: "Reconstruction seule (duration et KL de poids 0), AMP, mesuré localement le 2026-09-19." }
-    }
+
   },
   {
     id: "full-train",
@@ -38,11 +34,7 @@ STS.GROUPS = [
     note: "Complete objective (mel 1, STFT 0.5, wave 10, duration 1, KL 1), no AMP, Kaggle T4. Probe: same 8 fixed crops (in the training set).",
     reference: "full-gan0",
     report: "report.html#full-train-gan",
-    i18n: {
-      zh: { title: "全量训练：在全部 LJSpeech 上训练 50,000 次迭代", note: "完整训练目标（mel 1、STFT 0.5、wave 10、duration 1、KL 1），不开 AMP，Kaggle T4。评估探针：同样的 8 个固定裁剪（在训练集中）。" },
-      de: { title: "Volltraining: 50.000 Iterationen auf ganz LJSpeech", note: "Vollständiges Ziel (mel 1, STFT 0,5, wave 10, duration 1, KL 1), ohne AMP, Kaggle T4. Probe: dieselben 8 festen Ausschnitte (im Trainingsset)." },
-      fr: { title: "Entraînement complet : 50 000 itérations sur tout LJSpeech", note: "Objectif complet (mel 1, STFT 0,5, wave 10, duration 1, KL 1), sans AMP, Kaggle T4. Sonde : les 8 mêmes extraits fixes (dans l’ensemble d’entraînement)." }
-    }
+
   }
 ];
 
@@ -79,11 +71,7 @@ STS.EXPERIMENTS = [
   {
     id: "v1-original-eval",
     group: "v1-overfit",
-    i18n: {
-      zh: { name: "原始模型（评估基准）", change: "无：冻结的参照" },
-      de: { name: "Original (Evaluations-Baseline)", change: "Keine: eingefrorene Referenz" },
-      fr: { name: "Original (référence d’évaluation)", change: "Aucun : référence figée" }
-    },
+
     name: "Original (eval baseline)",
     change: "None: frozen reference",
     branch: "main",
@@ -106,11 +94,7 @@ STS.EXPERIMENTS = [
     name: "Full training, no GAN (gan_weight = 0)",
     change: "Reference for this pair: full model, 50,000 iterations on all of LJSpeech",
     branch: "Turino",
-    i18n: {
-      zh: { name: "全量训练，无 GAN（gan_weight = 0）", change: "本组参照：完整模型，在全部 LJSpeech 上训练 50,000 次迭代" },
-      de: { name: "Volltraining ohne GAN (gan_weight = 0)", change: "Referenz dieses Paars: vollständiges Modell, 50.000 Iterationen auf ganz LJSpeech" },
-      fr: { name: "Entraînement complet sans GAN (gan_weight = 0)", change: "Référence de la paire : modèle complet, 50 000 itérations sur tout LJSpeech" }
-    },
+
     status: "completed",
     params: 12141186, iterations: 50000, updates: 50000, ampSkipped: 0,
     seconds: 16874.4, peakAllocGiB: 1.134,
@@ -126,11 +110,7 @@ STS.EXPERIMENTS = [
     name: "Full training + GAN (LSGAN, gan_weight = 1)",
     change: "Adds the 1-D conv discriminator and adversarial loss; everything else identical",
     branch: "Turino",
-    i18n: {
-      zh: { name: "全量训练 + GAN（LSGAN，gan_weight = 1）", change: "加入一维卷积判别器和对抗损失，其余完全相同" },
-      de: { name: "Volltraining + GAN (LSGAN, gan_weight = 1)", change: "Ergänzt 1-D-Conv-Diskriminator und adversariellen Loss; sonst identisch" },
-      fr: { name: "Entraînement complet + GAN (LSGAN, gan_weight = 1)", change: "Ajoute le discriminateur conv 1-D et la perte adversariale ; le reste est identique" }
-    },
+
     status: "completed",
     params: 12141186, iterations: 50000, updates: 50000, ampSkipped: 0,
     seconds: 18748.1, peakAllocGiB: 1.253,
@@ -143,11 +123,7 @@ STS.EXPERIMENTS = [
   {
     id: "v3-new-encoder",
     group: "full-train",
-    i18n: {
-      zh: { name: "新的后验编码器", change: "替换 PosteriorEncoder；解码器不变" },
-      de: { name: "Neuer Posterior-Encoder", change: "Ersetzt PosteriorEncoder; Decoder unverändert" },
-      fr: { name: "Nouvel encodeur a posteriori", change: "Remplace PosteriorEncoder ; décodeur inchangé" }
-    },
+
     name: "New posterior encoder",
     change: "Replaces PosteriorEncoder; decoder unchanged",
     branch: "TBD",
@@ -159,11 +135,7 @@ STS.EXPERIMENTS = [
   {
     id: "v4-new-decoder",
     group: "full-train",
-    i18n: {
-      zh: { name: "新的波形解码器", change: "替换 Decoder；编码器不变" },
-      de: { name: "Neuer Waveform-Decoder", change: "Ersetzt Decoder; Encoder unverändert" },
-      fr: { name: "Nouveau décodeur de forme d’onde", change: "Remplace Decoder ; encodeur inchangé" }
-    },
+
     name: "New waveform decoder",
     change: "Replaces Decoder; encoder unchanged",
     branch: "TBD",

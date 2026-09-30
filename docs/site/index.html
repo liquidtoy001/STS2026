@@ -28,62 +28,62 @@
 
   <main>
     <article class="article">
-      <span data-i18n="ov.001" class="eyebrow">Team coursework · 2026</span>
-      <h1 data-i18n="ov.002">STS2026: a compact VITS-style speech model, built from scratch</h1>
-      <p data-i18n="ov.003" class="lede">
+      <span class="eyebrow">Team coursework · 2026</span>
+      <h1>STS2026: a compact VITS-style speech model, built from scratch</h1>
+      <p class="lede">
         STS2026 implements the main ideas of VITS in one readable PyTorch notebook: a text encoder with a learned prior,
         a posterior encoder, a normalizing flow, monotonic alignment search, a duration predictor and a waveform decoder.
         The current work measures how well the posterior encoder and decoder reconstruct speech, and compares every
         architectural change against one frozen baseline.
       </p>
       <div class="meta-row">
-        <span data-i18n="ov.004" class="chip ok"><span class="dot"></span>Baseline measured</span>
-        <span data-i18n="ov.005" class="chip gan"><span class="dot"></span>GAN comparison measured</span>
-        <span data-i18n="ov.006" class="chip">LJSpeech 1.1 · 22,050 Hz</span>
-        <span data-i18n="ov.007" class="chip">PyTorch 2.7.1 (measured env)</span>
+        <span class="chip ok"><span class="dot"></span>Baseline measured</span>
+        <span class="chip gan"><span class="dot"></span>GAN comparison measured</span>
+        <span class="chip">LJSpeech 1.1 · 22,050 Hz</span>
+        <span class="chip">PyTorch 2.7.1 (measured env)</span>
         <span class="chip warn" data-open-slots>open team sections</span>
       </div>
 
       <canvas class="spectro" aria-hidden="true"></canvas>
-      <p data-i18n="ov.008" class="small muted">Illustrative spectrogram. The amber band marks one decoder training crop: 32 frames × 256-sample hop = 8,192 samples, about 0.37 s of audio.</p>
+      <p class="small muted">Illustrative spectrogram. The amber band marks one decoder training crop: 32 frames × 256-sample hop = 8,192 samples, about 0.37 s of audio.</p>
 
       <div class="stat-row">
-        <div class="stat"><div data-i18n="ov.009" class="k">Parameters</div><div class="v">12.14 M</div><div data-i18n="ov.010" class="s">12,141,186 in v1</div></div>
-        <div class="stat"><div data-i18n="ov.011" class="k">Latent</div><div class="v">192 ch</div><div data-i18n="ov.012" class="s">prior, posterior, flow</div></div>
-        <div class="stat"><div data-i18n="ov.013" class="k">Upsampling</div><div class="v">×256</div><div class="s">8 · 8 · 2 · 2</div></div>
-        <div class="stat"><div data-i18n="ov.014" class="k">Baseline log-mel L1</div><div class="v">0.5601</div><div data-i18n="ov.015" class="s">mean mode, iter 2,000</div></div>
+        <div class="stat"><div class="k">Parameters</div><div class="v">12.14 M</div><div class="s">12,141,186 in v1</div></div>
+        <div class="stat"><div class="k">Latent</div><div class="v">192 ch</div><div class="s">prior, posterior, flow</div></div>
+        <div class="stat"><div class="k">Upsampling</div><div class="v">×256</div><div class="s">8 · 8 · 2 · 2</div></div>
+        <div class="stat"><div class="k">Baseline log-mel L1</div><div class="v">0.5601</div><div class="s">mean mode, iter 2,000</div></div>
       </div>
 
-      <h2 data-i18n="ov.016" id="versions">Versions</h2>
-      <p data-i18n="ov.017">The project is documented as a sequence of versions. Each has its own page with the design, the evidence and space for the team's own analysis.</p>
+      <h2 id="versions">Versions</h2>
+      <p>The project is documented as a sequence of versions. Each has its own page with the design, the evidence and space for the team's own analysis.</p>
       <div class="grid-3">
         <a class="card" href="prototype.html">
           <span class="chip" style="align-self:flex-start">v0</span>
-          <h3 data-i18n="ov.018">Prototype</h3>
-          <p data-i18n="ov.019">The first notebook. Full VITS-style architecture, reconstruction-only overfit training, listening check by ear. No evaluation module, GAN loss fixed at zero.</p>
+          <h3>Prototype</h3>
+          <p>The first notebook. Full VITS-style architecture, reconstruction-only overfit training, listening check by ear. No evaluation module, GAN loss fixed at zero.</p>
           <span class="card-foot">451c635 · 2026-09-17</span>
         </a>
         <a class="card" href="original-eval.html">
-          <span data-i18n="ov.020" class="chip base" style="align-self:flex-start">v1 · baseline</span>
-          <h3 data-i18n="ov.021">Original + eval</h3>
-          <p data-i18n="ov.022">Same model definitions, now trained and scored under a fixed protocol with the shared <code>sts_eval</code> module. This is the reference for every comparison.</p>
-          <span data-i18n="ov.023" class="card-foot">c9f258c · measured 2026-09-19</span>
+          <span class="chip base" style="align-self:flex-start">v1 · baseline</span>
+          <h3>Original + eval</h3>
+          <p>Same model definitions, now trained and scored under a fixed protocol with the shared <code>sts_eval</code> module. This is the reference for every comparison.</p>
+          <span class="card-foot">c9f258c · tuirno · completed 2026-09-20</span>
         </a>
         <a class="card" href="improvements.html">
           <span class="chip gan" style="align-self:flex-start">v2 +</span>
-          <h3 data-i18n="ov.024">Improvements</h3>
-          <p data-i18n="ov.025">GAN training, then new encoder and decoder designs. Each result is entered once and shown as a delta against v1.</p>
-          <span data-i18n="ov.026" class="card-foot">gan-group · planned work</span>
+          <h3>Improvements</h3>
+          <p>Changes measured after v1, starting with GAN training. Each run is compared with the reference run of its protocol group.</p>
+          <span class="card-foot">gan-group · planned work</span>
         </a>
       </div>
 
-      <h2 data-i18n="ov.027" id="architecture">Architecture</h2>
-      <p data-i18n="ov.028">
+      <h2 id="architecture">Architecture</h2>
+      <p>
         The model follows VITS: during training the posterior encoder sees the target spectrogram, the flow maps its latent
         into the text-conditioned prior space, and MAS finds a monotonic alignment between text tokens and frames.
         Only a random 32-frame slice of the latent is decoded to waveform, which keeps memory use low.
       </p>
-      <p data-i18n="ov.029">
+      <p>
         The current experiments train <strong>reconstruction only</strong>. Duration and KL losses have weight 0, so the text path,
         flow, MAS and duration predictor are computed but do not receive gradient from the objective.
       </p>
@@ -96,78 +96,78 @@
               <marker id="ah-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="arrow on"/></marker>
               <marker id="ah-gan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="arrow gan"/></marker>
             </defs>
-            <text data-i18n="ov.030" x="20" y="18" class="lbl mono">TEXT PATH</text>
-            <text data-i18n="ov.031" x="20" y="218" class="lbl mono">AUDIO PATH</text>
+            <text x="20" y="18" class="lbl mono">TEXT PATH</text>
+            <text x="20" y="218" class="lbl mono">AUDIO PATH</text>
 
             <!-- lane 1 -->
             <rect class="node data" x="20" y="30" width="130" height="56" rx="6"/>
-            <text data-i18n="ov.032" x="85" y="54" text-anchor="middle" class="t-title">Text tokens</text>
-            <text data-i18n="ov.033" x="85" y="72" text-anchor="middle" class="t-sub">char IDs, pad = 0</text>
+            <text x="85" y="54" text-anchor="middle" class="t-title">Text tokens</text>
+            <text x="85" y="72" text-anchor="middle" class="t-sub">char IDs, pad = 0</text>
 
             <rect class="node off" x="190" y="30" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.034" x="280" y="54" text-anchor="middle" class="t-title t-off">Text encoder</text>
-            <text data-i18n="ov.035" x="280" y="72" text-anchor="middle" class="t-sub">Transformer 6L · 2 heads</text>
+            <text x="280" y="54" text-anchor="middle" class="t-title t-off">Text encoder</text>
+            <text x="280" y="72" text-anchor="middle" class="t-sub">Transformer 6L · 2 heads</text>
 
             <rect class="node off" x="430" y="30" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.036" x="520" y="54" text-anchor="middle" class="t-title t-off">Duration predictor</text>
-            <text data-i18n="ov.037" x="520" y="72" text-anchor="middle" class="t-sub">conv · log frames/token</text>
+            <text x="520" y="54" text-anchor="middle" class="t-title t-off">Duration predictor</text>
+            <text x="520" y="72" text-anchor="middle" class="t-sub">conv · log frames/token</text>
 
             <rect class="node off" x="680" y="30" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.038" x="770" y="54" text-anchor="middle" class="t-title t-off">Duration loss</text>
-            <text data-i18n="ov.039" x="770" y="72" text-anchor="middle" class="t-sub">weight 0.0</text>
+            <text x="770" y="54" text-anchor="middle" class="t-title t-off">Duration loss</text>
+            <text x="770" y="72" text-anchor="middle" class="t-sub">weight 0.0</text>
 
             <!-- lane 2 -->
             <rect class="node off" x="430" y="130" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.040" x="520" y="154" text-anchor="middle" class="t-title t-off">MAS</text>
-            <text data-i18n="ov.041" x="520" y="172" text-anchor="middle" class="t-sub">monotonic alignment</text>
+            <text x="520" y="154" text-anchor="middle" class="t-title t-off">MAS</text>
+            <text x="520" y="172" text-anchor="middle" class="t-sub">monotonic alignment</text>
 
             <rect class="node off" x="680" y="130" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.042" x="770" y="154" text-anchor="middle" class="t-title t-off">KL loss</text>
-            <text data-i18n="ov.043" x="770" y="172" text-anchor="middle" class="t-sub">weight 0.0</text>
+            <text x="770" y="154" text-anchor="middle" class="t-title t-off">KL loss</text>
+            <text x="770" y="172" text-anchor="middle" class="t-sub">weight 0.0</text>
 
             <!-- lane 3 -->
             <rect class="node data" x="20" y="230" width="130" height="56" rx="6"/>
-            <text data-i18n="ov.044" x="85" y="254" text-anchor="middle" class="t-title">Spectrogram</text>
-            <text data-i18n="ov.045" x="85" y="272" text-anchor="middle" class="t-sub">513 bins · full utt.</text>
+            <text x="85" y="254" text-anchor="middle" class="t-title">Spectrogram</text>
+            <text x="85" y="272" text-anchor="middle" class="t-sub">513 bins · full utt.</text>
 
             <rect class="node on" x="190" y="230" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.046" x="280" y="254" text-anchor="middle" class="t-title">Posterior encoder</text>
-            <text data-i18n="ov.047" x="280" y="272" text-anchor="middle" class="t-sub">dilated conv 1·2·4·8</text>
+            <text x="280" y="254" text-anchor="middle" class="t-title">Posterior encoder</text>
+            <text x="280" y="272" text-anchor="middle" class="t-sub">dilated conv 1·2·4·8</text>
 
             <rect class="node off" x="430" y="230" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.048" x="520" y="254" text-anchor="middle" class="t-title t-off">Normalizing flow</text>
-            <text data-i18n="ov.049" x="520" y="272" text-anchor="middle" class="t-sub">4 additive couplings</text>
+            <text x="520" y="254" text-anchor="middle" class="t-title t-off">Normalizing flow</text>
+            <text x="520" y="272" text-anchor="middle" class="t-sub">4 additive couplings</text>
 
             <!-- lane 4 -->
             <rect class="node data" x="20" y="330" width="130" height="56" rx="6"/>
-            <text data-i18n="ov.050" x="85" y="354" text-anchor="middle" class="t-title">Waveform</text>
-            <text data-i18n="ov.051" x="85" y="372" text-anchor="middle" class="t-sub">target audio</text>
+            <text x="85" y="354" text-anchor="middle" class="t-title">Waveform</text>
+            <text x="85" y="372" text-anchor="middle" class="t-sub">target audio</text>
 
             <rect class="node on" x="190" y="330" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.052" x="280" y="354" text-anchor="middle" class="t-title">32-frame slice</text>
-            <text data-i18n="ov.053" x="280" y="372" text-anchor="middle" class="t-sub">same start for z &amp; target</text>
+            <text x="280" y="354" text-anchor="middle" class="t-title">32-frame slice</text>
+            <text x="280" y="372" text-anchor="middle" class="t-sub">same start for z &amp; target</text>
 
             <rect class="node on" x="430" y="330" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.054" x="520" y="354" text-anchor="middle" class="t-title">Decoder</text>
-            <text data-i18n="ov.055" x="520" y="372" text-anchor="middle" class="t-sub">ConvT ×256 · tanh</text>
+            <text x="520" y="354" text-anchor="middle" class="t-title">Decoder</text>
+            <text x="520" y="372" text-anchor="middle" class="t-sub">ConvT ×256 · tanh</text>
 
             <rect class="node on" x="680" y="330" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.056" x="770" y="354" text-anchor="middle" class="t-title">Reconstruction loss</text>
-            <text data-i18n="ov.057" x="770" y="372" text-anchor="middle" class="t-sub">10·mel + 1·STFT + 10·L1</text>
+            <text x="770" y="354" text-anchor="middle" class="t-title">Reconstruction loss</text>
+            <text x="770" y="372" text-anchor="middle" class="t-sub">10·mel + 1·STFT + 10·L1</text>
 
             <rect class="node gan" x="680" y="410" width="180" height="56" rx="6"/>
-            <text data-i18n="ov.058" x="770" y="434" text-anchor="middle" class="t-title">Discriminator</text>
-            <text data-i18n="ov.059" x="770" y="452" text-anchor="middle" class="t-sub">LSGAN · gan-group</text>
+            <text x="770" y="434" text-anchor="middle" class="t-title">Discriminator</text>
+            <text x="770" y="452" text-anchor="middle" class="t-sub">LSGAN · gan-group</text>
 
             <!-- edges -->
             <path class="edge off" d="M150 58H186" marker-end="url(#ah)"/>
             <path class="edge off" d="M370 58H426" marker-end="url(#ah)"/>
-            <text data-i18n="ov.060" x="398" y="50" text-anchor="middle" class="lbl">detached</text>
+            <text x="398" y="50" text-anchor="middle" class="lbl">detached</text>
             <path class="edge off" d="M610 58H676" marker-end="url(#ah)"/>
             <path class="edge off" d="M280 86V158H426" marker-end="url(#ah)"/>
-            <text data-i18n="ov.061" x="290" y="150" class="lbl">μp, log σp</text>
+            <text x="290" y="150" class="lbl">μp, log σp</text>
             <path class="edge off" d="M610 146H645V70H676" marker-end="url(#ah)"/>
-            <text data-i18n="ov.062" x="650" y="112" class="lbl">target dur.</text>
+            <text x="650" y="112" class="lbl">target dur.</text>
             <path class="edge off" d="M610 170H676" marker-end="url(#ah)"/>
             <path class="edge on" d="M150 258H186" marker-end="url(#ah-on)"/>
             <path class="edge off" d="M370 258H426" marker-end="url(#ah)"/>
@@ -184,87 +184,86 @@
             <path class="edge gan" d="M645 358V438H676" marker-end="url(#ah-gan)"/>
           </svg>
           <div class="legend">
-            <span data-i18n="ov.063"><i class="on"></i>Trained in v1 (reconstruction)</span>
-            <span data-i18n="ov.064"><i class="off"></i>Computed, loss weight 0</span>
-            <span data-i18n="ov.065"><i class="gan"></i>GAN path, gan-group branch (not merged)</span>
-            <span data-i18n="ov.066"><i></i>Data</span>
+            <span><i class="on"></i>Trained in v1 (reconstruction)</span>
+            <span><i class="off"></i>Computed, loss weight 0</span>
+            <span><i class="gan"></i>GAN path, gan-group branch (not merged)</span>
+            <span><i></i>Data</span>
           </div>
         </div>
-        <figcaption data-i18n="ov.067">Training forward pass. At inference the text path predicts durations, samples from the expanded prior and inverts the flow; that path has not been evaluated yet.</figcaption>
+        <figcaption>Training forward pass. At inference the text path predicts durations, samples from the expanded prior and inverts the flow; that path has not been evaluated yet.</figcaption>
       </figure>
 
-      <h3 data-i18n="ov.068" id="modules">Module reference</h3>
+      <h3 id="modules">Module reference</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th data-i18n="ov.069">Module</th><th data-i18n="ov.070">Input → output</th><th data-i18n="ov.071">Configuration</th><th data-i18n="ov.072">In v1 objective</th></tr></thead>
+          <thead><tr><th>Module</th><th>Input → output</th><th>Configuration</th><th>In v1 objective</th></tr></thead>
           <tbody>
-            <tr><td data-i18n="ov.073"><strong>TextEncoder</strong></td><td data-i18n="ov.074"><code>[B, T_text]</code> → features, μp, log σp</td><td data-i18n="ov.075">char + position embeddings, 6 Transformer layers, 2 heads, d = 192, FFN 768, dropout 0.1</td><td data-i18n="ov.076">weight 0</td></tr>
-            <tr><td data-i18n="ov.077"><strong>PosteriorEncoder</strong></td><td data-i18n="ov.078"><code>[B, 513, T]</code> → z, μq, log σq, mask</td><td data-i18n="ov.079">1×1 in-proj, 4 conv (k = 5, dilation 1/2/4/8), GELU, dropout 0.1, 192 latent channels</td><td data-i18n="ov.080">trained</td></tr>
-            <tr><td data-i18n="ov.081"><strong>ResidualCouplingBlock</strong></td><td data-i18n="ov.082">z → z_p (reversible)</td><td data-i18n="ov.083">4 additive coupling layers with channel flip, kernel 5, 4 conv layers each</td><td data-i18n="ov.084">weight 0</td></tr>
-            <tr><td data-i18n="ov.085"><strong>DurationPredictor</strong></td><td data-i18n="ov.086">detached text features → log duration</td><td data-i18n="ov.087">conv blocks, hidden 256, kernel 3, dropout 0.5</td><td data-i18n="ov.088">weight 0</td></tr>
-            <tr><td data-i18n="ov.089"><strong>MAS</strong></td><td data-i18n="ov.090">Gaussian score → hard alignment</td><td data-i18n="ov.091">NumPy dynamic programming under <code>no_grad</code></td><td data-i18n="ov.092">not differentiable</td></tr>
-            <tr><td data-i18n="ov.093"><strong>Decoder</strong></td><td><code>[B, 192, 32]</code> → <code>[B, 1, 8192]</code></td><td data-i18n="ov.094">Conv k7 → 512 ch, ConvTranspose ×8, ×8, ×2, ×2 (512→256→128→64→32), ResBlock dilations 1/3/5, LeakyReLU 0.1, tanh</td><td data-i18n="ov.095">trained</td></tr>
-            <tr><td data-i18n="ov.096"><strong>Discriminator</strong></td><td data-i18n="ov.097">waveform → scores</td><td data-i18n="ov.098">v0/v1: empty placeholder. gan-group: 1-D conv stack, base 32 channels</td><td data-i18n="ov.099">absent</td></tr>
+            <tr><td><strong>TextEncoder</strong></td><td><code>[B, T_text]</code> → features, μp, log σp</td><td>char + position embeddings, 6 Transformer layers, 2 heads, d = 192, FFN 768, dropout 0.1</td><td>weight 0</td></tr>
+            <tr><td><strong>PosteriorEncoder</strong></td><td><code>[B, 513, T]</code> → z, μq, log σq, mask</td><td>1×1 in-proj, 4 conv (k = 5, dilation 1/2/4/8), GELU, dropout 0.1, 192 latent channels</td><td>trained</td></tr>
+            <tr><td><strong>ResidualCouplingBlock</strong></td><td>z → z_p (reversible)</td><td>4 additive coupling layers with channel flip, kernel 5, 4 conv layers each</td><td>weight 0</td></tr>
+            <tr><td><strong>DurationPredictor</strong></td><td>detached text features → log duration</td><td>conv blocks, hidden 256, kernel 3, dropout 0.5</td><td>weight 0</td></tr>
+            <tr><td><strong>MAS</strong></td><td>Gaussian score → hard alignment</td><td>NumPy dynamic programming under <code>no_grad</code></td><td>not differentiable</td></tr>
+            <tr><td><strong>Decoder</strong></td><td><code>[B, 192, 32]</code> → <code>[B, 1, 8192]</code></td><td>Conv k7 → 512 ch, ConvTranspose ×8, ×8, ×2, ×2 (512→256→128→64→32), ResBlock dilations 1/3/5, LeakyReLU 0.1, tanh</td><td>trained</td></tr>
+            <tr><td><strong>Discriminator</strong></td><td>waveform → scores</td><td>v0/v1: empty placeholder. gan-group: 1-D conv stack, base 32 channels</td><td>absent</td></tr>
           </tbody>
         </table>
       </div>
 
-      <h3 data-i18n="ov.100" id="objective">Training objective</h3>
-      <p data-i18n="ov.101">All spectral losses are computed in float32 even when mixed precision is enabled.</p>
+      <h3 id="objective">Training objective</h3>
+      <p>All spectral losses are computed in float32 even when mixed precision is enabled.</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th data-i18n="ov.102">Term</th><th data-i18n="ov.103">Definition</th><th data-i18n="ov.104" class="num">v0 / v1 weight</th></tr></thead>
+          <thead><tr><th>Term</th><th>Definition</th><th class="num">v0 / v1 weight</th></tr></thead>
           <tbody>
-            <tr><td data-i18n="ov.105">Mel</td><td data-i18n="ov.106">L1 between log-mel spectrograms (80 bands, power 1.0, floor 1e-5)</td><td class="num">10.0</td></tr>
-            <tr><td data-i18n="ov.107">MR-STFT</td><td data-i18n="ov.108">spectral convergence + log-magnitude L1 over (512,128,512), (1024,256,1024), (2048,512,2048)</td><td class="num">1.0</td></tr>
-            <tr><td data-i18n="ov.109">Waveform</td><td data-i18n="ov.110">L1 between generated and target samples</td><td class="num">10.0</td></tr>
-            <tr><td data-i18n="ov.111">Duration</td><td data-i18n="ov.112">masked MSE of predicted vs MAS log durations</td><td class="num">0.0</td></tr>
-            <tr><td data-i18n="ov.113">KL</td><td data-i18n="ov.114">posterior after flow vs text prior</td><td class="num">0.0</td></tr>
-            <tr><td data-i18n="ov.115">GAN</td><td data-i18n="ov.116">placeholder constant 0 in v0/v1; LSGAN in gan-group</td><td class="num">0 → 1.0</td></tr>
+            <tr><td>Mel</td><td>L1 between log-mel spectrograms (80 bands, power 1.0, floor 1e-5)</td><td class="num">10.0</td></tr>
+            <tr><td>MR-STFT</td><td>spectral convergence + log-magnitude L1 over (512,128,512), (1024,256,1024), (2048,512,2048)</td><td class="num">1.0</td></tr>
+            <tr><td>Waveform</td><td>L1 between generated and target samples</td><td class="num">10.0</td></tr>
+            <tr><td>Duration</td><td>masked MSE of predicted vs MAS log durations</td><td class="num">0.0</td></tr>
+            <tr><td>KL</td><td>posterior after flow vs text prior</td><td class="num">0.0</td></tr>
+            <tr><td>GAN</td><td>placeholder constant 0 in v0/v1; LSGAN in gan-group</td><td class="num">0 → 1.0</td></tr>
           </tbody>
         </table>
       </div>
 
-      <h2 data-i18n="ov.117" id="timeline">Timeline</h2>
+      <h2 id="timeline">Timeline</h2>
       <ul class="timeline">
-        <li data-i18n="ov.118" class="done"><span class="when">2026-09-17 · 451c635</span><div class="what">v0 prototype published</div><p>Notebook, setup docs and the GitHub team handbook. Training loop has an empty <code>evaluate()</code> hook.</p></li>
-        <li data-i18n="ov.119" class="base"><span class="when">2026-09-19 · c9f258c, PR #1</span><div class="what">v1 shared evaluation and measured baseline</div><p><code>sts_eval</code>, fixed-batch protocol, local runner, checkpoint rescoring, 7 behavioral tests. Baseline run finished ≈15:27 UTC.</p></li>
-        <li data-i18n="ov.120" class="done"><span class="when">2026-09-20 · 9fba268, PR #2</span><div class="what">English experiment records</div><p>Standardized reports and completion-time attribution. 11 tests pass.</p></li>
-        <li data-i18n="ov.121" class="wip"><span class="when">2026-09-22 → 23 · gan-group</span><div class="what">GAN loss and discriminator</div><p>LSGAN losses, separate discriminator optimizer, <code>gan_weight = 1.0</code>. Not yet merged or measured.</p></li>
-        <li data-i18n="ov.138" class="wip"><span class="when">2026-09-24 · benlu (local notebook)</span><div class="what">GAN merged with the v1 evaluation</div><p>DataParallel and autocast removed. New loss weights: mel 1, STFT 0.5, wave 10, duration 1, KL 1, GAN 1. Not yet on GitHub. Next: 50,000-iteration runs with and without GAN.</p></li>
-        <li data-i18n="ov.140" class="done"><span class="when">2026-09-29 · Kaggle T4</span><div class="what">GAN vs no-GAN, 50,000 iterations each</div><p>Both runs completed. Spectral probe metrics slightly favour no-GAN; the discriminator overpowers the generator late. See the <a href="report.html#full-train-gan">experiment report</a>.</p></li>
-        <li data-i18n="ov.122" class="plan"><span class="when">Next</span><div class="what">New encoder and decoder</div><p>Integrated behind <code>MODEL_VARIANT</code> and compared to v1 under the same protocol.</p></li>
+        <li class="done"><span class="when">2026-09-17 · 451c635</span><div class="what">v0 prototype published</div><p>Notebook, setup docs and the GitHub team handbook. Training loop has an empty <code>evaluate()</code> hook.</p></li>
+        <li class="base"><span class="when">2026-09-20 · tuirno · c9f258c, PR #1</span><div class="what">v1 shared evaluation and measured baseline</div><p><code>sts_eval</code>, fixed-batch protocol, local runner, checkpoint rescoring, 7 behavioral tests. Baseline completed on September 20 in Brisbane (≈15:27 UTC on September 19).</p></li>
+        <li class="done"><span class="when">2026-09-20 · 9fba268, PR #2</span><div class="what">English experiment records</div><p>Standardized reports and completion-time attribution. 11 tests pass.</p></li>
+        <li class="wip"><span class="when">2026-09-23 · Mou and Warneke · gan-group</span><div class="what">GAN loss and discriminator</div><p>LSGAN losses, separate discriminator optimizer, <code>gan_weight = 1.0</code>. Completion commit 07e663d; subsequently used in the full-training pair.</p></li>
+        <li class="wip"><span class="when">2026-09-24 · benlu (local notebook)</span><div class="what">GAN merged with the v1 evaluation</div><p>DataParallel and autocast removed. New loss weights: mel 1, STFT 0.5, wave 10, duration 1, KL 1, GAN 1. Not yet on GitHub. Next: 50,000-iteration runs with and without GAN.</p></li>
+        <li class="done"><span class="when">2026-09-29 · tuirno · Kaggle T4</span><div class="what">GAN vs no-GAN, 50,000 iterations each</div><p>Both runs completed. Spectral probe metrics slightly favour no-GAN; the discriminator overpowers the generator late. See the <a href="report.html#full-train-gan">experiment report</a>.</p></li>
       </ul>
 
-      <h2 data-i18n="ov.123" id="comparisons">How comparisons work</h2>
-      <p data-i18n="ov.124">
+      <h2 id="comparisons">How comparisons work</h2>
+      <p>
         Every change is scored with the same evaluator on the same eight LJSpeech utterances (LJ001-0001 to LJ001-0008),
         the same seeds (train 2026, eval 1234), the same 2,000-iteration budget and the same optimizer.
         Posterior-mean and posterior-sample reconstructions are reported separately. Lower is better for all metrics.
       </p>
       <div class="callout warn">
-        <div data-i18n="ov.125" class="callout-title">Scope</div>
-        <p data-i18n="ov.126">These are reconstruction scores on the training batch. They are not held-out results, not text-to-speech quality and not evidence of generalization. Listen to the exported samples before drawing conclusions about audible change.</p>
+        <div class="callout-title">Scope</div>
+        <p>These are reconstruction scores on the training batch. They are not held-out results, not text-to-speech quality and not evidence of generalization. Listen to the exported samples before drawing conclusions about audible change.</p>
       </div>
-      <p data-i18n="ov.127">The full protocol is on the <a href="original-eval.html#protocol">v1 page</a>; the running results are on the <a href="improvements.html">comparison board</a>.</p>
+      <p>The full protocol is on the <a href="original-eval.html#protocol">v1 page</a>; the running results are on the <a href="improvements.html">comparison board</a>.</p>
 
-      <h2 data-i18n="ov.128" id="team">Team</h2>
+      <h2 id="team">Team</h2>
       <div class="slot" data-slot="project.team">
-        <div class="slot-head"><span data-i18n="ov.129" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="ov.130" class="slot-title">Members, roles and ownership</span></div>
-        <div data-i18n="ov.131" class="slot-prompt">Suggested content:
-          <ul><li>Who owns the baseline, the GAN work, the new encoder and the new decoder</li><li>Reviewer pairing and merge coordination</li><li>Course context and deadlines</li></ul>
+        <div class="slot-head"><span class="slot-tag">Team section</span><span class="slot-id"></span><span class="slot-title">Members, roles and ownership</span></div>
+        <div class="slot-prompt">Suggested content:
+          <ul><li>Who owns each workstream (baseline, GAN, and later work)</li><li>Reviewer pairing and merge coordination</li><li>Course context and deadlines</li></ul>
         </div>
         <div class="slot-body"><!-- Write here. Any content switches this box to the filled style. --></div>
       </div>
       <div class="slot" data-slot="project.goals">
-        <div class="slot-head"><span data-i18n="ov.132" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="ov.133" class="slot-title">Project goals and success criteria</span></div>
-        <div data-i18n="ov.134" class="slot-prompt">Suggested content:
+        <div class="slot-head"><span class="slot-tag">Team section</span><span class="slot-id"></span><span class="slot-title">Project goals and success criteria</span></div>
+        <div class="slot-prompt">Suggested content:
           <ul><li>What "better than baseline" must mean for the final report (metrics, listening test, held-out data)</li><li>End goal: reconstruction, full TTS, or voice conversion</li></ul>
         </div>
         <div class="slot-body"><!-- Write here. --></div>
       </div>
 
-      <h2 data-i18n="ov.135" id="repository">Repository map</h2>
+      <h2 id="repository">Repository map</h2>
 <pre><code>STS2026/
   notebooks/vits-light_v1.ipynb   <span class="c-com"># model, losses, trainer, eval entry</span>
   sts_eval/reconstruction.py      <span class="c-com"># shared evaluator, metrics, plots</span>
@@ -278,22 +277,19 @@
     site/                         <span class="c-com"># this documentation site</span>
     EVALUATION.md  LOCAL_EVALUATION.md  LOCAL_BASELINE_RESULT.md
   output/                         <span class="c-com"># local only, Git-ignored</span></code></pre>
-      <p data-i18n="ov.136" class="small muted">Data, checkpoints, generated audio and <code>output/</code> stay out of Git. No software license has been selected yet.</p>
-      <p data-i18n="ov.139" class="small muted">Checkpoints, run folders and detailed reports are shared in the <a href="https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU">team Google Drive</a>.</p>
+      <p class="small muted">Data, checkpoints, generated audio and <code>output/</code> stay out of Git. No software license has been selected yet.</p>
+      <p class="small muted">Checkpoints, run folders and detailed reports are shared in the <a href="https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU">team Google Drive</a>.</p>
 
       <nav class="page-nav" aria-label="Pages">
-        <a data-i18n="ov.137" class="next" href="prototype.html"><span class="dir">Next</span>v0 · Prototype</a>
+        <a class="next" href="prototype.html"><span class="dir">Next</span>v0 · Prototype</a>
       </nav>
-      <footer class="site-foot" data-i18n="ov.foot">STS2026 team coursework, 2026. Figures on this site come from committed records and the local baseline run; nothing is estimated.</footer>
+      <footer class="site-foot">STS2026 team coursework, 2026. Figures on this site come from committed records and the local baseline run; nothing is estimated.</footer>
     </article>
   </main>
 
   <aside class="toc" data-toc></aside>
 </div>
 <script src="assets/results.js"></script>
-<script src="assets/i18n/zh.js"></script>
-<script src="assets/i18n/de.js"></script>
-<script src="assets/i18n/fr.js"></script>
 <script src="assets/site.js"></script>
 </body>
 </html>

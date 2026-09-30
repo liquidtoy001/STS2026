@@ -1,0 +1,8 @@
+{
+  "status": "completed",
+  "step": 2000,
+  "completed_at_utc": "2026-09-20T07:42:35+00:00",
+  "completion_time_source": "runtime_clock",
+  "actual_optimizer_updates": 1990,
+  "amp_skipped_updates": 10
+}

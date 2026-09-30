@@ -80,10 +80,7 @@ img, svg { max-width: 100%; }
 }
 .icon-btn:hover { color: var(--ink); border-color: var(--ink-3); }
 .menu-btn { display: none; }
-.lang-select { padding-right: 6px; appearance: auto; }
 /* CJK: no negative tracking, a little more leading */
-:root:lang(zh) h1, :root:lang(zh) h2, :root:lang(zh) h3 { letter-spacing: 0; }
-:root:lang(zh) body { line-height: 1.75; }
 
 /* ---------- shell ---------- */
 .shell {
@@ -152,6 +149,7 @@ pre code { background: none; border: 0; padding: 0; white-space: pre; font-size:
 .chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px;
   font: 500 0.75rem/1.5 var(--f-mono); border: 1px solid var(--rule); background: var(--surface); color: var(--ink-2);
+  white-space: nowrap;
 }
 .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .chip.ok { color: var(--good); }
@@ -196,8 +194,14 @@ table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
 th { font: 600 0.75rem/1.4 var(--f-mono); letter-spacing: 0.03em; color: var(--ink-3); background: var(--sunken); white-space: nowrap; }
 tr:last-child td { border-bottom: 0; }
+/* Tables scroll inside .table-wrap, so cells keep readable widths instead of breaking words or code. */
+.table-wrap td { min-width: 6em; }
+.table-wrap td code { white-space: nowrap; overflow-wrap: normal; }
 td.num, th.num { text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
 tr.is-base td { background: color-mix(in srgb, var(--baseline-soft) 70%, transparent); }
+[data-comparison] td:first-child { min-width: 15em; }
+[data-comparison] td:nth-child(2) { white-space: nowrap; }
+.board-group h3 { margin-bottom: 4px; }
 .delta-good { color: var(--good); }
 .delta-bad { color: var(--bad); }
 .delta-na { color: var(--ink-3); }
@@ -282,8 +286,8 @@ a.card:hover { border-color: var(--accent); }
 
 /* diff list */
 .diff { display: grid; gap: 6px; margin: 12px 0 20px; padding: 0; list-style: none; }
-.diff li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 0.9375rem; }
-.diff li::before { font: 700 0.9rem/1.6 var(--f-mono); text-align: center; }
+.diff li { position: relative; padding-left: 30px; font-size: 0.9375rem; }
+.diff li::before { position: absolute; left: 0; top: 0; width: 22px; font: 700 0.9rem/1.6 var(--f-mono); text-align: center; }
 .diff li.add::before { content: "+"; color: var(--good); }
 .diff li.del::before { content: "−"; color: var(--bad); }
 .diff li.chg::before { content: "~"; color: var(--baseline); }

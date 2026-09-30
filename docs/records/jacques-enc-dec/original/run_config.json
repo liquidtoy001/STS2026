@@ -1,0 +1,55 @@
+{
+  "variant": "original",
+  "train_seed": 2026,
+  "total_steps": 2000,
+  "eval_every": 500,
+  "sample_ids": [
+    "LJ001-0001",
+    "LJ001-0002",
+    "LJ001-0003",
+    "LJ001-0004",
+    "LJ001-0005",
+    "LJ001-0006",
+    "LJ001-0007",
+    "LJ001-0008"
+  ],
+  "data_dir": "/kaggle/input/datasets/dromosys/ljspeech/LJSpeech-1.1",
+  "metadata_sha256": "852bce5c79e5184ba5bf2ea98aad4bcf49a5d787def5fd1f04fa2ab8aa6dc535",
+  "notebook_sha256": "ab8385ddd7711f0852b6a7870cd38f3d36841fafe2ccf099a871c16727778c29",
+  "eval_source_sha256": "92e7cefd38896f8f4c495fee36998d0818b29a45ed216ebd741aaff532c0776a",
+  "repository": {
+    "commit": null,
+    "working_tree": null
+  },
+  "device": "cuda:0",
+  "gpu": "Tesla T4",
+  "torch_cuda": "12.8",
+  "cudnn_deterministic": true,
+  "scope": "fixed training batch reconstruction; not held-out evaluation",
+  "model": "VITSModel(\n  (text_encoder): TextEncoder(\n    (token_embedding): Embedding(76, 192, padding_idx=0)\n    (position_embedding): Embedding(512, 192)\n    (transformer): TransformerEncoder(\n      (layers): ModuleList(\n        (0-5): 6 x TransformerEncoderLayer(\n          (self_attn): MultiheadAttention(\n            (out_proj): NonDynamicallyQuantizableLinear(in_features=192, out_features=192, bias=True)\n          )\n          (linear1): Linear(in_features=192, out_features=768, bias=True)\n          (dropout): Dropout(p=0.1, inplace=False)\n          (linear2): Linear(in_features=768, out_features=192, bias=True)\n          (norm1): LayerNorm((192,), eps=1e-05, elementwise_affine=True)\n          (norm2): LayerNorm((192,), eps=1e-05, elementwise_affine=True)\n          (dropout1): Dropout(p=0.1, inplace=False)\n          (dropout2): Dropout(p=0.1, inplace=False)\n        )\n      )\n    )\n    (statistics_projection): Linear(in_features=192, out_features=384, bias=True)\n  )\n  (posterior_encoder): PosteriorEncoder(\n    (input_projection): Conv1d(513, 256, kernel_size=(1,), stride=(1,))\n    (input_refinement): Conv1d(256, 192, kernel_size=(3,), stride=(1,), padding=(1,))\n    (blocks): ModuleList(\n      (0): GatedResidualBlock(\n        (temporal_conv): Conv1d(192, 384, kernel_size=(3,), stride=(1,), padding=(1,))\n        (residual_skip_projection): Conv1d(192, 384, kernel_size=(1,), stride=(1,))\n        (dropout): Dropout(p=0.1, inplace=False)\n      )\n      (1): GatedResidualBlock(\n        (temporal_conv): Conv1d(192, 384, kernel_size=(3,), stride=(1,), padding=(2,), dilation=(2,))\n        (residual_skip_projection): Conv1d(192, 384, kernel_size=(1,), stride=(1,))\n        (dropout): Dropout(p=0.1, inplace=False)\n      )\n      (2): GatedResidualBlock(\n        (temporal_conv): Conv1d(192, 384, kernel_size=(3,), stride=(1,), padding=(4,), dilation=(4,))\n        (residual_skip_projection): Conv1d(192, 384, kernel_size=(1,), stride=(1,))\n        (dropout): Dropout(p=0.1, inplace=False)\n      )\n      (3): GatedResidualBlock(\n        (temporal_conv): Conv1d(192, 384, kernel_size=(3,), stride=(1,), padding=(8,), dilation=(8,))\n        (residual_skip_projection): Conv1d(192, 384, kernel_size=(1,), stride=(1,))\n        (dropout): Dropout(p=0.1, inplace=False)\n      )\n      (4): GatedResidualBlock(\n        (temporal_conv): Conv1d(192, 384, kernel_size=(3,), stride=(1,), padding=(1,))\n        (residual_skip_projection): Conv1d(192, 384, kernel_size=(1,), stride=(1,))\n        (dropout): Dropout(p=0.1, inplace=False)\n      )\n      (5): GatedResidualBlock(\n        (temporal_conv): Conv1d(192, 384, kernel_size=(3,), stride=(1,), padding=(2,), dilation=(2,))\n        (residual_skip_projection): Conv1d(192, 384, kernel_size=(1,), stride=(1,))\n        (dropout): Dropout(p=0.1, inplace=False)\n      )\n      (6): GatedResidualBlock(\n        (temporal_conv): Conv1d(192, 384, kernel_size=(3,), stride=(1,), padding=(4,), dilation=(4,))\n        (residual_skip_projection): Conv1d(192, 384, kernel_size=(1,), stride=(1,))\n        (dropout): Dropout(p=0.1, inplace=False)\n      )\n      (7): GatedResidualBlock(\n        (temporal_conv): Conv1d(192, 384, kernel_size=(3,), stride=(1,), padding=(8,), dilation=(8,))\n        (residual_skip_projection): Conv1d(192, 384, kernel_size=(1,), stride=(1,))\n        (dropout): Dropout(p=0.1, inplace=False)\n      )\n    )\n    (statistics_projection): Conv1d(192, 384, kernel_size=(1,), stride=(1,))\n  )\n  (flow): ResidualCouplingBlock(\n    (coupling_layers): ModuleList(\n      (0-3): 4 x ResidualCouplingLayer(\n        (coupling_network): CouplingNetwork(\n          (input_projection): Conv1d(96, 192, kernel_size=(1,), stride=(1,))\n          (residual_layers): ModuleList(\n            (0-3): 4 x ResidualConvLayer(\n              (conv): Conv1d(192, 192, kernel_size=(5,), stride=(1,), padding=(2,))\n              (norm): ChannelLayerNorm(\n                (norm): LayerNorm((192,), eps=1e-05, elementwise_affine=True)\n              )\n              (dropout): Dropout(p=0.0, inplace=False)\n            )\n          )\n          (output_projection): Conv1d(192, 96, kernel_size=(1,), stride=(1,))\n        )\n      )\n    )\n  )\n  (duration_predictor): DurationPredictor(\n    (conv_block_1): DurationConvBlock(\n      (conv): Conv1d(192, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n      (norm): ChannelLayerNorm(\n        (norm): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n      )\n      (dropout): Dropout(p=0.5, inplace=False)\n    )\n    (conv_block_2): DurationConvBlock(\n      (conv): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n      (norm): ChannelLayerNorm(\n        (norm): LayerNorm((256,), eps=1e-05, elementwise_affine=True)\n      )\n      (dropout): Dropout(p=0.5, inplace=False)\n    )\n    (output_projection): Conv1d(256, 1, kernel_size=(1,), stride=(1,))\n  )\n  (decoder): Decoder(\n    (input_projection): Conv1d(192, 512, kernel_size=(7,), stride=(1,), padding=(3,))\n    (upsample_layers): ModuleList(\n      (0): ConvTranspose1d(512, 256, kernel_size=(16,), stride=(8,), padding=(4,))\n      (1): ConvTranspose1d(256, 128, kernel_size=(16,), stride=(8,), padding=(4,))\n      (2): ConvTranspose1d(128, 64, kernel_size=(4,), stride=(2,), padding=(1,))\n      (3): ConvTranspose1d(64, 32, kernel_size=(4,), stride=(2,), padding=(1,))\n    )\n    (resblock_stages): ModuleList(\n      (0): ModuleList(\n        (0): ResBlock(\n          (dilated_convs): ModuleList(\n            (0): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n            (1): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(3,), dilation=(3,))\n            (2): Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(5,), dilation=(5,))\n          )\n          (refinement_convs): ModuleList(\n            (0-2): 3 x Conv1d(256, 256, kernel_size=(3,), stride=(1,), padding=(1,))\n          )\n        )\n        (1): ResBlock(\n          (dilated_convs): ModuleList(\n            (0): Conv1d(256, 256, kernel_size=(7,), stride=(1,), padding=(3,))\n            (1): Conv1d(256, 256, kernel_size=(7,), stride=(1,), padding=(9,), dilation=(3,))\n            (2): Conv1d(256, 256, kernel_size=(7,), stride=(1,), padding=(15,), dilation=(5,))\n          )\n          (refinement_convs): ModuleList(\n            (0-2): 3 x Conv1d(256, 256, kernel_size=(7,), stride=(1,), padding=(3,))\n          )\n        )\n      )\n      (1): ModuleList(\n        (0): ResBlock(\n          (dilated_convs): ModuleList(\n            (0): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,))\n            (1): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(3,), dilation=(3,))\n            (2): Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(5,), dilation=(5,))\n          )\n          (refinement_convs): ModuleList(\n            (0-2): 3 x Conv1d(128, 128, kernel_size=(3,), stride=(1,), padding=(1,))\n          )\n        )\n        (1): ResBlock(\n          (dilated_convs): ModuleList(\n            (0): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,))\n            (1): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(9,), dilation=(3,))\n            (2): Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(15,), dilation=(5,))\n          )\n          (refinement_convs): ModuleList(\n            (0-2): 3 x Conv1d(128, 128, kernel_size=(7,), stride=(1,), padding=(3,))\n          )\n        )\n      )\n      (2): ModuleList(\n        (0): ResBlock(\n          (dilated_convs): ModuleList(\n            (0): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,))\n            (1): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(3,), dilation=(3,))\n            (2): Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(5,), dilation=(5,))\n          )\n          (refinement_convs): ModuleList(\n            (0-2): 3 x Conv1d(64, 64, kernel_size=(3,), stride=(1,), padding=(1,))\n          )\n        )\n        (1): ResBlock(\n          (dilated_convs): ModuleList(\n            (0): Conv1d(64, 64, kernel_size=(7,), stride=(1,), padding=(3,))\n            (1): Conv1d(64, 64, kernel_size=(7,), stride=(1,), padding=(9,), dilation=(3,))\n            (2): Conv1d(64, 64, kernel_size=(7,), stride=(1,), padding=(15,), dilation=(5,))\n          )\n          (refinement_convs): ModuleList(\n            (0-2): 3 x Conv1d(64, 64, kernel_size=(7,), stride=(1,), padding=(3,))\n          )\n        )\n      )\n      (3): ModuleList(\n        (0): ResBlock(\n          (dilated_convs): ModuleList(\n            (0): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,))\n            (1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(3,), dilation=(3,))\n            (2): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(5,), dilation=(5,))\n          )\n          (refinement_convs): ModuleList(\n            (0-2): 3 x Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,))\n          )\n        )\n        (1): ResBlock(\n          (dilated_convs): ModuleList(\n            (0): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,))\n            (1): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(9,), dilation=(3,))\n            (2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(15,), dilation=(5,))\n          )\n          (refinement_convs): ModuleList(\n            (0-2): 3 x Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,))\n          )\n        )\n      )\n    )\n    (output_projection): Conv1d(32, 1, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)\n  )\n)",
+  "optimizer": {
+    "lr": 0.0001,
+    "betas": [
+      0.8,
+      0.99
+    ],
+    "eps": 1e-09,
+    "weight_decay": 0.01,
+    "amsgrad": false,
+    "maximize": false,
+    "foreach": null,
+    "capturable": false,
+    "differentiable": false,
+    "fused": null,
+    "decoupled_weight_decay": true
+  },
+  "loss_weights": {
+    "mel_weight": 10.0,
+    "stft_weight": 1.0,
+    "duration_weight": 0.0,
+    "kl_weight": 0.0,
+    "wave_weight": 10.0
+  },
+  "amp": true,
+  "multi_gpu": false
+}
