@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Experiment Reports · STS2026 Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+  .tables2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 14px; margin: 12px 0 18px; }
+  #t-final td:first-child, #t-late td:first-child, #t-wins td:first-child { white-space: nowrap; }
+  .tables2 > div { min-width: 0; }
+  .tables2 .table-wrap { margin: 0; }
+  .tables2 h4 { margin: 0 0 6px; }
+  .verdict { margin: 20px 0; padding: 16px 18px; border: 1px solid var(--rule); border-left: 3px solid var(--gan); border-radius: var(--radius); background: var(--surface); }
+  .verdict ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .report-list { display: grid; gap: 12px; margin: 16px 0; }
+  .ok { color: var(--good); } .no { color: var(--bad); }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button class="icon-btn menu-btn" type="button" data-menu aria-expanded="false" aria-label="Open navigation">Menu</button>
+  <a class="brand" href="index.html">
+    <svg class="brand-mark" viewBox="0 0 30 22" aria-hidden="true"><path d="M1 11h3l2-7 3 14 3-16 3 18 3-13 3 8 2-4h5" style="fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round"/></svg>
+    <span class="brand-name">STS2026</span>
+    <span class="brand-sub">vits-light docs</span>
+  </a>
+  <span class="topbar-spacer"></span>
+  <a class="plain" href="https://github.com/liquidtoy001/STS2026">GitHub</a>
+  <button class="icon-btn" type="button" data-theme-toggle>Dark</button>
+</header>
+
+<div class="shell">
+  <aside class="sidenav" data-sidenav></aside>
+
+  <main>
+    <article class="article">
+      <span class="eyebrow" style="color:var(--gan)" id="r-eyebrow">Experiment report</span>
+      <h1 id="r-title">Experiment reports</h1>
+      <p class="lede" id="r-lede"></p>
+      <div class="meta-row" id="r-chips"></div>
+      <div class="verdict" id="r-verdict" hidden></div>
+
+      <!-- Index view: shown when no report is selected. -->
+      <section id="r-index" hidden>
+        <div class="report-list" id="r-list"></div>
+        <div class="callout note">
+          <div class="callout-title">Adding a report</div>
+          <p>Run <code>tools/build_site_report.py</code> on the finished run folders, write <code>reports/&lt;id&gt;.notes.js</code>, list the report in <code>reports/index.js</code> and add an entry to <code>assets/results.js</code>. See <code>docs/FULL_TRAINING.md</code>.</p>
+        </div>
+      </section>
+
+      <!-- Report view. Section headings are static so the contents list and translations work. -->
+      <section id="r-body" hidden>
+        <h2 id="runs">Runs</h2>
+        <div class="table-wrap"><table id="t-runs"></table></div>
+
+        <h2 id="comparability">Comparability check</h2>
+        <p>Every item must match between the runs; otherwise a difference cannot be attributed to the change under test.</p>
+        <div class="table-wrap"><table id="t-check"></table></div>
+
+        <h2 id="metrics">Evaluation metrics</h2>
+        <p id="r-metrics-description">Fixed-crop probe on LJ001-0001…0008 (central 32 frames), posterior mean and posterior sample scored separately; lower is better. Single evaluations fluctuate, so the average of the last five evaluation points is shown next to the final one. Δ is relative to the reference run; green means lower error.</p>
+        <div class="tables2">
+          <div><h4>Final evaluation</h4><div class="table-wrap"><table id="t-final"></table></div></div>
+          <div><h4 id="r-late-title">Mean of the last five evaluations</h4><div class="table-wrap"><table id="t-late"></table></div></div>
+        </div>
+        <h3 id="wins">Point-by-point comparison</h3>
+        <p class="small muted">Number of evaluation points (and of the eight utterances at the final step) where the compared run has the lower error.</p>
+        <div class="table-wrap"><table id="t-wins"></table></div>
+        <div class="chart-grid" id="c-eval"></div>
+
+        <h2 id="training">Training curves</h2>
+        <p class="small muted" id="r-training-description">Logged every 100 iterations, shown as a 10-point moving average. Training losses use random crops and are not the fixed-crop evaluation.</p>
+        <div class="chart-grid" id="c-train"></div>
+
+        <h2 id="listening">Listening</h2>
+        <div id="r-listen"></div>
+
+        <h2 id="findings">Findings and open questions</h2>
+        <div id="r-findings"></div>
+
+        <h2 id="storage">Where the artifacts are</h2>
+        <div id="r-storage"></div>
+        <div class="table-wrap"><table id="t-ckpt"></table></div>
+
+        <h2 id="team-notes">Team analysis</h2>
+        <div class="slot" data-slot="report.discussion">
+          <div class="slot-head"><span class="slot-tag">Team section</span><span class="slot-id"></span><span class="slot-title">Discussion of this experiment</span></div>
+          <div class="slot-prompt">Write the team's listening verdict, interpretation and next steps in this report's <code>notes.js</code> (field <code>team</code>).</div>
+          <div class="slot-body" id="r-team"></div>
+        </div>
+      </section>
+
+      <nav class="page-nav" aria-label="Pages">
+        <a href="improvements.html"><span class="dir">Previous</span><span>Comparison board</span></a>
+      </nav>
+      <footer class="site-foot">Reports are generated from run records by tools/build_site_report.py; the narrative lives in reports/&lt;id&gt;.notes.js.</footer>
+    </article>
+  </main>
+
+  <aside class="toc" data-toc></aside>
+</div>
+<script src="assets/results.js"></script>
+<script src="reports/index.js"></script>
+<script>
+  /* Report page: loads reports/<id>.data.js and reports/<id>.notes.js for the id in the URL hash. */
+  window.STS_REPORT_DEFAULTS = {
+    metrics: document.getElementById("r-metrics-description").innerHTML,
+    late: document.getElementById("r-late-title").textContent,
+    training: document.getElementById("r-training-description").innerHTML
+  };
+  window.onDocsReady = function (api) {
+    var COLORS = ["var(--accent)", "var(--gan)", "var(--baseline)", "var(--good)", "var(--bad)"];
+    var ML = { log_mel_l1: "Log-mel L1", stft_spectral_convergence: "STFT SC", stft_log_magnitude: "STFT log-mag" };
+    var $ = function (id) { return document.getElementById(id); };
+    var esc = api.esc, T = function (s) { return window.STS.t(s); };
+    var loaded = {};
+
+    function loc(value) {
+      if (value == null || typeof value === "string") return value || "";
+      return value.en || "";
+    }
+    function load(src) {
+      return new Promise(function (resolve, reject) {
+        if (loaded[src]) return resolve();
+        var s = document.createElement("script");
+        s.src = src; s.onload = function () { loaded[src] = true; resolve(); }; s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+    function f4(v) { return v == null ? "—" : Number(v).toFixed(4); }
+    function display(v) { return v == null ? "—" : String(v); }
+    function numeric(v) { return typeof v === "number" && Number.isFinite(v); }
+    function defaultText(key, fallback) {
+      return fallback;
+    }
+    function pct(a, b) {
+      var p = (b - a) / a * 100;
+      return "<span class=\"" + (p < 0 ? "delta-good" : "delta-bad") + "\">" + (p > 0 ? "+" : "") + p.toFixed(1) + "%</span>";
+    }
+    function smooth(a, w) {
+      return a.map(function (_, i) {
+        var s = a.slice(Math.max(0, i - w + 1), i + 1).filter(function (v) { return v != null; });
+        return s.length ? s.reduce(function (x, y) { return x + y; }, 0) / s.length : null;
+      });
+    }
+
+    function renderIndex() {
+      $("r-index").hidden = false; $("r-body").hidden = true; $("r-verdict").hidden = true;
+      $("r-title").textContent = T("Experiment reports");
+      $("r-lede").textContent = T("Each report compares finished runs under one protocol. Open one below.");
+      $("r-chips").innerHTML = "";
+      $("r-list").innerHTML = (window.STS_REPORT_INDEX || []).map(function (r) {
+        return "<a class=\"card\" href=\"#" + r.id + "\"><h3>" + esc(loc(r.title)) + "</h3><p>" + esc(loc(r.summary)) +
+          "</p><span class=\"card-foot\">" + esc(r.date) + " · " + esc(r.id) + "</span></a>";
+      }).join("");
+    }
+
+    function renderReport(id) {
+      var D = window.STS_REPORTS[id], N = (window.STS_REPORT_NOTES || {})[id] || {};
+      var arms = Object.keys(D.arms), ref = D.reference, others = arms.filter(function (a) { return a !== ref; });
+      $("r-metrics-description").innerHTML = loc(N.metricsDescription) || defaultText("rep.metrics.p", window.STS_REPORT_DEFAULTS.metrics);
+      $("r-late-title").textContent = loc(N.lateTitle) || defaultText("rep.late", window.STS_REPORT_DEFAULTS.late);
+      $("r-training-description").innerHTML = loc(N.trainingDescription) || defaultText("rep.training.p", window.STS_REPORT_DEFAULTS.training);
+      var name = function (a) { return loc((N.arms || {})[a]) || a; };
+      var color = function (a) { return COLORS[arms.indexOf(a) % COLORS.length]; };
+      var sw = function (a) { return "<span class=\"swatch\" style=\"background:" + color(a) + "\"></span>"; };
+      $("r-index").hidden = true; $("r-body").hidden = false;
+      $("r-eyebrow").textContent = T("Experiment report") + " · " + (N.date || "");
+      $("r-title").textContent = loc(N.title) || id;
+      $("r-lede").innerHTML = loc(N.lede) + (loc(N.provenance) || "");
+      $("r-chips").innerHTML = arms.map(function (a) {
+        return "<span class=\"chip\">" + sw(a) + esc(name(a)) + (a === ref ? " · " + esc(T("reference")) : "") + "</span>";
+      }).join("") + (N.chips || []).map(function (c) { return "<span class=\"chip\">" + esc(loc(c)) + "</span>"; }).join("");
+      var verdict = loc(N.verdict);
+      $("r-verdict").hidden = !verdict;
+      $("r-verdict").innerHTML = verdict ? "<div class=\"callout-title\" style=\"color:var(--gan)\">" + esc(T("Conclusion")) + "</div>" + verdict : "";
+
+      // runs
+      var runRows = [
+        ["Training by", function () { return esc(N.trainingBy || "—"); }],
+        ["Status", function (a) { return D.arms[a].status.status; }],
+        ["Iterations / updates", function (a) { var s = D.arms[a].status; return s.step.toLocaleString() + " / " + s.actual_optimizer_updates.toLocaleString(); }],
+        ["Wall time", function (a) { var v = D.arms[a].status.session_wall_seconds; return numeric(v) ? (v / 3600).toFixed(2) + " h" : "—"; }],
+        ["Seconds per iteration", function (a) { var v = (D.arms[a].train.sec_per_iter || []).filter(numeric); return v.length ? (v.reduce(function (x, y) { return x + y; }, 0) / v.length).toFixed(3) : "—"; }],
+        ["Peak allocated memory", function (a) { var v = D.arms[a].status.peak_allocated_GiB; return numeric(v) ? v + " GiB" : "—"; }],
+        ["Completed (UTC)", function (a) { return D.arms[a].status.completed_at_utc; }],
+        ["Resumed", function (a) { var v = D.arms[a].status.resumed; return v == null ? "—" : v ? T("yes") : T("no"); }],
+        ["Run folder", function (a) { return "<code>" + esc(D.arms[a].run) + "</code>"; }]
+      ];
+      if (N.completedDate) runRows.unshift(["Team completion date", function () { return esc(N.completedDate) + "<br><span class=\"small muted\">" + esc(loc(N.dateBasis)) + "</span>"; }]);
+      if (N.componentBy) runRows.unshift(["Component development", function () { return esc(N.componentBy) + " · " + esc(N.componentDate || ""); }]);
+      if (arms.some(function (a) { return D.arms[a].status.amp_skipped_updates != null; })) {
+        runRows.splice(2, 0, ["AMP skips", function (a) { return display(D.arms[a].status.amp_skipped_updates); }]);
+      }
+      $("t-runs").innerHTML = "<thead><tr><th></th>" + arms.map(function (a) { return "<th>" + sw(a) + esc(name(a)) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+        runRows.map(function (r) { return "<tr><td>" + esc(T(r[0])) + "</td>" + arms.map(function (a) { return "<td>" + r[1](a) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody>";
+
+      // comparability
+      var cfg = function (a) { return D.arms[a].config; };
+      var short = function (h) { return h ? h.slice(0, 16) + "…" : "—"; };
+      var weightsExcept = function (a) {
+        var w = Object.assign({}, cfg(a).loss_weights || {}); (N.changed || []).forEach(function (k) { delete w[k]; });
+        return Object.keys(w).map(function (k) { return k.replace("_weight", "") + " " + w[k]; }).join(", ");
+      };
+      var checks = [
+        ["Dataset", function (a) { return cfg(a).data_dir; }], ["Training clips", function (a) { return display(cfg(a).training_clips); }],
+        ["Metadata hash", function (a) { return short(cfg(a).metadata_sha256); }],
+        ["Seed / batch size", function (a) { return display(cfg(a).train_seed) + " / " + display(cfg(a).batch_size); }],
+        ["Iterations / evaluation interval", function (a) { return cfg(a).total_steps + " / " + cfg(a).eval_every; }],
+        ["Notebook hash", function (a) { return short(cfg(a).notebook_sha256); }],
+        ["Evaluator hash", function (a) { return short(cfg(a).eval_source_sha256); }],
+        ["Evaluation batch hash", function (a) { return short(D.arms[a].batch_sha256); }],
+        ["Other loss weights", weightsExcept],
+        ["GPU / PyTorch", function (a) { return display(cfg(a).gpu) + " · " + display(cfg(a).torch); }]
+      ];
+      $("t-check").innerHTML = "<thead><tr><th>" + esc(T("Item")) + "</th>" + arms.map(function (a) { return "<th>" + esc(name(a)) + "</th>"; }).join("") + "<th>" + esc(T("Match")) + "</th></tr></thead><tbody>" +
+        checks.map(function (c) {
+          var vals = arms.map(c[1]), known = vals.every(function (v) { return v != null && v !== "—"; });
+          var same = known && vals.every(function (v) { return String(v) === String(vals[0]); });
+          return "<tr><td>" + esc(T(c[0])) + "</td>" + vals.map(function (v) { return "<td class=\"small\">" + esc(String(v)) + "</td>"; }).join("") +
+            "<td class=\"" + (!known ? "muted" : same ? "ok" : "no") + "\">" + (!known ? "—" : same ? "✓" : "✗") + "</td></tr>";
+        }).join("") +
+        (N.changed || []).map(function (k) {
+          return "<tr><td><code>" + esc(k) + "</code></td>" + arms.map(function (a) { return "<td>" + esc(String((cfg(a).loss_weights || {})[k])) + "</td>"; }).join("") +
+            "<td class=\"muted\">" + esc(T("change under test")) + "</td></tr>";
+        }).join("") + "</tbody>";
+
+      // metrics
+      var evalOf = function (a, mode) { return D.arms[a].eval.filter(function (r) { return r.mode === mode; }); };
+      var stat = function (a, mode, k, which) {
+        var rows = evalOf(a, mode);
+        if (which === "final") return rows[rows.length - 1][k];
+        var last = rows.filter(function (r) { return r.step > 0; }).slice(-5); return last.reduce(function (x, r) { return x + r[k]; }, 0) / last.length;
+      };
+      [["t-final", "final"], ["t-late", "late"]].forEach(function (spec) {
+        var h = "<thead><tr><th>" + esc(T("Mode · metric")) + "</th>" + arms.map(function (a) { return "<th class=\"num\">" + sw(a) + esc(name(a)) + "</th>"; }).join("") +
+          others.map(function (a) { return "<th class=\"num\">Δ " + esc(name(a)) + "</th>"; }).join("") + "</tr></thead><tbody>";
+        ["mean", "sample"].forEach(function (m) {
+          Object.keys(ML).forEach(function (k) {
+            var r = stat(ref, m, k, spec[1]);
+            h += "<tr><td>" + m + " · " + ML[k] + "</td>" + arms.map(function (a) { return "<td class=\"num\">" + f4(stat(a, m, k, spec[1])) + "</td>"; }).join("") +
+              others.map(function (a) { return "<td class=\"num\">" + pct(r, stat(a, m, k, spec[1])) + "</td>"; }).join("") + "</tr>";
+          });
+        });
+        $(spec[0]).innerHTML = h + "</tbody>";
+      });
+      var wh = "<thead><tr><th>" + esc(T("Mode · metric")) + "</th>";
+      others.forEach(function (a) { wh += "<th class=\"num\">" + esc(name(a)) + ": " + esc(T("all points")) + "</th><th class=\"num\">" + esc(T("second half")) + "</th><th class=\"num\">" + esc(T("utterances, final")) + "</th>"; });
+      wh += "</tr></thead><tbody>";
+      ["mean", "sample"].forEach(function (m) {
+        Object.keys(ML).forEach(function (k) {
+          wh += "<tr><td>" + m + " · " + ML[k] + "</td>";
+          others.forEach(function (a) {
+            var base = {}; evalOf(ref, m).forEach(function (r) { base[r.step] = r[k]; });
+            var rows = evalOf(a, m).filter(function (r) { return r.step > 0 && base[r.step] != null; });
+            var half = rows.filter(function (r) { return r.step >= rows[rows.length - 1].step / 2; });
+            var win = function (list) { return list.filter(function (r) { return r[k] < base[r.step]; }).length; };
+            var ps = {}; D.arms[ref].per_sample_final.filter(function (r) { return r.mode === m; }).forEach(function (r) { ps[r.sample_id] = r[k]; });
+            var cmp = D.arms[a].per_sample_final.filter(function (r) { return r.mode === m; });
+            var cls = function (x, n) { return x / n >= 0.75 ? "delta-good" : x / n <= 0.25 ? "delta-bad" : ""; };
+            var w1 = win(rows), w2 = win(half), w3 = cmp.filter(function (r) { return r[k] < ps[r.sample_id]; }).length;
+            wh += "<td class=\"num " + cls(w1, rows.length) + "\">" + w1 + "/" + rows.length + "</td><td class=\"num " + cls(w2, half.length) + "\">" + w2 + "/" + half.length +
+              "</td><td class=\"num " + cls(w3, cmp.length) + "\">" + w3 + "/" + cmp.length + "</td>";
+          });
+          wh += "</tr>";
+        });
+      });
+      $("t-wins").innerHTML = wh + "</tbody>";
+
+      // charts
+      api.resetCharts();
+      $("c-eval").innerHTML = ""; $("c-train").innerHTML = "";
+      var chartBox = function (host, title) {
+        var d = document.createElement("div"); d.innerHTML = "<div class=\"chart-title\">" + esc(title) + "</div><div></div>";
+        host.appendChild(d); return d.lastChild;
+      };
+      ["mean", "sample"].forEach(function (m) {
+        ["log_mel_l1", "stft_spectral_convergence"].forEach(function (k) {
+          var steps = evalOf(ref, m).filter(function (r) { return r.step > 0; }).map(function (r) { return r.step; });
+          api.lineChart(chartBox($("c-eval"), ML[k] + " · " + m), {
+            label: ML[k], x: steps, width: 360, height: 230, xLabel: "iteration",
+            xTicks: [steps[0], steps[Math.floor(steps.length / 2)], steps[steps.length - 1]],
+            series: arms.map(function (a) {
+              var map = {}; evalOf(a, m).forEach(function (r) { map[r.step] = r[k]; });
+              return { name: name(a), color: color(a), dots: true, values: steps.map(function (s) { return map[s]; }) };
+            })
+          });
+        });
+      });
+      var tr = D.arms[ref].train, xs = tr.step;
+      var ticks = [0, xs[Math.floor(xs.length / 2)], xs[xs.length - 1]];
+      [["mel", "Mel L1 (unweighted)"], ["stft", "Multi-resolution STFT (unweighted)"], ["duration", "Duration loss"], ["kl", "KL loss"]].forEach(function (c) {
+        api.lineChart(chartBox($("c-train"), T(c[1])), {
+          label: c[1], x: xs, xMin: 0, xTicks: ticks, width: 360, height: 230, xLabel: "iteration",
+          series: arms.map(function (a) { return { name: name(a), color: color(a), values: smooth(D.arms[a].train[c[0]], 10) }; })
+        });
+      });
+      arms.filter(function (a) { return (cfg(a).loss_weights || {}).gan_weight > 0; }).forEach(function (a) {
+        var t2 = D.arms[a].train;
+        api.lineChart(chartBox($("c-train"), T("Discriminator scores") + " · " + name(a)), {
+          label: "discriminator", x: t2.step, xMin: 0, xTicks: ticks, width: 360, height: 230, xLabel: "iteration", yMin: 0,
+          series: [{ name: T("real"), color: "var(--good)", values: smooth(t2.discriminator_real_score, 10) },
+                   { name: T("generated"), color: "var(--bad)", values: smooth(t2.discriminator_fake_score, 10) }]
+        });
+        api.lineChart(chartBox($("c-train"), T("GAN losses") + " · " + name(a)), {
+          label: "gan", x: t2.step, xMin: 0, xTicks: ticks, width: 360, height: 230, xLabel: "iteration", yMin: 0,
+          series: [{ name: T("discriminator"), color: "var(--baseline)", values: smooth(t2.gan_discriminator, 10) },
+                   { name: T("generator adversarial"), color: color(a), values: smooth(t2.gan, 10) }]
+        });
+      });
+
+      $("r-listen").innerHTML = loc(N.listen);
+      $("r-findings").innerHTML = loc(N.findings);
+      $("r-storage").innerHTML = loc(N.storage);
+      $("t-ckpt").innerHTML = "<thead><tr><th>" + esc(T("Checkpoint")) + "</th>" + arms.map(function (a) { return "<th>" + esc(name(a)) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+        D.arms[ref].checkpoints.map(function (c) {
+          return "<tr><td><code>" + esc(c) + "</code></td>" + arms.map(function (a) { return "<td>" + (D.arms[a].checkpoints.indexOf(c) >= 0 ? "✓" : "—") + "</td>"; }).join("") + "</tr>";
+        }).join("") + "</tbody>";
+      $("r-team").innerHTML = loc(N.team);
+      var slot = $("r-team").closest(".slot");
+      slot.classList.toggle("filled", !!loc(N.team));
+      api.buildToc();
+    }
+
+    function route() {
+      var id = location.hash.replace("#", "");
+      if (!id || !(window.STS_REPORT_INDEX || []).some(function (r) { return r.id === id; })) {
+        if (id && document.getElementById(id)) return;  // in-page anchor inside a report
+        return renderIndex();
+      }
+      Promise.all([load("reports/" + id + ".data.js"), load("reports/" + id + ".notes.js")])
+        .then(function () { current = id; renderReport(id); })
+        .catch(function () { $("r-title").textContent = T("Report files are missing") + ": " + id; });
+    }
+    var current = null;
+    window.addEventListener("hashchange", function () {
+      var id = location.hash.replace("#", "");
+      if ((window.STS_REPORT_INDEX || []).some(function (r) { return r.id === id; }) || !id) route();
+    });
+    route();
+  };
+</script>
+<script src="assets/site.js"></script>
+</body>
+</html>

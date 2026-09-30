@@ -1,0 +1,162 @@
+8.6s 1 0.00s - Debugger warning: It seems that frozen modules are being used, which may
+8.6s 2 0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+8.6s 3 0.00s - to python to disable frozen modules.
+8.6s 4 0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+9.3s 5 0.00s - Debugger warning: It seems that frozen modules are being used, which may
+9.3s 6 0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+9.3s 7 0.00s - to python to disable frozen modules.
+9.3s 8 0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+127.9s 9 Dataset: /kaggle/input/datasets/dromosys/ljspeech/LJSpeech-1.1
+127.9s 10 PyTorch version: 2.10.0+cu128
+127.9s 11 Primary device: cuda:0
+127.9s 12 Visible CUDA GPUs: 2
+127.9s 13 GPU 0: Tesla T4
+127.9s 14 GPU 1: Tesla T4
+158.0s 15 Training clips: 13084
+169.5s 16 Text padded:        torch.Size([8, 146])
+169.5s 17 Text lengths:       torch.Size([8])
+169.5s 18 Spectrogram padded: torch.Size([8, 513, 748])
+169.5s 19 Spectrogram lengths: torch.Size([8])
+169.5s 20 Waveform padded:    torch.Size([8, 1, 191645])
+169.5s 21 Waveform lengths:   torch.Size([8])
+170.7s 22 Encoded text:    torch.Size([8, 192, 146])
+170.7s 23 Prior mean:      torch.Size([8, 192, 146])
+170.7s 24 Prior log-scale: torch.Size([8, 192, 146])
+170.7s 25 Text mask:       torch.Size([8, 1, 146])
+171.0s 26 Spectrogram: torch.Size([8, 513, 748])
+171.0s 27 z: torch.Size([8, 192, 748])
+171.0s 28 Mean: torch.Size([8, 192, 748])
+171.0s 29 Log-scale: torch.Size([8, 192, 748])
+171.0s 30 Mask: torch.Size([8, 1, 748])
+171.2s 31 Full latent shape:    torch.Size([8, 192, 748])
+171.2s 32 Latent segment shape: torch.Size([8, 192, 32])
+171.2s 33 Start-frame shape:    torch.Size([8])
+171.7s 34 Latent segment:    torch.Size([8, 192, 32])
+171.7s 35 Generated waveform: torch.Size([8, 1, 8192])
+173.7s 36 Run artifacts: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z
+173.9s 37 Training on one device: cuda
+173.9s 38 {'generator': 12141186, 'discriminator': 7141313} {'mel_weight': 1.0, 'stft_weight': 0.5, 'duration_weight': 1.0, 'kl_weight': 1.0, 'wave_weight': 10.0, 'gan_weight': 0.0}
+176.4s 39 /usr/local/lib/python3.12/dist-packages/torchaudio/__init__.py:178: UserWarning: The 'encoding' parameter is not fully supported by TorchCodec AudioEncoder.
+176.4s 40 return save_with_torchcodec(
+176.4s 41 /usr/local/lib/python3.12/dist-packages/torchaudio/__init__.py:178: UserWarning: The 'bits_per_sample' parameter is not directly supported by TorchCodec AudioEncoder.
+176.4s 42 return save_with_torchcodec(
+176.4s 43 
+176.4s 44 /usr/local/lib/python3.12/dist-packages/torchaudio/__init__.py:178: UserWarning: The 'encoding' parameter is not fully supported by TorchCodec AudioEncoder.
+176.4s 45 return save_with_torchcodec(
+176.4s 46 /usr/local/lib/python3.12/dist-packages/torchaudio/__init__.py:178: UserWarning: The 'bits_per_sample' parameter is not directly supported by TorchCodec AudioEncoder.
+176.4s 47 return save_with_torchcodec(
+176.4s 48 Step 0 evaluation: [{'step': 0, 'mode': 'mean', 'count': 8, 'log_mel_l1': 3.3436624705791473, 'stft_spectral_convergence': 2.2021687626838684, 'stft_log_magnitude': 3.71769842505455}, {'step': 0, 'mode': 'sample', 'count': 8, 'log_mel_l1': 1.9582465887069702, 'stft_spectral_convergence': 2.1961131393909454, 'stft_log_magnitude': 2.0073224306106567}]
+495.7s 49 step 1000/50000  total 4.170  mel 1.506  kl -0.077  gan 0.000  D 0.000  0.319 s/it  ETA 4.35 h
+830.7s 50 step 2000/50000  total 4.270  mel 1.608  kl -0.228  gan 0.000  D 0.000  0.344 s/it  ETA 4.59 h
+1002.8s 51 Fixed-crop evaluation at 2500: [{'step': 2500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 2.440755322575569, 'stft_spectral_convergence': 0.9928200766444206, 'stft_log_magnitude': 3.147766560316086}, {'step': 2500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 1.1990794464945793, 'stft_spectral_convergence': 0.9591403901576996, 'stft_log_magnitude': 1.3616084605455399}]
+1175.0s 52 step 3000/50000  total 4.087  mel 1.288  kl 0.049  gan 0.000  D 0.000  0.350 s/it  ETA 4.57 h
+1514.7s 53 step 4000/50000  total 4.182  mel 1.185  kl 0.185  gan 0.000  D 0.000  0.333 s/it  ETA 4.26 h
+1843.8s 54 step 5000/50000  total 3.942  mel 1.119  kl 0.068  gan 0.000  D 0.000  0.325 s/it  ETA 4.06 h
+1843.9s 55 Fixed-crop evaluation at 5000: [{'step': 5000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.8392684310674667, 'stft_spectral_convergence': 0.9688106030225754, 'stft_log_magnitude': 2.3838625252246857}, {'step': 5000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 1.0458021610975266, 'stft_spectral_convergence': 0.9343423470854759, 'stft_log_magnitude': 1.2459080517292023}]
+1844.4s 56 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_5000.pt
+1844.4s 57 /usr/local/lib/python3.12/dist-packages/torch/nn/modules/transformer.py:531: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. We recommend specifying layout=torch.jagged when constructing a nested tensor, as this layout receives active development, has better operator coverage, and works with torch.compile. (Triggered internally at /pytorch/aten/src/ATen/NestedTensorImpl.cpp:178.)
+1844.4s 58 output = torch._nested_tensor_from_mask(
+1844.4s 59 
+1844.4s 60 /usr/local/lib/python3.12/dist-packages/torch/nn/modules/transformer.py:531: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. We recommend specifying layout=torch.jagged when constructing a nested tensor, as this layout receives active development, has better operator coverage, and works with torch.compile. (Triggered internally at /pytorch/aten/src/ATen/NestedTensorImpl.cpp:178.)
+1844.4s 61 output = torch._nested_tensor_from_mask(
+2171.5s 62 step 6000/50000  total 3.570  mel 1.026  kl 0.004  gan 0.000  D 0.000  0.314 s/it  ETA 3.83 h
+2501.9s 63 step 7000/50000  total 3.365  mel 1.023  kl -0.183  gan 0.000  D 0.000  0.337 s/it  ETA 4.03 h
+2673.5s 64 Fixed-crop evaluation at 7500: [{'step': 7500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.7033638954162598, 'stft_spectral_convergence': 0.968227744102478, 'stft_log_magnitude': 2.2473263442516327}, {'step': 7500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9889620095491409, 'stft_spectral_convergence': 0.9166875332593918, 'stft_log_magnitude': 1.1764318645000458}]
+2842.4s 65 step 8000/50000  total 3.252  mel 0.975  kl -0.155  gan 0.000  D 0.000  0.340 s/it  ETA 3.97 h
+3175.9s 66 step 9000/50000  total 3.280  mel 0.983  kl -0.126  gan 0.000  D 0.000  0.343 s/it  ETA 3.90 h
+3514.9s 67 step 10000/50000  total 3.069  mel 1.017  kl -0.349  gan 0.000  D 0.000  0.335 s/it  ETA 3.73 h
+3514.9s 68 Fixed-crop evaluation at 10000: [{'step': 10000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.7069517225027084, 'stft_spectral_convergence': 0.9685822427272797, 'stft_log_magnitude': 2.243134945631027}, {'step': 10000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9949319511651993, 'stft_spectral_convergence': 0.9236957430839539, 'stft_log_magnitude': 1.215061366558075}]
+3515.4s 69 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_10000.pt
+3845.7s 70 step 11000/50000  total 3.652  mel 1.020  kl -0.039  gan 0.000  D 0.000  0.330 s/it  ETA 3.57 h
+4185.4s 71 step 12000/50000  total 3.375  mel 1.048  kl -0.142  gan 0.000  D 0.000  0.332 s/it  ETA 3.50 h
+4352.7s 72 Fixed-crop evaluation at 12500: [{'step': 12500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.6097663640975952, 'stft_spectral_convergence': 0.9614245817065239, 'stft_log_magnitude': 2.072829380631447}, {'step': 12500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9962112307548523, 'stft_spectral_convergence': 0.9212007075548172, 'stft_log_magnitude': 1.2030970752239227}]
+4523.1s 73 step 13000/50000  total 3.562  mel 0.964  kl 0.193  gan 0.000  D 0.000  0.348 s/it  ETA 3.58 h
+4859.7s 74 step 14000/50000  total 3.492  mel 1.009  kl -0.049  gan 0.000  D 0.000  0.342 s/it  ETA 3.42 h
+5199.4s 75 step 15000/50000  total 3.809  mel 1.019  kl 0.158  gan 0.000  D 0.000  0.336 s/it  ETA 3.26 h
+5199.5s 76 Fixed-crop evaluation at 15000: [{'step': 15000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.584983468055725, 'stft_spectral_convergence': 0.9611567631363869, 'stft_log_magnitude': 2.091329336166382}, {'step': 15000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9740112498402596, 'stft_spectral_convergence': 0.9220433756709099, 'stft_log_magnitude': 1.1840012967586517}]
+5199.9s 77 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_15000.pt
+5535.9s 78 step 16000/50000  total 3.463  mel 0.990  kl 0.082  gan 0.000  D 0.000  0.336 s/it  ETA 3.17 h
+5872.3s 79 step 17000/50000  total 3.256  mel 0.947  kl -0.005  gan 0.000  D 0.000  0.328 s/it  ETA 3.00 h
+6040.0s 80 Fixed-crop evaluation at 17500: [{'step': 17500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.4938423037528992, 'stft_spectral_convergence': 0.9546589627861977, 'stft_log_magnitude': 1.9794541150331497}, {'step': 17500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9478766173124313, 'stft_spectral_convergence': 0.9171980321407318, 'stft_log_magnitude': 1.1714684963226318}]
+6206.0s 81 step 18000/50000  total 3.340  mel 0.956  kl -0.091  gan 0.000  D 0.000  0.337 s/it  ETA 2.99 h
+6536.6s 82 step 19000/50000  total 3.796  mel 1.006  kl 0.169  gan 0.000  D 0.000  0.327 s/it  ETA 2.82 h
+6865.9s 83 step 20000/50000  total 3.645  mel 0.971  kl 0.166  gan 0.000  D 0.000  0.322 s/it  ETA 2.68 h
+6866.0s 84 Fixed-crop evaluation at 20000: [{'step': 20000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.4629937410354614, 'stft_spectral_convergence': 0.9523133486509323, 'stft_log_magnitude': 1.9996472299098969}, {'step': 20000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9603664055466652, 'stft_spectral_convergence': 0.9067166820168495, 'stft_log_magnitude': 1.1687238216400146}]
+6866.5s 85 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_20000.pt
+7197.6s 86 step 21000/50000  total 3.463  mel 0.947  kl -0.015  gan 0.000  D 0.000  0.329 s/it  ETA 2.65 h
+7524.2s 87 step 22000/50000  total 3.355  mel 1.002  kl -0.080  gan 0.000  D 0.000  0.311 s/it  ETA 2.42 h
+7685.4s 88 Fixed-crop evaluation at 22500: [{'step': 22500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.421729102730751, 'stft_spectral_convergence': 0.9516654685139656, 'stft_log_magnitude': 1.881191685795784}, {'step': 22500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9661063253879547, 'stft_spectral_convergence': 0.9187160581350327, 'stft_log_magnitude': 1.1732970923185349}]
+7847.9s 89 step 23000/50000  total 3.318  mel 0.990  kl -0.042  gan 0.000  D 0.000  0.326 s/it  ETA 2.44 h
+8189.2s 90 step 24000/50000  total 3.595  mel 0.995  kl 0.127  gan 0.000  D 0.000  0.358 s/it  ETA 2.59 h
+8532.8s 91 step 25000/50000  total 3.070  mel 0.889  kl -0.110  gan 0.000  D 0.000  0.325 s/it  ETA 2.26 h
+8532.9s 92 Fixed-crop evaluation at 25000: [{'step': 25000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.4642929434776306, 'stft_spectral_convergence': 0.955762691795826, 'stft_log_magnitude': 1.9818696826696396}, {'step': 25000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9579809159040451, 'stft_spectral_convergence': 0.9145102202892303, 'stft_log_magnitude': 1.1502150893211365}]
+8533.3s 93 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_25000.pt
+8865.4s 94 step 26000/50000  total 3.402  mel 0.949  kl 0.043  gan 0.000  D 0.000  0.324 s/it  ETA 2.16 h
+9199.5s 95 step 27000/50000  total 3.574  mel 1.014  kl 0.061  gan 0.000  D 0.000  0.335 s/it  ETA 2.14 h
+9363.9s 96 Fixed-crop evaluation at 27500: [{'step': 27500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.5019307881593704, 'stft_spectral_convergence': 0.9560548737645149, 'stft_log_magnitude': 1.9503659456968307}, {'step': 27500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9662648737430573, 'stft_spectral_convergence': 0.915673740208149, 'stft_log_magnitude': 1.16838838160038}]
+9525.9s 97 step 28000/50000  total 3.099  mel 0.929  kl -0.175  gan 0.000  D 0.000  0.317 s/it  ETA 1.94 h
+9853.0s 98 step 29000/50000  total 2.794  mel 0.889  kl -0.364  gan 0.000  D 0.000  0.321 s/it  ETA 1.87 h
+10176.1s 99 step 30000/50000  total 3.352  mel 0.986  kl 0.008  gan 0.000  D 0.000  0.323 s/it  ETA 1.79 h
+10176.2s 100 Fixed-crop evaluation at 30000: [{'step': 30000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.4406770020723343, 'stft_spectral_convergence': 0.9516178444027901, 'stft_log_magnitude': 1.9387444853782654}, {'step': 30000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.943837933242321, 'stft_spectral_convergence': 0.917491726577282, 'stft_log_magnitude': 1.1498468816280365}]
+10176.7s 101 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_30000.pt
+10508.2s 102 step 31000/50000  total 3.345  mel 1.078  kl -0.090  gan 0.000  D 0.000  0.329 s/it  ETA 1.74 h
+10830.7s 103 step 32000/50000  total 3.117  mel 0.955  kl -0.194  gan 0.000  D 0.000  0.324 s/it  ETA 1.62 h
+10992.9s 104 Fixed-crop evaluation at 32500: [{'step': 32500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.4326899498701096, 'stft_spectral_convergence': 0.9501735717058182, 'stft_log_magnitude': 1.8954565972089767}, {'step': 32500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9485585242509842, 'stft_spectral_convergence': 0.9195874854922295, 'stft_log_magnitude': 1.1420672684907913}]
+11152.3s 105 step 33000/50000  total 3.556  mel 0.887  kl 0.178  gan 0.000  D 0.000  0.325 s/it  ETA 1.54 h
+11478.7s 106 step 34000/50000  total 3.418  mel 1.057  kl -0.073  gan 0.000  D 0.000  0.316 s/it  ETA 1.41 h
+11804.5s 107 step 35000/50000  total 3.162  mel 0.896  kl -0.084  gan 0.000  D 0.000  0.314 s/it  ETA 1.31 h
+11804.6s 108 Fixed-crop evaluation at 35000: [{'step': 35000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.4351575523614883, 'stft_spectral_convergence': 0.9539751932024956, 'stft_log_magnitude': 1.9227138608694077}, {'step': 35000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9400656074285507, 'stft_spectral_convergence': 0.9231796562671661, 'stft_log_magnitude': 1.141629084944725}]
+11805.0s 109 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_35000.pt
+12126.5s 110 step 36000/50000  total 3.076  mel 0.917  kl -0.188  gan 0.000  D 0.000  0.321 s/it  ETA 1.25 h
+12455.8s 111 step 37000/50000  total 3.034  mel 0.907  kl -0.144  gan 0.000  D 0.000  0.346 s/it  ETA 1.25 h
+12624.0s 112 Fixed-crop evaluation at 37500: [{'step': 37500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.460147202014923, 'stft_spectral_convergence': 0.947985477745533, 'stft_log_magnitude': 2.012217327952385}, {'step': 37500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9610370174050331, 'stft_spectral_convergence': 0.9187387451529503, 'stft_log_magnitude': 1.1420327872037888}]
+12795.7s 113 step 38000/50000  total 3.623  mel 0.960  kl 0.275  gan 0.000  D 0.000  0.352 s/it  ETA 1.17 h
+13143.3s 114 step 39000/50000  total 3.278  mel 0.924  kl -0.025  gan 0.000  D 0.000  0.354 s/it  ETA 1.08 h
+13494.6s 115 step 40000/50000  total 3.385  mel 1.045  kl -0.078  gan 0.000  D 0.000  0.347 s/it  ETA 0.96 h
+13494.7s 116 Fixed-crop evaluation at 40000: [{'step': 40000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.3533236682415009, 'stft_spectral_convergence': 0.945838950574398, 'stft_log_magnitude': 1.8256659805774689}, {'step': 40000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9532792642712593, 'stft_spectral_convergence': 0.9178999438881874, 'stft_log_magnitude': 1.13313889503479}]
+13495.2s 117 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_40000.pt
+13848.2s 118 step 41000/50000  total 3.288  mel 0.896  kl 0.154  gan 0.000  D 0.000  0.360 s/it  ETA 0.90 h
+14200.5s 119 step 42000/50000  total 3.112  mel 0.937  kl -0.118  gan 0.000  D 0.000  0.352 s/it  ETA 0.78 h
+14379.3s 120 Fixed-crop evaluation at 42500: [{'step': 42500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.3412007838487625, 'stft_spectral_convergence': 0.9482310339808464, 'stft_log_magnitude': 1.8487191200256348}, {'step': 42500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9390178024768829, 'stft_spectral_convergence': 0.9182279706001282, 'stft_log_magnitude': 1.1218184381723404}]
+14560.2s 121 step 43000/50000  total 3.154  mel 0.938  kl -0.227  gan 0.000  D 0.000  0.359 s/it  ETA 0.70 h
+14916.3s 122 step 44000/50000  total 3.361  mel 0.906  kl -0.054  gan 0.000  D 0.000  0.343 s/it  ETA 0.57 h
+15270.7s 123 step 45000/50000  total 3.525  mel 1.042  kl -0.043  gan 0.000  D 0.000  0.354 s/it  ETA 0.49 h
+15270.7s 124 Fixed-crop evaluation at 45000: [{'step': 45000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.2366592437028885, 'stft_spectral_convergence': 0.945740170776844, 'stft_log_magnitude': 1.6968963295221329}, {'step': 45000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9623745307326317, 'stft_spectral_convergence': 0.9192309677600861, 'stft_log_magnitude': 1.1646933853626251}]
+15271.2s 125 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_45000.pt
+15629.8s 126 step 46000/50000  total 3.267  mel 0.941  kl -0.104  gan 0.000  D 0.000  0.361 s/it  ETA 0.40 h
+15982.8s 127 step 47000/50000  total 3.277  mel 0.947  kl -0.013  gan 0.000  D 0.000  0.363 s/it  ETA 0.30 h
+16162.1s 128 Fixed-crop evaluation at 47500: [{'step': 47500, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.3866933584213257, 'stft_spectral_convergence': 0.9449653774499893, 'stft_log_magnitude': 1.8946016281843185}, {'step': 47500, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9574988335371017, 'stft_spectral_convergence': 0.9144299775362015, 'stft_log_magnitude': 1.1296985894441605}]
+16340.6s 129 step 48000/50000  total 3.210  mel 0.902  kl -0.050  gan 0.000  D 0.000  0.359 s/it  ETA 0.20 h
+16694.5s 130 step 49000/50000  total 3.399  mel 0.946  kl -0.012  gan 0.000  D 0.000  0.363 s/it  ETA 0.10 h
+17047.8s 131 step 50000/50000  total 3.393  mel 1.040  kl -0.049  gan 0.000  D 0.000  0.361 s/it  ETA 0.00 h
+17047.9s 132 Fixed-crop evaluation at 50000: [{'step': 50000, 'mode': 'mean', 'count': 8, 'log_mel_l1': 1.2183219343423843, 'stft_spectral_convergence': 0.9410169497132301, 'stft_log_magnitude': 1.7540749609470367}, {'step': 50000, 'mode': 'sample', 'count': 8, 'log_mel_l1': 0.9420206770300865, 'stft_spectral_convergence': 0.9165768325328827, 'stft_log_magnitude': 1.1164949089288712}]
+17048.3s 133 Saved checkpoint: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z/checkpoints/vits_step_50000.pt
+17048.3s 134 Experiment record: {
+17048.3s 135 "status": "completed",
+17048.3s 136 "step": 50000,
+17048.3s 137 "total_steps": 50000,
+17048.3s 138 "gan_weight": 0.0,
+17048.3s 139 "actual_optimizer_updates": 50000,
+17048.3s 140 "session_wall_seconds": 16874.4,
+17048.3s 141 "resumed": false,
+17048.3s 142 "completion_time_source": "runtime_clock",
+17048.3s 143 "peak_allocated_GiB": 1.134,
+17048.3s 144 "completed_at_utc": "2026-09-29T22:35:50+00:00"
+17048.3s 145 }
+17049.3s 146 step   mode  count  log_mel_l1  stft_spectral_convergence  stft_log_magnitude
+17049.3s 147 50000   mean      8    1.218322                   0.941017            1.754075
+17049.3s 148 50000 sample      8    0.942021                   0.916577            1.116495
+17049.3s 149 LJ001-0001 target
+17049.3s 150 LJ001-0001 mean
+17049.3s 151 LJ001-0001 sample
+17049.3s 152 Upload this folder to the team Google Drive: /kaggle/working/sts2026-full-runs/full_gan0_20260929T175436031732Z
+17055.0s 153 /usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+17055.0s 154 cells[i][c] = re.sub('\\\\\|', '|', cell)
+17055.2s 155 /usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+17055.2s 156 text = re.sub(r'_', '\_', text) # Escape underscores in display text
+17055.9s 157 [NbConvertApp] Converting notebook __notebook__.ipynb to notebook
+17056.3s 158 [NbConvertApp] Writing 478959 bytes to __notebook__.ipynb
+17058.9s 159 [NbConvertApp] Converting notebook __notebook__.ipynb to html
+17060.3s 160 [NbConvertApp] Support files will be in __results___files/
+17060.3s 161 [NbConvertApp] Making directory __results___files
+17060.3s 162 [NbConvertApp] Writing 1049788 bytes to __results__.html

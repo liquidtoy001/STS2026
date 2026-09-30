@@ -1,0 +1,637 @@
+{
+  "source_archive": "Jacques Eval-20260930T110856Z-1-001.zip",
+  "source_archive_sha256": "b59c19ed438778be6d679d03d8f4924e1385c629e1af83114a4bc2d1aa37b253",
+  "imported_at_utc": "2026-09-30T11:37:56+00:00",
+  "scope": "Import and arithmetic validation; not a new training run or verified architecture ablation",
+  "assessment": {
+    "component_identity": "pending_verification",
+    "protocol_matches": {
+      "protocol": true,
+      "config": true,
+      "batch_sha256": true,
+      "sample_ids": true,
+      "start_frames": true,
+      "valid_samples": true,
+      "environment": true
+    },
+    "identical_run_config_bytes": true
+  },
+  "arms": {
+    "original": [
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/001_target.wav",
+        "bytes": 16462,
+        "sha256": "84723a77e51b0e921d7464d823c3cbe66dc533a2ba94141c14e91d27aa200fc7",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/manifest.json",
+        "bytes": 2027,
+        "sha256": "cd45a2fb93c2709884f45ed81fef369ef0dec433665f4322d83dc77977259083",
+        "git_record": "evaluation/manifest.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_000500/per_sample.json",
+        "bytes": 4232,
+        "sha256": "8d29aa0b00f6f2ee135e0b8b28a5a9844a0e5f7776a7bfc9b06939edb5d0658b",
+        "git_record": "evaluation/step_000500/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Screenshot 2026-09-20 175407.png",
+        "bytes": 112188,
+        "sha256": "9fc1bf01794563aa2e5dd83297a847370230381f95ad6c3f504345f6d5f91bc3",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/evaluation_history.json",
+        "bytes": 1989,
+        "sha256": "f64246e0a718217ae7cdf64c76f027ebba7fe2a8184b7614234691c3babc5a9a",
+        "git_record": "evaluation/evaluation_history.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/curves.png",
+        "bytes": 137371,
+        "sha256": "515e2cd3da2ea9af771677dd016351a4595b44c4fd8233b89981f17e7aeae2cd",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/download.wav",
+        "bytes": 16462,
+        "sha256": "ac60cc7c12a5dc4259151b1bb2a3b0a298ccac7bd8624461dcabff62e9606e57",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/006_target.wav",
+        "bytes": 16462,
+        "sha256": "e8de29df78a8062a7744b662d6cfd680602ede472755cb70ff5912f25e6a61e9",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_001500/summary.json",
+        "bytes": 402,
+        "sha256": "bac79d78ccc55789244356db67eaf6b7ea1faa6ed606e5c08ae8326f10a71bca",
+        "git_record": "evaluation/step_001500/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/007_target.wav",
+        "bytes": 16462,
+        "sha256": "9fb3e67b23aa06fe10adae19ebb2de9a7e0292b140ceb53b9307c3a5ea3f931d",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_001000/per_sample.json",
+        "bytes": 4241,
+        "sha256": "5d9e7d579205a83f511304563e4510fc383dfb1d8b30d4386b5b583ac1df1826",
+        "git_record": "evaluation/step_001000/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/000_target.wav",
+        "bytes": 16462,
+        "sha256": "ac60cc7c12a5dc4259151b1bb2a3b0a298ccac7bd8624461dcabff62e9606e57",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/004_target.wav",
+        "bytes": 16462,
+        "sha256": "8901669f0632f8ba536b60b9bc504f1c0bd0e2d8c743fce66bd07a93d6ed0cae",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/007_mean.wav",
+        "bytes": 16462,
+        "sha256": "a7b9ea63dccabcc547333085e4c95ad35cea4f092ac2b130f48662ea29f0d8ea",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/002_target.wav",
+        "bytes": 16462,
+        "sha256": "dbb026222b029e82a981538eaaa1e2e8b9a7b1d17210d51ebaaf6420a26a0914",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/007_sample.wav",
+        "bytes": 16462,
+        "sha256": "97f4eacf0f6a7d6c1f06db02423dfa7589959677392f1868a7c58252ba65ab8c",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_000000/summary.json",
+        "bytes": 396,
+        "sha256": "07a7878906e3828ef04958b35a587db0edff24061c71ad9820397299cb4ef82d",
+        "git_record": "evaluation/step_000000/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/summary.json",
+        "bytes": 402,
+        "sha256": "4902b977e55a3a2b1b74e463f743995c5f1f8771eb9ed7ad038d3b04050a503a",
+        "git_record": "evaluation/step_002000/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/004_mean.wav",
+        "bytes": 16462,
+        "sha256": "b91f9f1636257af49bf81cf099983fbf372ee14d7f5e055749253a280ddc6050",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/002_mean.wav",
+        "bytes": 16462,
+        "sha256": "2c6f10b3fd015189c80fcb6d292980768599eddcaf946cb14da7513138d453de",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/completion.json",
+        "bytes": 140,
+        "sha256": "9aa47240eec3c79980ce8afd584b5a2c3764d1d5c704ee6ac3245745900ebf44",
+        "git_record": "evaluation/step_002000/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/005_sample.wav",
+        "bytes": 16462,
+        "sha256": "526333a71b617fe835a1e1c4c88356a2df4680f6b97bbc4d0a0884ca98d9bfa0",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/003_mean.wav",
+        "bytes": 16462,
+        "sha256": "103ac502acf3220f1b146d845b09d77da6c6f31a1f197d63144416b466189ff0",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/002_sample.wav",
+        "bytes": 16462,
+        "sha256": "e538e671e205692c1fe2d495d3e5aa7d6359de15b4d8c85e8eefb61775b6084f",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/download (1).wav",
+        "bytes": 16462,
+        "sha256": "4afbe6d84fdc89612a0bb531a1478b3f8d1cf008ab190cdec6891467bad02bfd",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/000_mean.wav",
+        "bytes": 16462,
+        "sha256": "4afbe6d84fdc89612a0bb531a1478b3f8d1cf008ab190cdec6891467bad02bfd",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/005_mean.wav",
+        "bytes": 16462,
+        "sha256": "ad800191cf64dee949fd993c183f1a52d4f8d41f6300954fd12cdb3089cbfa2f",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Screenshot 2026-09-20 175351.png",
+        "bytes": 159132,
+        "sha256": "fc5f0f0e9ad3e22972dde6cda89a5aa09fe604aac2616c713a3da937cc0a5548",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_000500/summary.json",
+        "bytes": 400,
+        "sha256": "71b1ca4ed267e45f36f406e540064aad36abd442081085b8351f6d963b57906c",
+        "git_record": "evaluation/step_000500/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/006_sample.wav",
+        "bytes": 16462,
+        "sha256": "cf408021d3ac275c12286e1c3c4469ea933e18db1a5ca20c0b8587ef8ed90470",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/download (2).wav",
+        "bytes": 16462,
+        "sha256": "4fe7e0490c8570cfb4b8aeb254b413b0fa2ab54f517269b2610ce13a4b4b3a60",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/003_sample.wav",
+        "bytes": 16462,
+        "sha256": "a53be4b5a04386c86a7390ac7377cc6fc567177a69621286303cacb4ba780bc4",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/000_sample.wav",
+        "bytes": 16462,
+        "sha256": "4fe7e0490c8570cfb4b8aeb254b413b0fa2ab54f517269b2610ce13a4b4b3a60",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/training_history.json",
+        "bytes": 10576,
+        "sha256": "8186b81e071621895981585c15a35616986df7c184445f68b3dc598a442408aa",
+        "git_record": "training_history.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/status.json",
+        "bytes": 204,
+        "sha256": "896a8e268fc192b8ce4a4842dc0f1dde8b0fd3a624781a41fafbd33a4b6d9624",
+        "git_record": "status.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_000500/completion.json",
+        "bytes": 139,
+        "sha256": "7dd72b5893f91df8793b8ca68c107c4fd11aa1aa79982d66663b52fcb870dbaa",
+        "git_record": "evaluation/step_000500/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_001500/completion.json",
+        "bytes": 140,
+        "sha256": "4d34250bdafb44c84f2ee2d765afcda559c860829de2f09f2d3269fb8140f21a",
+        "git_record": "evaluation/step_001500/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_001500/per_sample.json",
+        "bytes": 4249,
+        "sha256": "e9baebb6cff7f691faf52cea2da73aaf53329c54dde898381ddeaafbb0aa668b",
+        "git_record": "evaluation/step_001500/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_001000/summary.json",
+        "bytes": 401,
+        "sha256": "ddb23b404a1399d2cc769831b65f86d057358b31ba00ce4610677c2d8eecc6b9",
+        "git_record": "evaluation/step_001000/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_001000/completion.json",
+        "bytes": 140,
+        "sha256": "8cd81ca29c09363b7a85286b137b0323c3a3f7a99afa0f6021d4b65c584312a3",
+        "git_record": "evaluation/step_001000/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_000000/completion.json",
+        "bytes": 137,
+        "sha256": "8925a881e6f453ba5f458fffbfe14a063639ea51c2d8bfc308036af01b463e73",
+        "git_record": "evaluation/step_000000/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/001_mean.wav",
+        "bytes": 16462,
+        "sha256": "9a1a121e5890f1417f5eb71f90bcc9eb308653f70ed5d7a180f6f096c583d3b7",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_000000/per_sample.json",
+        "bytes": 4187,
+        "sha256": "081d41639631f67debcdc810128c0d2d4e05fb67830379e92474b4e6151b76a0",
+        "git_record": "evaluation/step_000000/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/run_config.json",
+        "bytes": 11019,
+        "sha256": "0d7cec7d915f934602cda378f9438fe4b16d8e4b2cc7db660d9bee0d42face35",
+        "git_record": "run_config.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/005_target.wav",
+        "bytes": 16462,
+        "sha256": "5999d6bb7865cb8410d8e4b2a4531074d94b8530316fcee3e37cf8b287f38531",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/003_target.wav",
+        "bytes": 16462,
+        "sha256": "9523fbf37e5c8074168c6fdcb8070ef9e2aa848eda86827bb291ecb6e6064e0d",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/001_sample.wav",
+        "bytes": 16462,
+        "sha256": "729ced87d03561a9adf7952acc39bd6fba9501aaa3f5bab85a80cf7290af37f1",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/004_sample.wav",
+        "bytes": 16462,
+        "sha256": "a4e4ce18d128d659042df31ec60fdf0423b008e24f35053af67ed63899112be6",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/per_sample.json",
+        "bytes": 4252,
+        "sha256": "9dec6834d10bea6f2c6a7bcd6c312cad8a3c1656fe17699fa2bb6b04970681c6",
+        "git_record": "evaluation/step_002000/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-original/Step_002000/006_mean.wav",
+        "bytes": 16462,
+        "sha256": "cb9c19d859614f7950632c6cb02ccf3dede5b7d303dad4880b22efc6936dbfb6",
+        "git_record": null
+      }
+    ],
+    "new-enc-dec": [
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/001_target.wav",
+        "bytes": 16462,
+        "sha256": "84723a77e51b0e921d7464d823c3cbe66dc533a2ba94141c14e91d27aa200fc7",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/manifest (1).json",
+        "bytes": 2027,
+        "sha256": "cd45a2fb93c2709884f45ed81fef369ef0dec433665f4322d83dc77977259083",
+        "git_record": "evaluation/manifest.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Screenshot 2026-09-30 162526.png",
+        "bytes": 112386,
+        "sha256": "2d4d1c0c91c0d3e116f126aa82814618a405266cddee6db06293679655899424",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_001500/completion.json",
+        "bytes": 140,
+        "sha256": "ab1b9245170095ac82e10760ba8d267369d8ffccf83b11970f58c7b5eaca12b6",
+        "git_record": "evaluation/step_001500/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/evaluation_history.json",
+        "bytes": 1989,
+        "sha256": "1d2046defa1eea075d63c954ad435c8c394d054e836763ce261eb31385b30914",
+        "git_record": "evaluation/evaluation_history.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_000500/per_sample.json",
+        "bytes": 4223,
+        "sha256": "a8bb23dc44d3949432ca46871c895b756ff0e706df2be0bd0611a7c89a538c16",
+        "git_record": "evaluation/step_000500/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/004_target.wav",
+        "bytes": 16462,
+        "sha256": "8901669f0632f8ba536b60b9bc504f1c0bd0e2d8c743fce66bd07a93d6ed0cae",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_000000/completion.json",
+        "bytes": 137,
+        "sha256": "07ca6f101aacf9ae604c758aebc34d08d03fc983a09795941e0791d11ecb7955",
+        "git_record": "evaluation/step_000000/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/002_target.wav",
+        "bytes": 16462,
+        "sha256": "dbb026222b029e82a981538eaaa1e2e8b9a7b1d17210d51ebaaf6420a26a0914",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/status.json",
+        "bytes": 204,
+        "sha256": "a45c5890d33f7e88a9751ad76e61244793363f721be408887f872ae08cdea085",
+        "git_record": "status.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_000000/summary.json",
+        "bytes": 396,
+        "sha256": "07a7878906e3828ef04958b35a587db0edff24061c71ad9820397299cb4ef82d",
+        "git_record": "evaluation/step_000000/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/002_mean.wav",
+        "bytes": 16462,
+        "sha256": "e270a757f0724fb37f4494954ac983be5fcbe37622e6ac976a35a33b108adbe7",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/000_target.wav",
+        "bytes": 16462,
+        "sha256": "ac60cc7c12a5dc4259151b1bb2a3b0a298ccac7bd8624461dcabff62e9606e57",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/download (2).wav",
+        "bytes": 16462,
+        "sha256": "75a4b270228a5d1a81d58b577c239402be4d2c4af0bbcff3ac3ad7153f11d5d0",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/download.wav",
+        "bytes": 16462,
+        "sha256": "ac60cc7c12a5dc4259151b1bb2a3b0a298ccac7bd8624461dcabff62e9606e57",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/006_target.wav",
+        "bytes": 16462,
+        "sha256": "e8de29df78a8062a7744b662d6cfd680602ede472755cb70ff5912f25e6a61e9",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/000_mean.wav",
+        "bytes": 16462,
+        "sha256": "e023fec37766bb3a5a6a68894044f4c8bf90ca7be3f7baa10628e3928ec97c55",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_001000/completion.json",
+        "bytes": 140,
+        "sha256": "23fa95ef3a730f8651f8dc21fdb186011dd1b4995406b5282645ee96c0776430",
+        "git_record": "evaluation/step_001000/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_001000/per_sample.json",
+        "bytes": 4249,
+        "sha256": "28f619e6a5472f6987633078b234ef866b959faa16d170e0646d1c72f662ec77",
+        "git_record": "evaluation/step_001000/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/005_sample.wav",
+        "bytes": 16462,
+        "sha256": "1cc089084c9ca77b5ef2d65c7ee253c659d8c5fda82072c763d36e556bb64eae",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/curves.png",
+        "bytes": 137518,
+        "sha256": "2e1c789041a11e4d2d5a57ab9775d2f50b680f43111d020d20778e04f282029f",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/000_sample.wav",
+        "bytes": 16462,
+        "sha256": "75a4b270228a5d1a81d58b577c239402be4d2c4af0bbcff3ac3ad7153f11d5d0",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/003_mean.wav",
+        "bytes": 16462,
+        "sha256": "104aaf5fa494589fe89ab817bf1100c4909915ed077ef51bf8a4c6190fdd4ecd",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/training_history.json",
+        "bytes": 10578,
+        "sha256": "0ab7d1e205b0621df359bcfc346a46b770974f59772796b32d17806c1e6c73bf",
+        "git_record": "training_history.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/completion.json",
+        "bytes": 140,
+        "sha256": "0915a7a33c50d8d25659af19b003d314a095aad61c2f8f8b04ee6d33297b34f5",
+        "git_record": "evaluation/step_002000/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/download (1).wav",
+        "bytes": 16462,
+        "sha256": "e023fec37766bb3a5a6a68894044f4c8bf90ca7be3f7baa10628e3928ec97c55",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/007_target.wav",
+        "bytes": 16462,
+        "sha256": "9fb3e67b23aa06fe10adae19ebb2de9a7e0292b140ceb53b9307c3a5ea3f931d",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_001500/per_sample.json",
+        "bytes": 4247,
+        "sha256": "0a724be41c7c0b523360173ca06dd460e1e1ad226b2a907d1cf077719848df99",
+        "git_record": "evaluation/step_001500/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/001_sample.wav",
+        "bytes": 16462,
+        "sha256": "5e4da661a3263add02ddeb8f0b760fb3002baa269188fb5b6e820bf6ee2a3584",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_001000/summary.json",
+        "bytes": 399,
+        "sha256": "96da44acecf7dcd594d6f77e67fb8630db8c58a29157ebbfd836b24d1b8f6c8d",
+        "git_record": "evaluation/step_001000/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/001_mean.wav",
+        "bytes": 16462,
+        "sha256": "de4158efa81badf23f4bfa9565bfaf15cdb8737d4465f0177dd1de4ae1a5ed75",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_000500/completion.json",
+        "bytes": 139,
+        "sha256": "6c24ff84911a355a9c5bbd851c4782cdb78df33506496192eb0c9fbbf12cf4c1",
+        "git_record": "evaluation/step_000500/completion.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/004_sample.wav",
+        "bytes": 16462,
+        "sha256": "b728aa81eb4d62dfbc73a163e1c5f4a7a89bc0cc8473427f79c465a89958b7c4",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/005_target.wav",
+        "bytes": 16462,
+        "sha256": "5999d6bb7865cb8410d8e4b2a4531074d94b8530316fcee3e37cf8b287f38531",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_000500/summary.json",
+        "bytes": 400,
+        "sha256": "7e624b02f7d46ef0f65847c479510dc1b91bb1ca7eb96f2c68c5b76e6fe9d120",
+        "git_record": "evaluation/step_000500/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_001500/summary.json",
+        "bytes": 403,
+        "sha256": "094117ef3961d88226b99c4c745037b08c6449b1389e43ebee7a7fb902b3e806",
+        "git_record": "evaluation/step_001500/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/run_config.json",
+        "bytes": 11019,
+        "sha256": "0d7cec7d915f934602cda378f9438fe4b16d8e4b2cc7db660d9bee0d42face35",
+        "git_record": "run_config.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Screenshot 2026-09-30 162612.png",
+        "bytes": 158938,
+        "sha256": "5b99cd8db5a49bc58c8e8eb0412525ee55e08d7eeedda050f7984a85e822af44",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/summary.json",
+        "bytes": 403,
+        "sha256": "43a08d4ad11b973662b724bd30a2563037e239aa175acd44903e78aa571d48d7",
+        "git_record": "evaluation/step_002000/summary.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/per_sample.json",
+        "bytes": 4252,
+        "sha256": "1dedbe11d49586fbd472872de42331e3bae6b65d05d9e175929f4f55e3f47c52",
+        "git_record": "evaluation/step_002000/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/006_sample.wav",
+        "bytes": 16462,
+        "sha256": "5841e9e5f88af2bc673d68a67e4ac5569152f3acf93577af7d1f757d6fe8fdd2",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_000000/per_sample.json",
+        "bytes": 4187,
+        "sha256": "081d41639631f67debcdc810128c0d2d4e05fb67830379e92474b4e6151b76a0",
+        "git_record": "evaluation/step_000000/per_sample.json"
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/003_target.wav",
+        "bytes": 16462,
+        "sha256": "9523fbf37e5c8074168c6fdcb8070ef9e2aa848eda86827bb291ecb6e6064e0d",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/004_mean.wav",
+        "bytes": 16462,
+        "sha256": "1d02bfa37ef47d6c7df501f535c30a2e4744c8795cf7ec1cc6e7b8b733fecf82",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/003_sample.wav",
+        "bytes": 16462,
+        "sha256": "3dbcdb84af8455c8d25f2484e26334a2ac0ccce90140866727d5321ea7191451",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/007_mean.wav",
+        "bytes": 16462,
+        "sha256": "9984075d25e14f00d3059d4227f24ffcd8875735a7583a36caa41403f3656ab8",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/002_sample.wav",
+        "bytes": 16462,
+        "sha256": "f75fbdcb3a77c00353bf34fcea21f37a19e656012a26725805e936d07872af72",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/007_sample.wav",
+        "bytes": 16462,
+        "sha256": "110467a7f4db45f218e1b152ae5d7e5f920c61e1d640eceffd495199fee024de",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/005_mean.wav",
+        "bytes": 16462,
+        "sha256": "17e33f2486f056d37d3c56162817b561a8a25c2ae72fb728974ef9dfdde023a2",
+        "git_record": null
+      },
+      {
+        "source_path": "Jacques Eval/vits-eval-new-enc-dec/Step_002000/006_mean.wav",
+        "bytes": 16462,
+        "sha256": "6c02a813aba7f31859f35d34c17afbef8a25b934af5c6355340b9d3dd51d391c",
+        "git_record": null
+      }
+    ]
+  },
+  "file_counts": {
+    "original": {
+      ".wav": 27,
+      ".json": 20,
+      ".png": 3
+    },
+    "new-enc-dec": {
+      ".wav": 27,
+      ".json": 20,
+      ".png": 3
+    }
+  }
+}

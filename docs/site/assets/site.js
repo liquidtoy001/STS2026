@@ -12,7 +12,13 @@
       { href: "original-eval.html", label: "Original + eval", ver: "v1", cls: "base" }
     ]},
     { group: "Improvements", items: [
-      { href: "improvements.html", label: "Comparison board", ver: "v2+", cls: "gan" }
+      { href: "improvements.html", label: "Comparison board", ver: "v2+", cls: "gan" },
+      { href: "improvements.html#v2-gan", label: "Adversarial training (GAN)", ver: "v2", cls: "gan" },
+      { href: "listening-turino-2026-10-01.html", label: "Listening improvements · Turino", ver: "10-01" }
+    ]},
+    { group: "Experiment reports", items: [
+      { href: "report.html#jacques-enc-dec", label: "Jacques: original vs new enc/dec", ver: "09-20", cls: "base" },
+      { href: "report.html#full-train-gan", label: "Full training: GAN vs no-GAN", ver: "09-29", cls: "gan" }
     ]},
     { group: "Repository", items: [
       { href: "../EVALUATION.md", label: "Evaluation protocol (md)" },
@@ -25,45 +31,9 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
 
-  /* ---- languages ----
-   * English is the source text in the HTML. Other languages live in assets/i18n/<code>.js:
-   *   ui   : keyed by the English UI phrase (nav, buttons, table headers)
-   *   text : keyed by the data-i18n attribute of page elements
-   * A missing entry falls back to English, so technical labels can simply be left out. */
-  var I18N = window.STS_I18N || {};
-  var LANGS = [{ code: "en", label: "English", htmlLang: "en" }];
-  ["zh", "de", "fr"].forEach(function (c) { if (I18N[c]) LANGS.push({ code: c, label: I18N[c].label, htmlLang: I18N[c].htmlLang }); });
-  var lang = "en", EN = new Map(), EN_TITLE = document.title;
-  function t(s) { var d = I18N[lang]; return (d && d.ui && d.ui[s]) || s; }
-  function tf(s, vars) { return t(s).replace(/\{(\w+)\}/g, function (_, k) { return vars[k]; }); }
-  function pickLang() {
-    var q = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
-    var want = q || store("sts-lang") || "en";
-    return LANGS.some(function (l) { return l.code === want; }) ? want : "en";
-  }
-  function applyText() {
-    var d = I18N[lang], text = (d && d.text) || {};
-    document.querySelectorAll("[data-i18n]").forEach(function (el) {
-      if (!EN.has(el)) EN.set(el, el.innerHTML);
-      var k = el.getAttribute("data-i18n");
-      el.innerHTML = lang !== "en" && text[k] ? text[k] : EN.get(el);
-    });
-    var meta = LANGS.filter(function (l) { return l.code === lang; })[0];
-    document.documentElement.lang = meta.htmlLang;
-    document.title = t(EN_TITLE);
-  }
-  /* Team text can be written once per language: <div data-lang="zh">…</div> inside .slot-body.
-     The matching block is shown; otherwise English, otherwise every block. */
-  function applySlotLanguages() {
-    document.querySelectorAll(".slot-body").forEach(function (body) {
-      body.setAttribute("data-empty", t("Not written yet."));
-      var blocks = Array.prototype.filter.call(body.children, function (c) { return c.hasAttribute("data-lang"); });
-      if (!blocks.length) return;
-      var show = blocks.some(function (b) { return b.getAttribute("data-lang") === lang; }) ? lang
-        : blocks.some(function (b) { return b.getAttribute("data-lang") === "en"; }) ? "en" : null;
-      blocks.forEach(function (b) { b.hidden = show !== null && b.getAttribute("data-lang") !== show; });
-    });
-  }
+  /* English is the only maintained website language. */
+  function t(s) { return s; }
+  function tf(s, vars) { return s.replace(/\{(\w+)\}/g, function (_, k) { return vars[k]; }); }
 
   /* ---- theme ---- */
   var saved = store("sts-theme");
@@ -82,7 +52,8 @@
     NAV.forEach(function (g) {
       html += "<div><h4>" + esc(t(g.group)) + "</h4><ul>";
       g.items.forEach(function (it) {
-        var cur = it.href === here ? " aria-current=\"page\"" : "";
+        var parts = it.href.split("#"), cur = parts[0] === here && (!parts[1] || "#" + parts[1] === location.hash)
+          ? " aria-current=\"page\"" : "";
         var ver = it.ver ? "<span class=\"ver " + (it.cls || "") + "\">" + esc(it.ver) + "</span>" : "";
         html += "<li><a href=\"" + it.href + "\"" + cur + ">" + ver + "<span>" + esc(t(it.label)) + "</span></a></li>";
       });
@@ -94,14 +65,16 @@
   var tocObserver = null;
   function buildToc() {
     var host = document.querySelector("[data-toc]");
-    var heads = document.querySelectorAll("main h2[id], main h3[id]");
+    var heads = Array.prototype.filter.call(document.querySelectorAll("main h2[id], main h3[id]"),
+      function (h) { return !h.closest("[hidden]"); });
     heads.forEach(function (h) {
       h.querySelectorAll(".anchor").forEach(function (old) { old.remove(); });
       var a = document.createElement("a");
       a.className = "anchor"; a.href = "#" + h.id; a.textContent = "#"; a.setAttribute("aria-label", t("Link to this section"));
       h.appendChild(a);
     });
-    if (!host || !heads.length) return;
+    if (!host) return;
+    if (!heads.length) { host.innerHTML = ""; return; }
     var html = "<h4>" + esc(t("On this page")) + "</h4><ul>";
     heads.forEach(function (h) {
       var text = Array.prototype.filter.call(h.childNodes, function (n) { return !(n.classList && n.classList.contains("anchor")); })
@@ -145,18 +118,7 @@
         document.documentElement.setAttribute("data-theme", next);
         store("sts-theme", next); themeLabel(); redrawAll();
       });
-      if (LANGS.length > 1) {
-        var sel = document.createElement("select");
-        sel.id = "lang-select"; sel.className = "icon-btn lang-select"; sel.setAttribute("aria-label", "Language");
-        LANGS.forEach(function (l) {
-          var o = document.createElement("option");
-          o.value = l.code; o.textContent = l.label; o.lang = l.htmlLang;
-          sel.appendChild(o);
-        });
-        sel.value = lang;
-        sel.addEventListener("change", function () { store("sts-lang", sel.value); setLang(sel.value); });
-        btn.parentNode.insertBefore(sel, btn);
-      }
+
     }
     var m = document.querySelector("[data-menu]");
     if (m) m.textContent = t("Menu");
@@ -200,7 +162,8 @@
     });
     (o.xTicks || niceTicks(x0, x1, 5)).forEach(function (v) {
       if (v < x0 || v > x1) return;
-      svg += "<text x=\"" + px(v) + "\" y=\"" + (H - B + 16) + "\" text-anchor=\"middle\">" + v + "</text>";
+      var anchor = v === x1 ? "end" : v === x0 ? "start" : "middle";
+      svg += "<text x=\"" + px(v) + "\" y=\"" + (H - B + 16) + "\" text-anchor=\"" + anchor + "\">" + (v >= 10000 ? v / 1000 + "k" : v) + "</text>";
     });
     svg += "<line class=\"axis\" x1=\"" + L + "\" x2=\"" + (W - R) + "\" y1=\"" + (H - B) + "\" y2=\"" + (H - B) + "\"/>";
     if (o.xLabel) svg += "<text x=\"" + (W - R) + "\" y=\"" + (H - 4) + "\" text-anchor=\"end\">" + esc(t(o.xLabel)) + "</text>";
@@ -258,22 +221,35 @@
   function renderComparison(el) {
     var S = window.STS; if (!S) return;
     var mode = el.getAttribute("data-mode") || "mean";
-    var base = S.EXPERIMENTS.filter(function (e) { return e.id === S.BASELINE_ID; })[0];
-    var h = "<table><thead><tr><th>" + esc(t("Variant")) + "</th><th>" + esc(t("Status")) + "</th>";
-    METRICS.forEach(function (m) { h += "<th class=\"num\">" + esc(t(m.label)) + "</th><th class=\"num\">" + esc(t("Δ vs base")) + "</th>"; });
-    h += "<th class=\"num\">" + esc(t("Iter / updates")) + "</th></tr></thead><tbody>";
-    S.EXPERIMENTS.forEach(function (e) {
-      var st = STATUS[e.status] || ["", e.status];
-      var isBase = e.id === S.BASELINE_ID, loc = (e.i18n && e.i18n[lang]) || {};
-      h += "<tr class=\"" + (isBase ? "is-base" : "") + "\"><td><strong>" + esc(loc.name || e.name) + "</strong><br><span class=\"small muted\">" + esc(loc.change || e.change) + " · <code>" + esc(e.branch) + "</code></span></td>";
-      h += "<td><span class=\"chip " + st[0] + "\"><span class=\"dot\"></span>" + esc(t(st[1])) + "</span></td>";
-      METRICS.forEach(function (m) {
-        var v = e.final[mode][m.key], b = base.final[mode][m.key];
-        h += "<td class=\"num\">" + num(v) + "</td><td class=\"num\">" + (isBase ? "<span class=\"delta-na\">" + esc(t("base")) + "</span>" : delta(v, b)) + "</td>";
+    var groups = S.GROUPS || [{ id: null, reference: S.BASELINE_ID }];
+    var out = "";
+    groups.forEach(function (g) {
+      var rows = S.EXPERIMENTS.filter(function (e) { return g.id == null || e.group === g.id; });
+      var base = S.EXPERIMENTS.filter(function (e) { return e.id === g.reference; })[0];
+      if (!rows.length) return;
+      if (g.id != null) {
+        out += "<div class=\"board-group\"><h3>" + esc(g.title) + "</h3><p class=\"small muted\">" + esc(g.note || "") +
+          (g.report ? " <a href=\"" + g.report + "\">" + esc(t("Open report")) + "</a>" : "") + "</p></div>";
+      }
+      var h = "<div class=\"table-wrap\"><table><thead><tr><th>" + esc(t("Variant")) + "</th><th>" + esc(t("Status")) + "</th>";
+      METRICS.forEach(function (m) { h += "<th class=\"num\">" + esc(t(m.label)) + "</th><th class=\"num\">" + esc(t("Δ vs base")) + "</th>"; });
+      h += "<th class=\"num\">" + esc(t("Iter / updates")) + "</th></tr></thead><tbody>";
+      rows.forEach(function (e) {
+        var st = STATUS[e.status] || ["", e.status];
+        var isBase = base && e.id === base.id;
+        h += "<tr class=\"" + (isBase ? "is-base" : "") + "\"><td><strong>" + esc(e.name) + "</strong><br><span class=\"small muted\">" + esc(e.change) + " · <code>" + esc(e.branch) + "</code></span>";
+        if (e.trainingBy) h += "<br><span class=\"small muted\">" + esc(t("Training by")) + ": " + esc(e.trainingBy) + (e.completedDate ? " · " + esc(e.completedDate) : "") + "</span>";
+        h += "</td>";
+        h += "<td><span class=\"chip " + st[0] + "\"><span class=\"dot\"></span>" + esc(t(st[1])) + "</span></td>";
+        METRICS.forEach(function (m) {
+          var v = e.final[mode][m.key], b = base ? base.final[mode][m.key] : null;
+          h += "<td class=\"num\">" + num(v) + "</td><td class=\"num\">" + (isBase ? "<span class=\"delta-na\">" + esc(t("base")) + "</span>" : delta(v, b)) + "</td>";
+        });
+        h += "<td class=\"num\">" + (e.iterations == null ? "<span class=\"delta-na\">—</span>" : e.iterations + " / " + e.updates) + "</td></tr>";
       });
-      h += "<td class=\"num\">" + (e.iterations == null ? "<span class=\"delta-na\">—</span>" : e.iterations + " / " + e.updates) + "</td></tr>";
+      out += h + "</tbody></table></div>";
     });
-    el.innerHTML = h + "</tbody></table>";
+    el.innerHTML = out;
   }
 
   /* ---------------- hero spectrogram (decorative, deterministic) ---------------- */
@@ -306,19 +282,11 @@
     g.globalAlpha = 1;
   }
 
-  function setLang(code) {
-    lang = code;
-    applyText(); applySlotLanguages(); buildNav(); buildToc(); markSlots(); themeLabel();
-    var m = document.querySelector("[data-menu]"); if (m) m.textContent = t("Menu");
-    document.querySelectorAll("[data-comparison]").forEach(renderComparison);
-    redrawAll();
-  }
   window.STS = window.STS || {};
   window.STS.t = t;
 
   document.addEventListener("DOMContentLoaded", function () {
-    lang = pickLang();
-    applyText(); applySlotLanguages();
+    document.documentElement.lang = "en";
     buildNav(); buildToc(); markSlots(); wireChrome();
     document.querySelectorAll("[data-comparison]").forEach(renderComparison);
     document.querySelectorAll("[data-mode-switch]").forEach(function (sw) {
@@ -329,6 +297,9 @@
     drawSpectro();
     var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(drawSpectro, 120); });
     if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawAll);
-    if (typeof window.onDocsReady === "function") window.onDocsReady({ lineChart: lineChart });
+    if (typeof window.onDocsReady === "function") window.onDocsReady({
+      lineChart: lineChart, esc: esc, resetCharts: function () { charts.length = 0; }, buildToc: buildToc, buildNav: buildNav
+    });
+    window.addEventListener("hashchange", buildNav);
   });
 })();

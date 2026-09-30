@@ -2,8 +2,9 @@
  * STS2026 measured results and experiment registry.
  *
  * This is the ONE file to edit when a new comparison run finishes.
- * The "Improvements" page builds its comparison table and deltas from EXPERIMENTS,
- * always relative to the entry whose id is BASELINE_ID.
+ * The "Improvements" page builds one comparison table per entry in GROUPS, with deltas
+ * relative to that group's reference run. Detailed experiment reports are generated with
+ * tools/build_site_report.py and shown at report.html#<id>.
  *
  * Rules (from docs/EVALUATION.md):
  *  - Copy numbers from the run's evaluation/summary.json (step 2000). Never round by hand.
@@ -14,6 +15,28 @@
 window.STS = window.STS || {};
 
 STS.BASELINE_ID = "v1-original-eval";
+
+/*
+ * Comparison groups. Each group has its own protocol and reference run; deltas are
+ * only computed inside a group. Runs from different groups are never compared.
+ */
+STS.GROUPS = [
+  {
+    id: "v1-overfit",
+    title: "v1 protocol: 2,000-iteration overfit on 8 utterances",
+    note: "Reconstruction-only objective (duration and KL weight 0), AMP. Training by tuirno; completed 2026-09-20 Brisbane time (2026-09-19 UTC).",
+    reference: "v1-original-eval",
+
+  },
+  {
+    id: "full-train",
+    title: "Full training: 50,000 iterations on all of LJSpeech",
+    note: "Complete objective (mel 1, STFT 0.5, wave 10, duration 1, KL 1), no AMP, Kaggle T4. Probe: same 8 fixed crops (in the training set).",
+    reference: "full-gan0",
+    report: "report.html#full-train-gan",
+
+  }
+];
 
 /* Source: output/local-eval/original_20260919T151630615757Z/evaluation/evaluation_history.json */
 STS.BASELINE_EVAL_HISTORY = [
@@ -47,11 +70,8 @@ STS.BASELINE_TRAIN_HISTORY = {
 STS.EXPERIMENTS = [
   {
     id: "v1-original-eval",
-    i18n: {
-      zh: { name: "原始模型（评估基准）", change: "无：冻结的参照" },
-      de: { name: "Original (Evaluations-Baseline)", change: "Keine: eingefrorene Referenz" },
-      fr: { name: "Original (référence d’évaluation)", change: "Aucun : référence figée" }
-    },
+    group: "v1-overfit",
+
     name: "Original (eval baseline)",
     change: "None: frozen reference",
     branch: "main",
@@ -69,27 +89,41 @@ STS.EXPERIMENTS = [
     evidence: "output/local-eval/original_20260919T151630615757Z/"
   },
   {
-    id: "v2-gan",
-    i18n: {
-      zh: { name: "+ GAN（LSGAN，一维卷积判别器）", change: "加入判别器 + 对抗损失，gan_weight = 1.0" },
-      de: { name: "+ GAN (LSGAN, 1-D-Conv-Diskriminator)", change: "Ergänzt Diskriminator + adversariellen Loss, gan_weight = 1.0" },
-      fr: { name: "+ GAN (LSGAN, discriminateur conv 1-D)", change: "Ajoute un discriminateur + perte adversariale, gan_weight = 1.0" }
+    id: "full-gan0",
+    group: "full-train",
+    name: "Full training, no GAN (gan_weight = 0)",
+    change: "Reference for this pair: full model, 50,000 iterations on all of LJSpeech",
+    branch: "Turino",
+
+    status: "completed",
+    params: 12141186, iterations: 50000, updates: 50000, ampSkipped: 0,
+    seconds: 16874.4, peakAllocGiB: 1.134,
+    final: {
+      mean:   { log_mel_l1: 1.2183219343423843, stft_sc: 0.9410169497132301, stft_logmag: 1.7540749609470367 },
+      sample: { log_mel_l1: 0.9420206770300865, stft_sc: 0.9165768325328827, stft_logmag: 1.1164949089288712 }
     },
-    name: "+ GAN (LSGAN, 1-D conv discriminator)",
-    change: "Adds discriminator + adversarial loss, gan_weight = 1.0",
-    branch: "gan-group",
-    status: "in-progress",
-    params: null, iterations: null, updates: null, ampSkipped: null, seconds: null, peakAllocGiB: null,
-    final: { mean: { log_mel_l1: null, stft_sc: null, stft_logmag: null }, sample: { log_mel_l1: null, stft_sc: null, stft_logmag: null } },
-    evidence: null
+    evidence: "Drive: full-train-2026-09-29/runs/full_gan0_20260929T175436031732Z; docs/records/full-train-gan/gan0"
+  },
+  {
+    id: "full-gan1",
+    group: "full-train",
+    name: "Full training + GAN (LSGAN, gan_weight = 1)",
+    change: "Adds the 1-D conv discriminator and adversarial loss; everything else identical",
+    branch: "Turino",
+
+    status: "completed",
+    params: 12141186, iterations: 50000, updates: 50000, ampSkipped: 0,
+    seconds: 18748.1, peakAllocGiB: 1.253,
+    final: {
+      mean:   { log_mel_l1: 1.3442358523607254, stft_sc: 0.9474663287401199, stft_logmag: 1.7193482369184494 },
+      sample: { log_mel_l1: 0.973286584019661, stft_sc: 0.9181935712695122, stft_logmag: 1.1861073970794678 }
+    },
+    evidence: "Drive: full-train-2026-09-29/runs/full_gan1_20260929T170528763415Z; docs/records/full-train-gan/gan1"
   },
   {
     id: "v3-new-encoder",
-    i18n: {
-      zh: { name: "新的后验编码器", change: "替换 PosteriorEncoder；解码器不变" },
-      de: { name: "Neuer Posterior-Encoder", change: "Ersetzt PosteriorEncoder; Decoder unverändert" },
-      fr: { name: "Nouvel encodeur a posteriori", change: "Remplace PosteriorEncoder ; décodeur inchangé" }
-    },
+    group: "full-train",
+
     name: "New posterior encoder",
     change: "Replaces PosteriorEncoder; decoder unchanged",
     branch: "TBD",
@@ -100,11 +134,8 @@ STS.EXPERIMENTS = [
   },
   {
     id: "v4-new-decoder",
-    i18n: {
-      zh: { name: "新的波形解码器", change: "替换 Decoder；编码器不变" },
-      de: { name: "Neuer Waveform-Decoder", change: "Ersetzt Decoder; Encoder unverändert" },
-      fr: { name: "Nouveau décodeur de forme d’onde", change: "Remplace Decoder ; encodeur inchangé" }
-    },
+    group: "full-train",
+
     name: "New waveform decoder",
     change: "Replaces Decoder; encoder unchanged",
     branch: "TBD",

@@ -17,8 +17,8 @@
   .seg label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
   .board-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 12px; }
   .checklist { list-style: none; padding: 0; margin: 12px 0 20px; display: grid; gap: 6px; }
-  .checklist li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; }
-  .checklist li::before { content: ""; width: 14px; height: 14px; margin-top: 5px; border: 1.5px solid var(--ink-3); border-radius: 3px; }
+  .checklist li { position: relative; padding-left: 28px; }
+  .checklist li::before { content: ""; position: absolute; left: 0; top: 0.35em; width: 14px; height: 14px; border: 1.5px solid var(--ink-3); border-radius: 3px; }
   .exp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: -4px; }
 </style>
 </head>
@@ -40,52 +40,44 @@
 
   <main>
     <article class="article">
-      <span data-i18n="imp.001" class="eyebrow" style="color:var(--gan)">Versions v2 and later</span>
-      <h1 data-i18n="imp.002">Improvements and the comparison board</h1>
-      <p data-i18n="imp.003" class="lede">
-        Every change to the model is measured against the v1 baseline under the same protocol.
-        The board below reads its numbers from <code>assets/results.js</code>, so a finished run needs one edit there
-        and appears here with its deltas.
+      <span class="eyebrow" style="color:var(--gan)">Versions v2 and later</span>
+      <h1>Improvements and the comparison board</h1>
+      <p class="lede">
+        Each measured change is compared with the reference run of its protocol group. The board below reads its numbers from <code>assets/results.js</code>; detailed results are in the experiment reports.
       </p>
       <div class="meta-row">
-        <span data-i18n="imp.004" class="chip base"><span class="dot"></span>Reference: v1 original + eval</span>
-        <span data-i18n="imp.005" class="chip gan"><span class="dot"></span>v2 GAN in progress</span>
-        <span data-i18n="imp.006" class="chip">v3 / v4 planned</span>
+        <span class="chip base"><span class="dot"></span>Reference: v1 original + eval</span>
+        <span class="chip gan"><span class="dot"></span>GAN pair measured</span>
         <span class="chip warn" data-open-slots>open team sections</span>
       </div>
 
-      <h2 data-i18n="imp.007" id="board">Comparison board</h2>
+      <h2 id="board">Comparison board</h2>
       <div class="board-head">
-        <span data-i18n="imp.075" class="small muted">Final evaluation at iteration 2,000. Lower is better. Green Δ = lower error than baseline.</span>
+        <span class="small muted">Final evaluation of each run. Lower is better. Green Δ = lower error than the group's reference run.</span>
         <div class="seg" role="radiogroup" aria-label="Reconstruction mode" data-mode-switch>
           <label><input type="radio" name="mode" id="mode-mean" value="mean" checked><span>mean</span></label>
           <label><input type="radio" name="mode" id="mode-sample" value="sample"><span>sample</span></label>
         </div>
       </div>
       <div class="table-wrap" data-comparison data-mode="mean"></div>
-      <p data-i18n="imp.008" class="small muted">"—" and "not measured" mean no completed run exists yet. Nothing on this board is estimated.</p>
+      <p class="small muted">"—" and "not measured" mean no completed run exists yet. Nothing on this board is estimated.</p>
 
-      <h3 data-i18n="imp.009" id="rules">Before a run counts</h3>
+      <h3 id="rules">Before a run counts</h3>
       <ul class="checklist">
-        <li data-i18n="imp.010">Same eight IDs in the same order, and the batch tensor hash in <code>manifest.json</code> matches the baseline.</li>
-        <li data-i18n="imp.011">Same crop plan, seeds (2026 / 1234), 2,000-iteration budget, optimizer, precision and loss weights, except the change under test.</li>
-        <li data-i18n="imp.012">Fresh kernel, fresh model and optimizer; no resumed checkpoint.</li>
-        <li data-i18n="imp.013"><code>status.json</code> says <code>completed</code>. Failed or interrupted runs are kept but not entered as results.</li>
-        <li data-i18n="imp.014">Iterations, actual updates and AMP skips are reported. For GAN runs, report discriminator updates too.</li>
-        <li data-i18n="imp.015">Run in the same validated environment as the baseline, or re-run the baseline there first.</li>
-        <li data-i18n="imp.016">Listen to the exported target / mean / sample WAVs before writing conclusions.</li>
+        <li>Same eight IDs in the same order, and the batch tensor hash in <code>manifest.json</code> matches the baseline.</li>
+        <li>Same crop plan, seeds (2026 / 1234), 2,000-iteration budget, optimizer, precision and loss weights, except the change under test.</li>
+        <li>Fresh kernel, fresh model and optimizer; no resumed checkpoint.</li>
+        <li><code>status.json</code> says <code>completed</code>. Failed or interrupted runs are kept but not entered as results.</li>
+        <li>Iterations, actual updates and AMP skips are reported. For GAN runs, report discriminator updates too.</li>
+        <li>Run in the same validated environment as the baseline, or re-run the baseline there first.</li>
+        <li>Listen to the exported target / mean / sample WAVs before writing conclusions.</li>
       </ul>
-      <div class="callout note">
-        <div data-i18n="imp.017" class="callout-title">One change at a time</div>
-        <p data-i18n="imp.018">If encoder and decoder change together, the result describes the pair. It cannot separate the encoder's effect from the decoder's. Plan v3 and v4 as separate runs, then a combined run.</p>
-      </div>
-
-      <h3 data-i18n="imp.019" id="add-result">Adding a result</h3>
+      <h3 id="add-result">Adding a result</h3>
       <ol class="list">
-        <li data-i18n="imp.020">Open <code>docs/site/assets/results.js</code> and find the experiment's entry in <code>STS.EXPERIMENTS</code>.</li>
-        <li data-i18n="imp.021">Copy the step-2000 values from <code>evaluation/step_002000/summary.json</code> for both modes. Do not round.</li>
-        <li data-i18n="imp.022">Fill in <code>iterations</code>, <code>updates</code>, <code>ampSkipped</code>, <code>params</code>, <code>seconds</code>, <code>evidence</code>, and set <code>status: "completed"</code>.</li>
-        <li data-i18n="imp.023">Write the analysis in that experiment's team sections on this page and open a PR.</li>
+        <li>Open <code>docs/site/assets/results.js</code> and find the experiment's entry in <code>STS.EXPERIMENTS</code>.</li>
+        <li>Copy the step-2000 values from <code>evaluation/step_002000/summary.json</code> for both modes. Do not round.</li>
+        <li>Fill in <code>iterations</code>, <code>updates</code>, <code>ampSkipped</code>, <code>params</code>, <code>seconds</code>, <code>evidence</code>, and set <code>status: "completed"</code>.</li>
+        <li>Write the analysis in that experiment's team sections on this page and open a PR.</li>
       </ol>
 <pre><code>{
   id: <span class="c-str">"v2-gan"</span>,
@@ -98,140 +90,86 @@
   evidence: <span class="c-str">"output/local-eval/&lt;run&gt;/"</span>
 }</code></pre>
 
+      <h2 id="turino-2026-10-01-listening">Improvement suggestion — Turino · 2026-10-01</h2>
+      <p><a href="listening-turino-2026-10-01.html">Open the listening improvement proposal</a>: all eight samples and full-utterance target / mean / sample playback. Status: proposed; implementation pending.</p>
+
       <!-- ================= v2 GAN ================= -->
-      <h2 data-i18n="imp.024" id="v2-gan">v2 · Adversarial training (GAN)</h2>
+      <h2 id="v2-gan">v2 · Adversarial training (GAN)</h2>
       <div class="exp-head">
-        <span data-i18n="imp.025" class="chip gan"><span class="dot"></span>in progress</span>
-        <span data-i18n="imp.026" class="chip">branch gan-group</span>
+        <span class="chip ok"><span class="dot"></span>measured</span>
+        <span class="chip">branch gan-group</span>
         <span class="chip">07e663d · 2026-09-23</span>
-        <span data-i18n="imp.027" class="chip">not merged · not measured</span>
+        <span class="chip">2026-09-29 · <a href="report.html#full-train-gan">report</a></span>
       </div>
-      <p data-i18n="imp.028">
+      <p>
         v0 and v1 train the decoder with regression losses only, and the <code>Discriminator</code> class is empty.
         The gan-group branch adds a waveform discriminator and least-squares GAN losses, and splits training into a discriminator step and a generator step.
       </p>
 
-      <h3 data-i18n="imp.029" id="v2-design">What the branch contains</h3>
+      <p>GAN components developed by <strong>Mou and Warneke</strong>; completion commit <a href="https://github.com/liquidtoy001/STS2026/commit/07e663dba683af7df352bdaf6b27308596b3ff94">07e663d</a> on 2026-09-23. GitHub branches: <a href="https://github.com/liquidtoy001/STS2026/tree/gan-group">gan-group</a> and <a href="https://github.com/liquidtoy001/STS2026/tree/Mou">Mou</a>. Tag: <a href="https://github.com/liquidtoy001/STS2026/tree/gan-loss-completed">gan-loss-completed</a>, which currently points to the earlier 2026-09-22 commit <code>1f3fd0f</code>, not the completion commit. Training of gan0 and gan1 was executed by <strong>tuirno</strong>.</p>
+      <h3 id="v2-design">What the branch contains</h3>
       <div class="grid-2">
         <div class="card">
-          <h4 data-i18n="imp.030">Discriminator</h4>
-          <p data-i18n="imp.031">1-D conv stack on raw waveform, <code>base_channels = 32</code>: k15 s1 → k41 s4 ×4 (32→64→128→256→512) → k5 to 1 channel. LeakyReLU 0.2. Outputs a score per time position.</p>
+          <h4>Discriminator</h4>
+          <p>1-D conv stack on raw waveform, <code>base_channels = 32</code>: k15 s1 → k41 s4 ×4 (32→64→128→256→512) → k5 to 1 channel. LeakyReLU 0.2. Outputs a score per time position.</p>
         </div>
         <div class="card">
-          <h4 data-i18n="imp.032">LSGAN losses</h4>
-          <p data-i18n="imp.033">D: (D(x) − 1)² + D(G(z))². G: (D(G(z)) − 1)². Added to the reconstruction total with <code>gan_weight = 1.0</code>.</p>
+          <h4>LSGAN losses</h4>
+          <p>D: (D(x) − 1)² + D(G(z))². G: (D(G(z)) − 1)². Added to the reconstruction total with <code>gan_weight = 1.0</code>.</p>
         </div>
         <div class="card">
-          <h4 data-i18n="imp.034">Two optimizers</h4>
-          <p data-i18n="imp.035">Separate AdamW for generator and discriminator, both lr 1e-4, betas (0.8, 0.99). One shared <code>GradScaler</code>. Discriminator updates are counted by their own hook.</p>
+          <h4>Two optimizers</h4>
+          <p>Separate AdamW for generator and discriminator, both lr 1e-4, betas (0.8, 0.99). One shared <code>GradScaler</code>. Discriminator updates are counted by their own hook.</p>
         </div>
         <div class="card">
-          <h4 data-i18n="imp.036">Update order</h4>
-          <p data-i18n="imp.037">D step on real vs detached fake audio, then G step with D's parameters frozen so adversarial gradient reaches the decoder only.</p>
+          <h4>Update order</h4>
+          <p>D step on real vs detached fake audio, then G step with D's parameters frozen so adversarial gradient reaches the decoder only.</p>
         </div>
       </div>
       <div class="callout gan">
-        <div data-i18n="imp.038" class="callout-title">Before comparing with v1</div>
-        <p data-i18n="imp.039">The branch sets <code>MODEL_VARIANT = "original"</code>. Give GAN runs their own variant name so run folders are not confused with the baseline, and record both generator and discriminator update counts.</p>
+        <div class="callout-title">Before comparing with v1</div>
+        <p>The branch sets <code>MODEL_VARIANT = "original"</code>. Give GAN runs their own variant name so run folders are not confused with the baseline, and record both generator and discriminator update counts.</p>
       </div>
       <div class="callout note">
-        <div data-i18n="imp.076" class="callout-title">Merged version and the next runs</div>
-        <p data-i18n="imp.077">On 2026-09-24 benlu merged the GAN code with the v1 evaluation in a local notebook and removed DataParallel and autocast (no measured speed benefit). It also switches to full-model training (duration and KL weight 1) with mel 1, STFT 0.5, wave 10, GAN 1. Because the objective changed, these runs are not comparable with the v1 numbers. The next comparison is a pair: 50,000 iterations with <code>gan_weight = 0</code> and with <code>gan_weight = 1</code>, same seed, data and budget. Upload each run folder and report to the <a href="https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU">team Google Drive</a>.</p>
+        <div class="callout-title">Merged version and the next runs</div>
+        <p>On 2026-09-24 benlu merged the GAN code with the v1 evaluation and removed DataParallel and autocast. The merged trainer was run by tuirno as a pair on Kaggle on 2026-09-29: 50,000 iterations each with <code>gan_weight = 0</code> and <code>1</code>, full objective (mel 1, STFT 0.5, wave 10, duration 1, KL 1). These results form their own comparison group and are not comparable with v1. Read the <a href="report.html#full-train-gan">experiment report</a>.</p>
       </div>
 
       <div class="slot" data-slot="v2.discussion">
-        <div class="slot-head"><span data-i18n="imp.040" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="imp.041" class="slot-title">Design discussion</span></div>
-        <div data-i18n="imp.042" class="slot-prompt">Suggested content:
+        <div class="slot-head"><span class="slot-tag">Team section</span><span class="slot-id"></span><span class="slot-title">Design discussion</span></div>
+        <div class="slot-prompt">Suggested content:
           <ul><li>Why a single-scale waveform discriminator instead of HiFi-GAN's multi-period / multi-scale set</li><li>Choice of LSGAN, <code>gan_weight</code>, and whether to add feature-matching loss</li><li>Warm-up: start adversarial loss at iteration 0 or later?</li></ul>
         </div>
         <div class="slot-body"><!-- Write here. --></div>
       </div>
       <div class="slot" data-slot="v2.results">
-        <div class="slot-head"><span data-i18n="imp.043" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="imp.044" class="slot-title">Results and comparison with v1</span></div>
-        <div data-i18n="imp.045" class="slot-prompt">Suggested content:
+        <div class="slot-head"><span class="slot-tag">Team section</span><span class="slot-id"></span><span class="slot-title">Results and comparison with v1</span></div>
+        <div class="slot-prompt">Suggested content:
           <ul><li>Board deltas for both modes, D real/fake score curves, training stability</li><li>Listening comparison with the v1 samples for the same IDs</li></ul>
         </div>
         <div class="slot-body"><!-- Write here. --></div>
       </div>
       <div class="slot" data-slot="v2.analysis">
-        <div class="slot-head"><span data-i18n="imp.046" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="imp.047" class="slot-title">Analysis</span></div>
-        <div data-i18n="imp.048" class="slot-prompt">Note: the evaluation metrics are spectral and overlap with the reconstruction loss. A GAN can improve perceived quality while these numbers stay flat or worsen. Say which you observed.</div>
+        <div class="slot-head"><span class="slot-tag">Team section</span><span class="slot-id"></span><span class="slot-title">Analysis</span></div>
+        <div class="slot-prompt">Note: the evaluation metrics are spectral and overlap with the reconstruction loss. A GAN can improve perceived quality while these numbers stay flat or worsen. Say which you observed.</div>
         <div class="slot-body"><!-- Write here. --></div>
       </div>
       <div class="slot" data-slot="v2.future">
-        <div class="slot-head"><span data-i18n="imp.049" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="imp.050" class="slot-title">Next steps</span></div>
-        <div data-i18n="imp.051" class="slot-prompt">Suggested content: follow-up GAN experiments, and what carries forward into v3 / v4.</div>
+        <div class="slot-head"><span class="slot-tag">Team section</span><span class="slot-id"></span><span class="slot-title">Next steps</span></div>
+        <div class="slot-prompt">Suggested content: follow-up GAN experiments the team decides on.</div>
         <div class="slot-body"><!-- Write here. --></div>
       </div>
-
-      <!-- ================= v3 encoder ================= -->
-      <h2 data-i18n="imp.052" id="v3-encoder">v3 · New posterior encoder</h2>
-      <div class="exp-head">
-        <span data-i18n="imp.053" class="chip"><span class="dot"></span>planned</span>
-        <span data-i18n="imp.054" class="chip">branch TBD</span>
-      </div>
-      <p data-i18n="imp.055">
-        The current posterior encoder is a 1×1 projection followed by four dilated convolutions (dilation 1, 2, 4, 8, kernel 5) with GELU and dropout 0.1,
-        then separate 1×1 heads for μq and log σq. A replacement must keep the <a href="original-eval.html#contract">integration contract</a>:
-        return <code>(z, mean, log_scale, mask)</code> with <code>log_scale</code> as log σ.
-      </p>
-      <div class="slot" data-slot="v3.design">
-        <div class="slot-head"><span data-i18n="imp.056" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="imp.057" class="slot-title">Design and motivation</span></div>
-        <div data-i18n="imp.058" class="slot-prompt">Suggested content: the new architecture (diagram or layer table), parameter count vs v1, and what weakness of the current encoder it targets.</div>
-        <div class="slot-body"><!-- Write here. --></div>
-      </div>
-      <div class="slot" data-slot="v3.results">
-        <div class="slot-head"><span data-i18n="imp.059" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="imp.060" class="slot-title">Results, analysis and next steps</span></div>
-        <div data-i18n="imp.061" class="slot-prompt">Suggested content: board deltas, listening notes, whether the posterior statistics changed, and what to try next.</div>
-        <div class="slot-body"><!-- Write here. --></div>
-      </div>
-
-      <!-- ================= v4 decoder ================= -->
-      <h2 data-i18n="imp.062" id="v4-decoder">v4 · New waveform decoder</h2>
-      <div class="exp-head">
-        <span data-i18n="imp.063" class="chip"><span class="dot"></span>planned</span>
-        <span data-i18n="imp.064" class="chip">branch TBD</span>
-      </div>
-      <p data-i18n="imp.065">
-        The current decoder upsamples ×256 with four transposed convolutions (×8, ×8, ×2, ×2), one ResBlock (dilations 1, 3, 5) per stage and a tanh output.
-        A replacement must map <code>[B, latent, 32]</code> to <code>[B, 1, 8192]</code>. The notebook notes that interpolation + convolution is an alternative to transposed convolution that has to be tested, not assumed better.
-      </p>
-      <div class="slot" data-slot="v4.design">
-        <div class="slot-head"><span data-i18n="imp.066" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="imp.067" class="slot-title">Design and motivation</span></div>
-        <div data-i18n="imp.068" class="slot-prompt">Suggested content: upsampling scheme, receptive field, parameter count and memory vs v1 (0.789 GiB peak allocated), and the artifacts it aims to remove.</div>
-        <div class="slot-body"><!-- Write here. --></div>
-      </div>
-      <div class="slot" data-slot="v4.results">
-        <div class="slot-head"><span data-i18n="imp.069" class="slot-tag">Team section</span><span class="slot-id"></span><span data-i18n="imp.070" class="slot-title">Results, analysis and next steps</span></div>
-        <div data-i18n="imp.071" class="slot-prompt">Suggested content: board deltas, listening notes, run time, and whether the decoder interacts with the GAN from v2.</div>
-        <div class="slot-body"><!-- Write here. --></div>
-      </div>
-
-      <h2 data-i18n="imp.072" id="template">Template for further experiments</h2>
-      <p data-i18n="imp.073">Copy this block for each new experiment, give its slots unique ids, and add a matching entry to <code>results.js</code>.</p>
-<pre><code>&lt;h2 id="v5-name"&gt;v5 · Name&lt;/h2&gt;
-&lt;div class="exp-head"&gt;&lt;span class="chip"&gt;&lt;span class="dot"&gt;&lt;/span&gt;planned&lt;/span&gt;&lt;/div&gt;
-&lt;p&gt;One paragraph: what changes, and what stays fixed.&lt;/p&gt;
-&lt;div class="slot" data-slot="v5.design"&gt;
-  &lt;div class="slot-head"&gt;&lt;span class="slot-tag"&gt;Team section&lt;/span&gt;&lt;span class="slot-id"&gt;&lt;/span&gt;
-    &lt;span class="slot-title"&gt;Design and motivation&lt;/span&gt;&lt;/div&gt;
-  &lt;div class="slot-prompt"&gt;What to write here.&lt;/div&gt;
-  &lt;div class="slot-body"&gt;&lt;!-- Write here. --&gt;&lt;/div&gt;
-&lt;/div&gt;</code></pre>
 
       <nav class="page-nav" aria-label="Pages">
-        <a data-i18n="imp.074" href="original-eval.html"><span class="dir">Previous</span>v1 · Original + eval</a>
+        <a href="original-eval.html"><span class="dir">Previous</span>v1 · Original + eval</a>
       </nav>
-      <footer class="site-foot" data-i18n="imp.foot">GAN details are read from branch gan-group at 07e663d. Board values come from assets/results.js.</footer>
+      <footer class="site-foot">GAN details are read from branch gan-group at 07e663d. Board values come from assets/results.js.</footer>
     </article>
   </main>
 
   <aside class="toc" data-toc></aside>
 </div>
 <script src="assets/results.js"></script>
-<script src="assets/i18n/zh.js"></script>
-<script src="assets/i18n/de.js"></script>
-<script src="assets/i18n/fr.js"></script>
 <script src="assets/site.js"></script>
 </body>
 </html>

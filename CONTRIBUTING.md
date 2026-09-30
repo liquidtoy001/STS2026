@@ -39,6 +39,28 @@ Use `.gitignore` for local files, but inspect manually selected website uploads 
 
 If a credential is uploaded, revoke/rotate it first and notify the maintainer without reposting its value. A later file deletion does not erase Git history.
 
+## Documentation navigation
+
+Each documented model-version change or improvement proposal must have its own
+entry in the shared left sidebar (`docs/site/assets/site.js`, `NAV`). Use a
+dedicated page for a new proposal or version, with a stable URL, descriptive
+title, author, date and explicit status (proposed, implemented or measured).
+An existing version section may have its own anchored entry. Do not bury new
+proposals only in the comparison board or experiment reports. Update related
+links and check that the sidebar destination exists in the same change.
+
 ## Handbook
 
 The [23-page handbook](docs/guides/STS2026_GitHub_Team_Handbook.pdf) covers invitations (page 5), normal website operations (pages 6–10), conflict/recovery scenarios (pages 14–18), a practice PR (page 19), a checklist (page 22), and optional Mac setup (page 23).
+
+## Website language and synchronization
+
+Maintain the documentation website in English only. Do not add language
+selectors, translation dictionaries or translated website copies.
+`docs/site/` is the canonical source. For future website changes, update and
+validate the local source, synchronize the intended changes to GitHub on
+`Turino`, and publish the same website source to the existing GPT Sites site.
+GitHub pushes and GPT Sites publication are separate operations; verify both
+and record the deployed version. Preserve teammates' branches. Merge a PR to `main` only with maintainer authorization;
+never rewrite `main`. If the maintainer asks you to wait for a decision, pause
+commits, pushes, PR changes and deployment until that decision.

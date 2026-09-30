@@ -1,5 +1,8 @@
 # Original-model local baseline
 
+- Training executed by: **tuirno** (team attribution).
+- Team completion date: **2026-09-20**, using Brisbane local time.
+
 - Training completed at (UTC): **approximately `2026-09-19T15:27:12+00:00`**.
 - Brisbane local equivalent: approximately `2026-09-20T01:27:12+10:00`.
 - Completion time source: the original training `status.json` last-write time.
