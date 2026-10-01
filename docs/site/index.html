@@ -3,17 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>STS2026 Docs</title>
+<title>STS2026 Technical Documentation</title>
 <meta name="description" content="Technical documentation for STS2026, a compact VITS-style speech model and its reconstruction evaluation.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
 <header class="topbar">
-  <button class="icon-btn menu-btn" type="button" data-menu aria-expanded="false" aria-label="Open navigation">Menu</button>
-  <a class="brand" href="index.html">
+  <button class="icon-btn menu-btn" type="button" data-menu aria-expanded="true" aria-label="Hide navigation">Hide nav</button>
+  <a class="brand" href="#overview">
     <svg class="brand-mark" viewBox="0 0 30 22" aria-hidden="true"><path d="M1 11h3l2-7 3 14 3-16 3 18 3-13 3 8 2-4h5" style="fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round"/></svg>
     <span class="brand-name">STS2026</span>
     <span class="brand-sub">vits-light docs</span>
@@ -27,9 +24,13 @@
   <aside class="sidenav" data-sidenav></aside>
 
   <main>
-    <article class="article">
-      <span class="eyebrow">Team coursework · 2026</span>
-      <h1>STS2026: a compact VITS-style speech model, built from scratch</h1>
+    <article class="article"><span class="eyebrow">Team coursework · 2026</span>
+      <h1 id="overview">STS2026: a compact VITS-style speech model, built from scratch</h1>
+      <div class="callout note">
+        <div class="callout-title">Model naming</div>
+        <p><code>TTS_&lt;version&gt;</code> identifies revisions used to train and improve the TTS model. The integrated starting version is <code>TTS_0.01</code>. Earlier notebooks retain their descriptive historical names.</p>
+        <p>The <code>d/m</code> prefix records a revision date or a task's setup date; it is separate from the model version number. RVC and other future models will use their own naming rules, to be defined when that work begins.</p>
+      </div>
       <p class="lede">
         STS2026 implements the main ideas of VITS in one readable PyTorch notebook: a text encoder with a learned prior,
         a posterior encoder, a normalizing flow, monotonic alignment search, a duration predictor and a waveform decoder.
@@ -41,7 +42,6 @@
         <span class="chip gan"><span class="dot"></span>GAN comparison measured</span>
         <span class="chip">LJSpeech 1.1 · 22,050 Hz</span>
         <span class="chip">PyTorch 2.7.1 (measured env)</span>
-        <span class="chip warn" data-open-slots>open team sections</span>
       </div>
 
       <canvas class="spectro" aria-hidden="true"></canvas>
@@ -54,28 +54,82 @@
         <div class="stat"><div class="k">Baseline log-mel L1</div><div class="v">0.5601</div><div class="s">mean mode, iter 2,000</div></div>
       </div>
 
+      <section class="doc-section task-board" id="tasks">
+        <span class="eyebrow">Team backlog</span>
+        <h2>To-do</h2>
+        <p class="lede">Two workstreams await group allocation; the listening improvement proposal is also pending implementation.</p>
+
+        <article class="task-card" id="task-tts">
+          <div class="task-card-head">
+            <h3>1/10 · Continue training and improve the existing TTS model</h3>
+            <span class="chip warn">Group allocation: pending</span>
+          </div>
+          <p>Continue from the current VITS-style TTS baseline and evaluate proposed improvements against the recorded reference.</p>
+        </article>
+
+        <article class="task-card" id="task-rvc">
+          <div class="task-card-head">
+            <h3>1/10 · Implement a basic RVC system from the architecture diagram</h3>
+            <span class="chip warn">Group allocation: pending</span>
+          </div>
+          <p>Build the basic voice-conversion training path around the data flow below. The diagram is a reference architecture; confirm its assumptions against the chosen implementation before training.</p>
+          <div class="callout note task-assumptions">
+            <div class="callout-title">Reference configuration shown</div>
+            <p>RVC v2 + F0 · 40 kHz output · latent channels 192 · 32-frame training segments · FFT 2048 / hop 400 · coarse F0 embedding 256.</p>
+          </div>
+          <figure class="task-figure">
+            <img src="assets/rvc-training-flow-original.png" alt="Original RVC training data flow and tensor shapes diagram supplied for this task." loading="lazy" decoding="async">
+            <figcaption>Original training data flow and tensor shapes diagram supplied for the RVC task. <a href="assets/rvc-training-flow-original.png">Open the original image</a>.</figcaption>
+          </figure>
+        </article>
+<span id="v2-turino-2026-10-01-listening"></span>
+<section class="doc-section" id="turino-listening">
+<span class="eyebrow">To-do · listening improvement proposal</span>
+      <h2>1/10 · Listening improvements · Turino</h2>
+      <div class="exp-head">
+        <span class="chip">Author: Turino</span>
+        <span class="chip">Proposed: 2026-10-01 · Australia/Brisbane</span>
+        <span class="chip warn">Planned · implementation pending</span>
+      </div>
+      <p>The original evaluation notebook plays only the first exported example. Its 8,192-sample crop at 22,050 Hz lasts approximately 0.37 seconds, which limits listening to local noise and distortion. Expand the listening interface so the team can inspect more samples and complete utterances.</p>
+      <h4 id="proposal-turino-listening-plan">Proposed work</h4>
+      <ol class="list">
+        <li>Expose all eight existing samples, labeled by utterance ID, with matched target, posterior-mean reconstruction and posterior-sample reconstruction players. Reuse the exported crops without retraining.</li>
+        <li>Add full-utterance posterior reconstruction from a saved checkpoint: encode the complete reference spectrogram and decode both the posterior mean and a reproducibly seeded posterior sample. Export aligned reference and reconstruction audio with valid lengths and sample rates recorded.</li>
+        <li>Present the full-utterance outputs in a sample selector or per-sample player groups. Use the same utterances and sampling settings when comparing original and new models.</li>
+        <li>Retain the existing fixed-crop numerical evaluation as a separate protocol. Label full-utterance listening outputs clearly and verify the memory requirements and behavior of a decoder trained on short segments before drawing conclusions.</li>
+      </ol>
+      <h4 id="proposal-turino-listening-acceptance">Acceptance criteria</h4>
+      <ul class="list">
+        <li>Each of the eight utterance IDs exposes a target / mean / sample listening group, with no silent truncation or padding presented as valid audio.</li>
+        <li>A compatible checkpoint produces complete reference-length reconstructions without another training run, or reports an explicit compatibility or resource limitation.</li>
+        <li>Sampling is reproducible and does not disturb the training random-number state. Original/new model listening comparisons use matching inputs and settings.</li>
+        <li>Listening notes are written in English and include completion times. No MOS score or perceptual improvement is claimed unless actually assessed.</li>
+      </ul>
+      <p class="small muted">Scope: posterior reconstruction conditioned on real audio. Full-utterance playback is an additional diagnostic; its quality remains to be measured. This proposal does not establish text-only synthesis quality, convergence or generalization.</p>
+<footer class="site-foot">Proposal by Turino · 2026-10-01 · Australia/Brisbane. Status: implementation pending.</footer>
+</section>
+      </section>
+
       <h2 id="versions">Versions</h2>
-      <p>The project is documented as a sequence of versions. Each has its own page with the design, the evidence and space for the team's own analysis.</p>
-      <div class="grid-3">
-        <a class="card" href="prototype.html">
+      <p>Each notebook revision owns its related experimental results. Dates below identify the revision; result blocks record their own run completion times.</p>
+      <div class="grid-2">
+        <a class="card" href="#version-v0">
           <span class="chip" style="align-self:flex-start">v0</span>
-          <h3>Prototype</h3>
+          <h3>17/9 · Original</h3>
           <p>The first notebook. Full VITS-style architecture, reconstruction-only overfit training, listening check by ear. No evaluation module, GAN loss fixed at zero.</p>
           <span class="card-foot">451c635 · 2026-09-17</span>
         </a>
-        <a class="card" href="original-eval.html">
+        <a class="card" href="#version-v1">
           <span class="chip base" style="align-self:flex-start">v1 · baseline</span>
-          <h3>Original + eval</h3>
+          <h3>20/9 · Original_eval</h3>
           <p>Same model definitions, now trained and scored under a fixed protocol with the shared <code>sts_eval</code> module. This is the reference for every comparison.</p>
           <span class="card-foot">c9f258c · tuirno · completed 2026-09-20</span>
         </a>
-        <a class="card" href="improvements.html">
-          <span class="chip gan" style="align-self:flex-start">v2 +</span>
-          <h3>Improvements</h3>
-          <p>Changes measured after v1, starting with GAN training. Each run is compared with the reference run of its protocol group.</p>
-          <span class="card-foot">gan-group · planned work</span>
-        </a>
       </div>
+
+      <p><a href="#version-original-eval-gan">24/9 · Original_eval_gan</a> — GAN-enabled notebook revision.<br>
+      <a href="#version-full-training">30/9 · TTS_0.01</a> — full-corpus training notebook.</p>
 
       <h2 id="architecture">Architecture</h2>
       <p>
@@ -84,7 +138,7 @@
         Only a random 32-frame slice of the latent is decoded to waveform, which keeps memory use low.
       </p>
       <p>
-        The current experiments train <strong>reconstruction only</strong>. Duration and KL losses have weight 0, so the text path,
+        The Original_eval baseline trains <strong>reconstruction only</strong>. Duration and KL losses have weight 0, so the text path,
         flow, MAS and duration predictor are computed but do not receive gradient from the objective.
       </p>
 
@@ -229,67 +283,282 @@
       <ul class="timeline">
         <li class="done"><span class="when">2026-09-17 · 451c635</span><div class="what">v0 prototype published</div><p>Notebook, setup docs and the GitHub team handbook. Training loop has an empty <code>evaluate()</code> hook.</p></li>
         <li class="base"><span class="when">2026-09-20 · tuirno · c9f258c, PR #1</span><div class="what">v1 shared evaluation and measured baseline</div><p><code>sts_eval</code>, fixed-batch protocol, local runner, checkpoint rescoring, 7 behavioral tests. Baseline completed on September 20 in Brisbane (≈15:27 UTC on September 19).</p></li>
-        <li class="done"><span class="when">2026-09-20 · 9fba268, PR #2</span><div class="what">English experiment records</div><p>Standardized reports and completion-time attribution. 11 tests pass.</p></li>
         <li class="wip"><span class="when">2026-09-23 · Mou and Warneke · gan-group</span><div class="what">GAN loss and discriminator</div><p>LSGAN losses, separate discriminator optimizer, <code>gan_weight = 1.0</code>. Completion commit 07e663d; subsequently used in the full-training pair.</p></li>
-        <li class="wip"><span class="when">2026-09-24 · benlu (local notebook)</span><div class="what">GAN merged with the v1 evaluation</div><p>DataParallel and autocast removed. New loss weights: mel 1, STFT 0.5, wave 10, duration 1, KL 1, GAN 1. Not yet on GitHub. Next: 50,000-iteration runs with and without GAN.</p></li>
-        <li class="done"><span class="when">2026-09-29 · tuirno · Kaggle T4</span><div class="what">GAN vs no-GAN, 50,000 iterations each</div><p>Both runs completed. Spectral probe metrics slightly favour no-GAN; the discriminator overpowers the generator late. See the <a href="report.html#full-train-gan">experiment report</a>.</p></li>
+        <li class="wip"><span class="when">2026-09-24 · benlu (local notebook)</span><div class="what">GAN merged with the v1 evaluation</div><p>DataParallel and autocast removed. New loss weights: mel 1, STFT 0.5, wave 10, duration 1, KL 1, GAN 1. Used for the subsequent 50,000-iteration GAN-on/off runs.</p></li>
+        <li class="done"><span class="when">2026-09-29 · tuirno · Kaggle T4</span><div class="what">GAN vs no-GAN, 50,000 iterations each</div><p>Both runs completed. Spectral probe metrics slightly favour no-GAN; the discriminator overpowers the generator late. See the <a href="#full-train-gan">experiment report</a>.</p></li>
       </ul>
 
-      <h2 id="comparisons">How comparisons work</h2>
-      <p>
-        Every change is scored with the same evaluator on the same eight LJSpeech utterances (LJ001-0001 to LJ001-0008),
-        the same seeds (train 2026, eval 1234), the same 2,000-iteration budget and the same optimizer.
-        Posterior-mean and posterior-sample reconstructions are reported separately. Lower is better for all metrics.
+<footer class="site-foot">STS2026 team coursework, 2026. Figures on this site come from committed records and the local baseline run; nothing is estimated.</footer>
+
+<section class="doc-section" id="version-v0">
+<span class="eyebrow">Version v0</span>
+      <h2>17/9 · Original</h2>
+      <p class="lede">
+        The first published notebook. It contains the complete VITS-style architecture and a working trainer,
+        and it trains the posterior encoder and decoder to reconstruct a small batch of speech.
+        Results were judged by listening. There is no evaluation module and the GAN loss is a zero placeholder.
       </p>
+      <div class="meta-row">
+        <span class="chip">commit 451c635</span>
+        <span class="chip">2026-09-17</span>
+        <span class="chip">vits-light_v1.ipynb (repo root)</span>
+        <span class="chip warn"><span class="dot"></span>No metrics recorded</span>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-title">Reading this page</div>
+        <p>Model definitions in v0 and v1 are identical. A cell-by-cell comparison found that only the trainer, evaluation setup and final run cells changed (cells 41–46). This page therefore focuses on how v0 trained and was inspected. The architecture itself is described on the <a href="#architecture">overview</a>.</p>
+      </div>
+
+      <h3 id="v0-scope">Scope</h3>
+      <p>
+        The notebook's own description calls it an educational, non-adversarial VITS-style implementation.
+        It trains with mel, multi-resolution STFT and waveform losses. The discriminator, adversarial loss and
+        feature-matching loss of full VITS are left out on purpose.
+      </p>
+      <ul class="list">
+        <li>Data: LJSpeech 1.1 from a hard-coded Kaggle input path, 22,050 Hz, <code>N_FFT = 1024</code>, <code>HOP_LENGTH = 256</code>.</li>
+        <li>Hardware target: Kaggle <strong>GPU T4 ×2</strong>. The trainer supports <code>nn.DataParallel</code>, but the final build cell passes <code>use_multi_gpu=False</code>.</li>
+        <li>Task: overfit one batch of 8 utterances to check that encoder and decoder can reconstruct audio at all.</li>
+      </ul>
+
+      <h3 id="v0-configuration">Configuration</h3>
+      <div class="grid-2">
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>Setting</th><th class="num">Value</th></tr></thead>
+            <tbody>
+              <tr><td>Global batch size</td><td class="num">8</td></tr>
+              <tr><td>Data loader</td><td class="num">shuffle, 4 workers</td></tr>
+              <tr><td>Training steps</td><td class="num">1,500</td></tr>
+              <tr><td>Log / save every</td><td class="num">500 / 500</td></tr>
+              <tr><td>Mixed precision / multi-GPU</td><td class="num">fp16 autocast / off</td></tr>
+              <tr><td>Gradient clip</td><td class="num">1.0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>Optimizer / loss</th><th class="num">Value</th></tr></thead>
+            <tbody>
+              <tr><td>AdamW lr</td><td class="num">1e-4</td></tr>
+              <tr><td>betas, eps</td><td class="num">(0.8, 0.99), 1e-9</td></tr>
+              <tr><td>weight decay</td><td class="num">0.01</td></tr>
+              <tr><td>mel / STFT / wave</td><td class="num">10 / 1 / 10</td></tr>
+              <tr><td>duration / KL</td><td class="num">0 / 0</td></tr>
+              <tr><td>GAN</td><td class="num">10 × 0 (placeholder)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3 id="v0-training-loop">Training loop</h3>
+      <p><code>VITSTrainer.overfit_train()</code> repeats one batch. Each iteration:</p>
+      <ol class="list">
+        <li>Takes the <strong>first batch of the shuffled loader</strong> once, before the loop, and moves it to the device.</li>
+        <li>Runs the full forward pass under fp16 autocast. The model picks a new random 32-frame start for every utterance.</li>
+        <li>Slices the target waveform at <code>start_frames × 256</code> and computes losses in float32.</li>
+        <li>Stops with <code>FloatingPointError</code> on a non-finite loss.</li>
+        <li>Scales, backpropagates, unscales, clips to norm 1.0, steps the <code>GradScaler</code>.</li>
+        <li>Every 500 steps shows losses in the progress bar and calls <code>evaluate(outputs, batch)</code>, which is an empty stub.</li>
+        <li>Every 500 steps saves a checkpoint to <code>./model_weight_no_gan</code>.</li>
+      </ol>
+<pre><code><span class="c-com"># v0 cell 42: the evaluation hook left for the team</span>
+<span class="c-com"># Pick one to two metric to evaluate the model performace (and plot a graph)</span>
+<span class="c-com"># Also create a graph which plotting the loss curve</span>
+<span class="c-key">def</span> evaluate(outputs, batch):
+    <span class="c-key">pass</span>
+
+t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, save_every=<span class="c-num">500</span>, log_every=<span class="c-num">500</span>)</code></pre>
+
+      <h3 id="v0-inspection">How results were checked</h3>
+      <p>The last cell re-encodes the returned batch in <code>inference_mode</code> and plays three clips for the first utterance:</p>
+      <div class="grid-3">
+        <div class="card"><h5>Posterior mean</h5><p>Decoder applied to μq, the noise-free latent (noise scale 0).</p></div>
+        <div class="card"><h5>Posterior sample</h5><p>μq + ε·σq with <code>torch.manual_seed(1234)</code> (noise scale 1).</p></div>
+        <div class="card"><h5>Target</h5><p>The matching slice of the real waveform.</p></div>
+      </div>
+      <p>It also prints posterior statistics: the standard deviation of the mean segment, the mean/min/max of σq and σq², and the standard deviation of the sampled z. Playback clamps audio to [−1, 1].</p>
+
+<footer class="site-foot">Source: notebook at commit 451c635. Values are read from the notebook code; v0 recorded no measurements.</footer>
+</section>
+
+<section class="doc-section" id="version-v1">
+<span class="eyebrow" style="color:var(--baseline)">Version v1 · baseline</span>
+      <h2>20/9 · Original_eval</h2>
+      <p class="lede">
+        v1 keeps every model definition from v0 and adds a fixed, repeatable way to train and score it.
+        Its measured run is the reference that all later changes are compared against.
+        The GAN loss is still zero.
+      </p>
+      <div class="meta-row">
+        <span class="chip base"><span class="dot"></span>Frozen baseline</span>
+        <span class="chip">c9f258c (PR #1) · 9fba268 (PR #2)</span>
+        <span class="chip">tuirno · completed 2026-09-20 (Brisbane)</span>
+        <span class="chip">RTX 4070 Ti SUPER</span>
+      </div>
+
+      <h3 id="v1-changes">What changed from v0</h3>
+      <ul class="diff">
+        <li class="add"><span><code>sts_eval/reconstruction.py</code>: <code>ReconstructionEvaluator</code>, metric functions, <code>plot_history</code>, provenance helpers.</span></li>
+        <li class="chg"><span>Training batch fixed to <code>LJ001-0001</code> … <code>LJ001-0008</code> in that order, instead of the first shuffled batch.</span></li>
+        <li class="chg"><span>Seeds fixed: training 2026, evaluation 1234. cuDNN deterministic, benchmark off.</span></li>
+        <li class="chg"><span>Budget raised to 2,000 iterations. Evaluation at 0, 500, 1000, 1500, 2000.</span></li>
+        <li class="add"><span>Optimizer hook counts actual updates, separate from attempted iterations.</span></li>
+        <li class="add"><span>Per-run directory with <code>run_config.json</code>, <code>status.json</code>, training history, checkpoints and scored WAVs.</span></li>
+        <li class="add"><span>Local runner, report generator, subset downloader, Kaggle export, checkpoint rescoring.</span></li>
+        <li class="add"><span>11 tests covering metrics, crop padding, RNG restoration, a real optimizer update and export.</span></li>
+        <li class="del"><span>The empty <code>evaluate()</code> stub and the clamped listening cell.</span></li>
+      </ul>
+
+      <h3 id="v1-protocol">Evaluation protocol</h3>
+      <p>The evaluator measures <code>spectrogram → posterior encoder → decoder → waveform</code> on the same eight utterances used for training.</p>
+      <figure>
+        <div class="figure-box">
+          <svg class="diagram" viewBox="0 0 880 232" role="img" aria-label="Evaluation pipeline">
+            <defs>
+              <marker id="v1-eh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="arrow on"/></marker>
+            </defs>
+            <rect class="node data" x="20" y="88" width="140" height="56" rx="6"/>
+            <text x="90" y="112" text-anchor="middle" class="t-title">Fixed batch</text>
+            <text x="90" y="130" text-anchor="middle" class="t-sub">LJ001-0001…0008</text>
+
+            <rect class="node on" x="200" y="88" width="150" height="56" rx="6"/>
+            <text x="275" y="112" text-anchor="middle" class="t-title">Posterior encoder</text>
+            <text x="275" y="130" text-anchor="middle" class="t-sub">full spectrogram</text>
+
+            <rect class="node base" x="390" y="28" width="160" height="56" rx="6"/>
+            <text x="470" y="52" text-anchor="middle" class="t-title">mode: mean</text>
+            <text x="470" y="70" text-anchor="middle" class="t-sub">z = μq</text>
+
+            <rect class="node base" x="390" y="148" width="160" height="56" rx="6"/>
+            <text x="470" y="172" text-anchor="middle" class="t-title">mode: sample</text>
+            <text x="470" y="190" text-anchor="middle" class="t-sub">μq + ε·exp(log σq)</text>
+
+            <rect class="node on" x="590" y="88" width="140" height="56" rx="6"/>
+            <text x="660" y="112" text-anchor="middle" class="t-title">Crop → decoder</text>
+            <text x="660" y="130" text-anchor="middle" class="t-sub">central 32 fr</text>
+
+            <rect class="node data" x="770" y="88" width="100" height="56" rx="6"/>
+            <text x="820" y="112" text-anchor="middle" class="t-title">Metrics</text>
+            <text x="820" y="130" text-anchor="middle" class="t-sub">per utterance</text>
+
+            <path class="edge on" d="M160 116H196" marker-end="url(#eh)"/>
+            <path class="edge on" d="M350 116H370V56H386" marker-end="url(#eh)"/>
+            <path class="edge on" d="M350 116H370V176H386" marker-end="url(#eh)"/>
+            <path class="edge on" d="M550 56H570V108H586" marker-end="url(#eh)"/>
+            <path class="edge on" d="M550 176H570V124H586" marker-end="url(#eh)"/>
+            <path class="edge on" d="M730 116H766" marker-end="url(#eh)"/>
+            <text x="748" y="108" text-anchor="middle" class="lbl">8,192</text>
+            <text x="560" y="222" class="lbl">ε from its own generator, seed 1234</text>
+          </svg>
+        </div>
+        <figcaption>The two modes are scored and reported separately. The random latent returned by the encoder is deliberately not used; the evaluator draws its own noise.</figcaption>
+      </figure>
+
+      <h4 id="v1-fixed">Baseline experiment configuration</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Samples and order</td><td>LJ001-0001 to LJ001-0008, batch of 8</td></tr>
+            <tr><td>Audio</td><td>22,050 Hz, <code>n_fft</code> 1024, hop 256, win 1024</td></tr>
+            <tr><td>Crop</td><td>deterministic central 32 frames = 8,192 samples. Short utterances are padded for decoding; only real samples are scored. Crops under 1,025 valid samples fail loudly.</td></tr>
+            <tr><td>Seeds</td><td>train 2026, eval noise 1234; CPU/CUDA RNG state and module train flags are restored after evaluation</td></tr>
+            <tr><td>Budget</td><td>2,000 training iterations, eval every 500, log every 50</td></tr>
+            <tr><td>Optimizer</td><td>AdamW lr 1e-4, betas (0.8, 0.99), eps 1e-9, wd 0.01, clip 1.0</td></tr>
+            <tr><td>Loss weights</td><td>mel 10, STFT 1, wave 10, duration 0, KL 0</td></tr>
+            <tr><td>Precision</td><td>AMP on, single GPU</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 id="v1-metrics">Metrics</h4>
+      <p>All metrics are computed per utterance and averaged arithmetically, with no padding in the reduction. Lower is better. They are errors, not accuracy percentages.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metric</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Log-mel L1</strong></td><td>80 bands, magnitude mel, HTK scale, no normalization, natural log, floor 1e-5</td></tr>
+            <tr><td><strong>STFT spectral convergence</strong></td><td>‖|S| − |Ŝ|‖<sub>F</sub> / ‖|S|‖<sub>F</sub>, averaged over the three resolutions</td></tr>
+            <tr><td><strong>STFT log-magnitude</strong></td><td>L1 of log magnitudes, floor 1e-7, same three resolutions</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">STFT resolutions (FFT, hop, window): (512, 128, 512), (1024, 256, 1024), (2048, 512, 2048); Hann, centered, reflect padding. These match the training loss, so the metrics overlap with the objective.</p>
+
+      <h3 id="v1-results">Measured baseline</h3>
+      <div class="stat-row">
+        <div class="stat"><div class="k">Iterations / updates</div><div class="v">2,000 / 1,988</div><div class="s">12 skipped by AMP</div></div>
+        <div class="stat"><div class="k">Wall time</div><div class="v">640.9 s</div><div class="s">train + eval + save</div></div>
+        <div class="stat"><div class="k">Peak allocated</div><div class="v">0.789 GiB</div><div class="s">reserved 0.830 GiB</div></div>
+        <div class="stat"><div class="k">Parameters</div><div class="v">12.14 M</div><div class="s">12,141,186</div></div>
+      </div>
+
+      <div class="chart-grid figure-box" style="margin:0 0 22px">
+        <div><div class="chart-title">Log-mel L1 at each evaluation</div><div id="v1-ch-mel"></div></div>
+        <div><div class="chart-title">STFT spectral convergence at each evaluation</div><div id="v1-ch-sc"></div></div>
+      </div>
+      <figure>
+        <div class="figure-box">
+          <div class="chart-title">Training losses, unweighted (random crops, logged every 50 iterations)</div>
+          <div id="v1-ch-train"></div>
+        </div>
+        <figcaption>Training losses use random crops and the pre-update forward pass; they are not the fixed-crop evaluation. Weighted total fell from 17.29 at iteration 50 to 9.00 at 2,000.</figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mode</th><th>Metric</th><th class="num">Iter 0</th><th class="num">Iter 2,000</th><th class="num">Change</th></tr></thead>
+          <tbody>
+            <tr><td>mean</td><td>Log-mel L1</td><td class="num">3.340485</td><td class="num">0.560088</td><td class="num delta-good">−83.2%</td></tr>
+            <tr><td>mean</td><td>STFT SC</td><td class="num">2.202136</td><td class="num">0.862740</td><td class="num delta-good">−60.8%</td></tr>
+            <tr><td>mean</td><td>STFT log-mag</td><td class="num">3.585402</td><td class="num">1.160106</td><td class="num delta-good">−67.6%</td></tr>
+            <tr><td>sample</td><td>Log-mel L1</td><td class="num">1.961753</td><td class="num">0.557840</td><td class="num delta-good">−71.6%</td></tr>
+            <tr><td>sample</td><td>STFT SC</td><td class="num">2.196269</td><td class="num">0.861846</td><td class="num delta-good">−60.8%</td></tr>
+            <tr><td>sample</td><td>STFT log-mag</td><td class="num">2.008696</td><td class="num">1.105923</td><td class="num delta-good">−44.9%</td></tr>
+          </tbody>
+        </table>
+      </div>
       <div class="callout warn">
-        <div class="callout-title">Scope</div>
-        <p>These are reconstruction scores on the training batch. They are not held-out results, not text-to-speech quality and not evidence of generalization. Listen to the exported samples before drawing conclusions about audible change.</p>
-      </div>
-      <p>The full protocol is on the <a href="original-eval.html#protocol">v1 page</a>; the running results are on the <a href="improvements.html">comparison board</a>.</p>
-
-      <h2 id="team">Team</h2>
-      <div class="slot" data-slot="project.team">
-        <div class="slot-head"><span class="slot-tag">Team section</span><span class="slot-id"></span><span class="slot-title">Members, roles and ownership</span></div>
-        <div class="slot-prompt">Suggested content:
-          <ul><li>Who owns each workstream (baseline, GAN, and later work)</li><li>Reviewer pairing and merge coordination</li><li>Course context and deadlines</li></ul>
-        </div>
-        <div class="slot-body"><!-- Write here. Any content switches this box to the filled style. --></div>
-      </div>
-      <div class="slot" data-slot="project.goals">
-        <div class="slot-head"><span class="slot-tag">Team section</span><span class="slot-id"></span><span class="slot-title">Project goals and success criteria</span></div>
-        <div class="slot-prompt">Suggested content:
-          <ul><li>What "better than baseline" must mean for the final report (metrics, listening test, held-out data)</li><li>End goal: reconstruction, full TTS, or voice conversion</li></ul>
-        </div>
-        <div class="slot-body"><!-- Write here. --></div>
+        <div class="callout-title">What this does and does not show</div>
+        <p>Reconstruction error on the training batch went down. This does not establish convergence, acceptable perceptual quality, or performance on unseen utterances. One seed was run, so training variation is unknown.</p>
       </div>
 
-      <h2 id="repository">Repository map</h2>
-<pre><code>STS2026/
-  notebooks/vits-light_v1.ipynb   <span class="c-com"># model, losses, trainer, eval entry</span>
-  sts_eval/reconstruction.py      <span class="c-com"># shared evaluator, metrics, plots</span>
-  tools/
-    run_local_eval.py             <span class="c-com"># local GPU training + rescoring</span>
-    report_local_eval.py          <span class="c-com"># REPORT.md from a run directory</span>
-    prepare_ljspeech_subset.py    <span class="c-com"># download the 8 fixed utterances</span>
-    build_kaggle_eval.py          <span class="c-com"># self-contained Kaggle notebook</span>
-  tests/                          <span class="c-com"># behavioral, export, report tests</span>
-  docs/
-    site/                         <span class="c-com"># this documentation site</span>
-    EVALUATION.md  LOCAL_EVALUATION.md  LOCAL_BASELINE_RESULT.md
-  output/                         <span class="c-com"># local only, Git-ignored</span></code></pre>
-      <p class="small muted">Data, checkpoints, generated audio and <code>output/</code> stay out of Git. No software license has been selected yet.</p>
-      <p class="small muted">Checkpoints, run folders and detailed reports are shared in the <a href="https://drive.google.com/drive/folders/1RNj-DalkXNUA9ZGDNreAvGdHG8QWwDfU">team Google Drive</a>.</p>
+      <h4 id="v1-reproducibility">Reproducibility check</h4>
+      <p>
+        The final checkpoint was reloaded strictly in a fresh Python process after checking the data fingerprint and protocol, then rescored.
+        Across 8 samples × 2 modes × 3 metrics, the largest per-sample absolute difference was <strong>0</strong>.
+        This confirms same-machine, same-environment rescoring only.
+      </p>
+      <pre><code><span class="c-com"># final checkpoint SHA256</span>
+4cfbd3c87bcb84d456038a30f99cf50fb64c7dc35ab0be023878c08b853022d4</code></pre>
 
-      <nav class="page-nav" aria-label="Pages">
-        <a class="next" href="prototype.html"><span class="dir">Next</span>v0 · Prototype</a>
-      </nav>
-      <footer class="site-foot">STS2026 team coursework, 2026. Figures on this site come from committed records and the local baseline run; nothing is estimated.</footer>
-    </article>
+<footer class="site-foot">Sources: docs/LOCAL_BASELINE_RESULT.md, docs/EVALUATION.md and run output/local-eval/original_20260919T151630615757Z/.</footer>
+  <div id="encoder-results"></div>
+</section>
+
+<section class="doc-section" id="version-original-eval-gan">
+  <span id="version-v2"></span><span id="v2-v2-gan"></span><span id="v2-board"></span>
+  <span class="eyebrow">24/9 · Notebook revision</span>
+  <h2>24/9 · Original_eval_gan</h2>
+  <p>Extends Original_eval with a waveform discriminator, least-squares GAN losses and separate generator/discriminator optimizers. GAN components were completed on 23/9 by Mou and Warneke; benlu combined them with evaluation on 24/9.</p>
+  <p class="small muted">Source: <code>notebooks/vits-light_v1.ipynb</code>, GAN component commit <code>07e663d</code>. The earlier evaluated baseline remains the GAN-disabled snapshot at <code>c9f258c</code>.</p>
+</section>
+<section class="doc-section" id="version-full-training">
+  <span class="eyebrow">30/9 · Notebook integration</span>
+  <h2>30/9 · TTS_0.01</h2>
+  <p><code>notebooks/vits-full-train.ipynb</code> extends the GAN/evaluation model to full-corpus LJSpeech training, with duration and KL losses enabled. GAN-on and GAN-off exports use the same source notebook.</p>
+  <p class="small muted">Committed on 30/9 at <code>3a5724b</code>. The results below were run on 29/9 (UTC) using this full-training configuration before notebook integration.</p>
+  <div id="gan-results"></div>
+</section>
+
+</article>
   </main>
-
-  <aside class="toc" data-toc></aside>
 </div>
 <script src="assets/results.js"></script>
+<script src="assets/version-results.js"></script>
+<script src="assets/baseline.js"></script>
 <script src="assets/site.js"></script>
 </body>
 </html>

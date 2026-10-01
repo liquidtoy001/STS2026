@@ -1,30 +1,33 @@
-/* STS2026 docs: shared shell (nav, contents, theme), charts and comparison table. */
+/* STS2026 docs: single-page navigation, theme, charts and comparison table. */
 (function () {
   "use strict";
 
-  /* ---- page registry: add a page here and it appears in every sidebar ---- */
+  /* Versions own their reports; pending work belongs to To-do.
+     Prefix dates use d/m: version creation or task setup, not run completion. */
   var NAV = [
-    { group: "Project", items: [
-      { href: "index.html", label: "Overview" }
+    { group: "Project", defaultOpen: true, items: [
+      { href: "#overview", label: "Overview" }
     ]},
-    { group: "Versions", items: [
-      { href: "prototype.html", label: "Prototype", ver: "v0" },
-      { href: "original-eval.html", label: "Original + eval", ver: "v1", cls: "base" }
+    { group: "To-do", defaultOpen: true, items: [
+      { href: "#task-tts", label: "Continue TTS training", ver: "1/10" },
+      { href: "#task-rvc", label: "Basic RVC implementation", ver: "1/10" },
+      { href: "#turino-listening", label: "Listening improvements · Turino", ver: "1/10" }
     ]},
-    { group: "Improvements", items: [
-      { href: "improvements.html", label: "Comparison board", ver: "v2+", cls: "gan" },
-      { href: "improvements.html#v2-gan", label: "Adversarial training (GAN)", ver: "v2", cls: "gan" },
-      { href: "listening-turino-2026-10-01.html", label: "Listening improvements · Turino", ver: "10-01" }
-    ]},
-    { group: "Experiment reports", items: [
-      { href: "report.html#jacques-enc-dec", label: "Jacques: original vs new enc/dec", ver: "09-20", cls: "base" },
-      { href: "report.html#full-train-gan", label: "Full training: GAN vs no-GAN", ver: "09-29", cls: "gan" }
-    ]},
-    { group: "Repository", items: [
-      { href: "../EVALUATION.md", label: "Evaluation protocol (md)" },
-      { href: "../LOCAL_BASELINE_RESULT.md", label: "Baseline record (md)" },
-      { href: "../LOCAL_EVALUATION.md", label: "Local runner (md)" },
-      { href: "../../CONTRIBUTING.md", label: "Contributing (md)" }
+    { group: "Versions", defaultOpen: true, groups: [
+      { group: "17/9 · Original", items: [
+        { href: "#version-v0", label: "Model overview" }
+      ]},
+      { group: "20/9 · Original_eval", items: [
+        { href: "#version-v1", label: "Model and baseline" },
+        { href: "#jacques-enc-dec", label: "Original vs new encoder/decoder" }
+      ]},
+      { group: "24/9 · Original_eval_gan", items: [
+        { href: "#version-original-eval-gan", label: "Model overview" }
+      ]},
+      { group: "30/9 · TTS_0.01", items: [
+        { href: "#version-full-training", label: "Notebook overview" },
+        { href: "#full-train-gan", label: "GAN vs no GAN" }
+      ]}
     ]}
   ];
 
@@ -47,51 +50,101 @@
   function buildNav() {
     var host = document.querySelector("[data-sidenav]");
     if (!host) return;
-    var here = (location.pathname.split("/").pop() || "index.html");
+    var here = location.hash || "#overview";
     var html = "<nav aria-label=\"" + esc(t("Documentation")) + "\">";
-    NAV.forEach(function (g) {
-      html += "<div><h4>" + esc(t(g.group)) + "</h4><ul>";
-      g.items.forEach(function (it) {
-        var parts = it.href.split("#"), cur = parts[0] === here && (!parts[1] || "#" + parts[1] === location.hash)
-          ? " aria-current=\"page\"" : "";
+    function containsActive(g) {
+      return (g.items || []).some(function (it) { return it.href === here; }) ||
+        (g.groups || []).some(containsActive);
+    }
+    function renderGroup(g) {
+      var key = g.group.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      var saved = store("sts-nav-group-" + key);
+      var open = containsActive(g) || (saved === null ? g.defaultOpen === true : saved === "true");
+      var content = "<details class=\"nav-group\" data-nav-group=\"" + esc(key) + "\"" + (open ? " open" : "") + "><summary>" +
+        "<span>" + esc(t(g.group)) + "</span><span class=\"nav-chevron\" aria-hidden=\"true\"></span></summary><ul>";
+      (g.items || []).forEach(function (it) {
+        var cur = it.href === here ? " aria-current=\"location\"" : "";
         var ver = it.ver ? "<span class=\"ver " + (it.cls || "") + "\">" + esc(it.ver) + "</span>" : "";
-        html += "<li><a href=\"" + it.href + "\"" + cur + ">" + ver + "<span>" + esc(t(it.label)) + "</span></a></li>";
+        content += "<li><a href=\"" + esc(it.href) + "\"" + (it.sub ? " class=\"sub\"" : "") + cur + ">" + ver + "<span>" + esc(t(it.label)) + "</span></a></li>";
       });
-      html += "</ul></div>";
-    });
+      (g.groups || []).forEach(function (child) {
+        content += "<li>" + renderGroup(child) + "</li>";
+      });
+      return content + "</ul></details>";
+    }
+    NAV.forEach(function (g) { html += renderGroup(g); });
     host.innerHTML = html + "</nav>";
+    host.querySelectorAll(".nav-group").forEach(function (group) {
+      group.addEventListener("toggle", function () {
+        store("sts-nav-group-" + group.getAttribute("data-nav-group"), group.open ? "true" : "false");
+      });
+    });
   }
 
-  var tocObserver = null;
-  function buildToc() {
-    var host = document.querySelector("[data-toc]");
+  function addHeadingAnchors() {
     var heads = Array.prototype.filter.call(document.querySelectorAll("main h2[id], main h3[id]"),
       function (h) { return !h.closest("[hidden]"); });
     heads.forEach(function (h) {
+      if (h.querySelector(".anchor")) return;
       h.querySelectorAll(".anchor").forEach(function (old) { old.remove(); });
       var a = document.createElement("a");
       a.className = "anchor"; a.href = "#" + h.id; a.textContent = "#"; a.setAttribute("aria-label", t("Link to this section"));
       h.appendChild(a);
     });
+  }
+
+  /* Track the reading position without changing history or keyboard focus. */
+  function wireScrollTracking() {
+    var host = document.querySelector("[data-sidenav]");
     if (!host) return;
-    if (!heads.length) { host.innerHTML = ""; return; }
-    var html = "<h4>" + esc(t("On this page")) + "</h4><ul>";
-    heads.forEach(function (h) {
-      var text = Array.prototype.filter.call(h.childNodes, function (n) { return !(n.classList && n.classList.contains("anchor")); })
-        .map(function (n) { return n.textContent; }).join("");
-      html += "<li><a href=\"#" + h.id + "\"" + (h.tagName === "H3" ? " class=\"sub\"" : "") + ">" + esc(text.trim()) + "</a></li>";
-    });
-    host.innerHTML = html + "</ul>";
-    var links = host.querySelectorAll("a");
-    if (!("IntersectionObserver" in window)) return;
-    if (tocObserver) tocObserver.disconnect();
-    var io = tocObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        links.forEach(function (l) { l.classList.toggle("active", l.getAttribute("href") === "#" + e.target.id); });
+    var pending = false, active = null;
+    function update() {
+      pending = false;
+      var links = Array.prototype.slice.call(host.querySelectorAll("a[href^='#']"));
+      var selected = links[0], latestTop = -Infinity;
+      var section = document.querySelector(".doc-section");
+      var padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      var margin = section ? parseFloat(getComputedStyle(section).scrollMarginTop) || 0 : 0;
+      var readingLine = padding + margin + 8;
+      links.forEach(function (link) {
+        var target = document.getElementById(link.getAttribute("href").slice(1));
+        if (!target) return; // Result headings appear after lazy loading.
+        var rect = target.getBoundingClientRect();
+        var end = target.tagName === "H3" ? target.parentElement.getBoundingClientRect().bottom : rect.bottom;
+        if (rect.top <= readingLine && end > readingLine && rect.top >= latestTop) {
+          selected = link; latestTop = rect.top;
+        }
       });
-    }, { rootMargin: "-80px 0px -70% 0px" });
-    heads.forEach(function (h) { io.observe(h); });
+      if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+        // A short final section cannot reach the reading line at the end of the page.
+        for (var i = links.length - 1; i >= 0; i--) {
+          if (document.getElementById(links[i].getAttribute("href").slice(1))) { selected = links[i]; break; }
+        }
+      }
+      if (!selected) return;
+      links.forEach(function (link) {
+        if (link === selected) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+      var href = selected.getAttribute("href");
+      if (href === active) return;
+      active = href;
+      var parent = selected.closest("details");
+      while (parent) { parent.open = true; parent = parent.parentElement.closest("details"); }
+      // Scroll only the navigation rail; scrollIntoView would also move the article.
+      var rail = host.getBoundingClientRect(), item = selected.getBoundingClientRect();
+      if (item.top < rail.top) host.scrollTop -= rail.top - item.top + 8;
+      else if (item.bottom > rail.bottom) host.scrollTop += item.bottom - rail.bottom + 8;
+    }
+    function schedule() {
+      if (!pending) { pending = true; window.requestAnimationFrame(update); }
+    }
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    window.addEventListener("hashchange", function () { active = null; schedule(); });
+    // Lazy results and expandable curves can change section positions without scrolling.
+    if (window.ResizeObserver) new ResizeObserver(schedule).observe(document.querySelector(".article"));
+    schedule();
   }
 
   /* Slots: a slot whose .slot-body has any content switches to the "filled" style. */
@@ -120,12 +173,54 @@
       });
 
     }
-    var m = document.querySelector("[data-menu]");
-    if (m) m.textContent = t("Menu");
+    var m = document.querySelector("[data-menu]"), shell = document.querySelector(".shell");
+    var mobile = window.matchMedia ? window.matchMedia("(max-width: 760px)") : { matches: false };
+    function syncNavButton() {
+      if (!m || !shell) return;
+      if (mobile.matches) {
+        var open = document.body.classList.contains("nav-open");
+        m.textContent = open ? t("Close") : t("Menu");
+        m.setAttribute("aria-expanded", open ? "true" : "false");
+        m.setAttribute("aria-label", open ? t("Close navigation") : t("Open navigation"));
+      } else {
+        var collapsed = shell.classList.contains("nav-collapsed");
+        m.textContent = collapsed ? t("Show nav") : t("Hide nav");
+        m.setAttribute("aria-expanded", collapsed ? "false" : "true");
+        m.setAttribute("aria-label", collapsed ? t("Show navigation") : t("Hide navigation"));
+      }
+    }
+    function syncViewport() {
+      if (mobile.matches) {
+        shell.classList.remove("nav-collapsed");
+        document.body.classList.remove("nav-open");
+      } else {
+        document.body.classList.remove("nav-open");
+        shell.classList.toggle("nav-collapsed", store("sts-nav-collapsed") === "true");
+      }
+      syncNavButton();
+    }
+    syncViewport();
     if (m) m.addEventListener("click", function () {
-      var open = document.body.classList.toggle("nav-open");
-      m.setAttribute("aria-expanded", open ? "true" : "false");
+      if (mobile.matches) document.body.classList.toggle("nav-open");
+      else {
+        shell.classList.toggle("nav-collapsed");
+        store("sts-nav-collapsed", shell.classList.contains("nav-collapsed") ? "true" : "false");
+      }
+      syncNavButton();
     });
+    var nav = document.querySelector("[data-sidenav]");
+    if (nav) nav.addEventListener("click", function (ev) {
+      if (mobile.matches && ev.target.closest("a")) {
+        document.body.classList.remove("nav-open"); syncNavButton();
+      }
+    });
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape" && mobile.matches && document.body.classList.contains("nav-open")) {
+        document.body.classList.remove("nav-open"); syncNavButton();
+      }
+    });
+    if (mobile.addEventListener) mobile.addEventListener("change", syncViewport);
+    else if (mobile.addListener) mobile.addListener(syncViewport);
   }
 
   /* ---------------- charts ---------------- */
@@ -287,7 +382,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     document.documentElement.lang = "en";
-    buildNav(); buildToc(); markSlots(); wireChrome();
+    buildNav(); addHeadingAnchors(); markSlots(); wireChrome();
     document.querySelectorAll("[data-comparison]").forEach(renderComparison);
     document.querySelectorAll("[data-mode-switch]").forEach(function (sw) {
       sw.addEventListener("change", function (ev) {
@@ -297,9 +392,15 @@
     drawSpectro();
     var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(drawSpectro, 120); });
     if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawAll);
-    if (typeof window.onDocsReady === "function") window.onDocsReady({
-      lineChart: lineChart, esc: esc, resetCharts: function () { charts.length = 0; }, buildToc: buildToc, buildNav: buildNav
+    var api = {
+      lineChart: lineChart, esc: esc,
+      resetCharts: function () { charts.length = 0; },
+      addHeadingAnchors: addHeadingAnchors, buildNav: buildNav
+    };
+    [window.onDocsReady, window.onBaselineDocsReady, window.onReportDocsReady].forEach(function (init) {
+      if (typeof init === "function") init(api);
     });
     window.addEventListener("hashchange", buildNav);
+    wireScrollTracking();
   });
 })();

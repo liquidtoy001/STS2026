@@ -2,75 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Listening improvements · Turino · 2026-10-01 · STS2026 Docs</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
-<link rel="stylesheet" href="assets/site.css">
-<style>
-  .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
-  .seg label { padding: 5px 12px; font: 500 var(--step--1) var(--f-mono); color: var(--ink-2); cursor: pointer; }
-  .seg input { position: absolute; opacity: 0; pointer-events: none; }
-  .seg input:checked + span { color: var(--ink); }
-  .seg label:has(input:checked) { background: var(--accent-soft); color: var(--ink); }
-  .seg label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
-  .board-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 12px; }
-  .checklist { list-style: none; padding: 0; margin: 12px 0 20px; display: grid; gap: 6px; }
-  .checklist li { position: relative; padding-left: 28px; }
-  .checklist li::before { content: ""; position: absolute; left: 0; top: 0.35em; width: 14px; height: 14px; border: 1.5px solid var(--ink-3); border-radius: 3px; }
-  .exp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: -4px; }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="0;url=index.html#turino-listening">
+<title>Listening improvements · STS2026 Docs</title>
 </head>
 <body>
-<header class="topbar">
-  <button class="icon-btn menu-btn" type="button" data-menu aria-expanded="false" aria-label="Open navigation">Menu</button>
-  <a class="brand" href="index.html">
-    <svg class="brand-mark" viewBox="0 0 30 22" aria-hidden="true"><path d="M1 11h3l2-7 3 14 3-16 3 18 3-13 3 8 2-4h5" style="fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round"/></svg>
-    <span class="brand-name">STS2026</span>
-    <span class="brand-sub">vits-light docs</span>
-  </a>
-  <span class="topbar-spacer"></span>
-  <a class="plain" href="https://github.com/liquidtoy001/STS2026">GitHub</a>
-  <button class="icon-btn" type="button" data-theme-toggle>Dark</button>
-</header>
-
-<div class="shell">
-  <aside class="sidenav" data-sidenav></aside>
-
-  <main>
-    <article class="article">
-      <span class="eyebrow">Improvement proposal</span>
-      <h1>Improvement suggestion — Turino · 2026-10-01</h1>
-      <div class="exp-head">
-        <span class="chip">Author: Turino</span>
-        <span class="chip">Proposed: 2026-10-01 · Australia/Brisbane</span>
-        <span class="chip warn">Planned · implementation pending</span>
-      </div>
-      <p>The original evaluation notebook plays only the first exported example. Its 8,192-sample crop at 22,050 Hz lasts approximately 0.37 seconds, which limits listening to local noise and distortion. Expand the listening interface so the team can inspect more samples and complete utterances.</p>
-      <h3 id="turino-listening-plan">Proposed work</h3>
-      <ol class="list">
-        <li>Expose all eight existing samples, labeled by utterance ID, with matched target, posterior-mean reconstruction and posterior-sample reconstruction players. Reuse the exported crops without retraining.</li>
-        <li>Add full-utterance posterior reconstruction from a saved checkpoint: encode the complete reference spectrogram and decode both the posterior mean and a reproducibly seeded posterior sample. Export aligned reference and reconstruction audio with valid lengths and sample rates recorded.</li>
-        <li>Present the full-utterance outputs in a sample selector or per-sample player groups. Use the same utterances and sampling settings when comparing original and new models.</li>
-        <li>Retain the existing fixed-crop numerical evaluation as a separate protocol. Label full-utterance listening outputs clearly and verify the memory requirements and behavior of a decoder trained on short segments before drawing conclusions.</li>
-      </ol>
-      <h3 id="turino-listening-acceptance">Acceptance criteria</h3>
-      <ul class="list">
-        <li>Each of the eight utterance IDs exposes a target / mean / sample listening group, with no silent truncation or padding presented as valid audio.</li>
-        <li>A compatible checkpoint produces complete reference-length reconstructions without another training run, or reports an explicit compatibility or resource limitation.</li>
-        <li>Sampling is reproducible and does not disturb the training random-number state. Original/new model listening comparisons use matching inputs and settings.</li>
-        <li>Listening notes are written in English and include completion times. No MOS score or perceptual improvement is claimed unless actually assessed.</li>
-      </ul>
-      <p class="small muted">Scope: posterior reconstruction conditioned on real audio. Full-utterance playback is an additional diagnostic; its quality remains to be measured. This proposal does not establish text-only synthesis quality, convergence or generalization.</p>
-
-      <nav class="page-nav" aria-label="Pages"><a href="improvements.html"><span class="dir">Back</span>Comparison board</a></nav>
-      <footer class="site-foot">Proposal by Turino · 2026-10-01 · Australia/Brisbane. Status: implementation pending.</footer>
-    </article>
-  </main>
-  <aside class="toc" data-toc></aside>
-</div>
-<script src="assets/results.js"></script>
-<script src="assets/site.js"></script>
+<p>This section is now part of the <a href="index.html#turino-listening">STS2026 single-page documentation</a>.</p>
+<script>
+  var id = decodeURIComponent(location.hash.replace(/^#/, ""));
+  location.replace("index.html#" + (id ? "proposal-" + id : "turino-listening"));
+</script>
 </body>
 </html>
