@@ -38,6 +38,19 @@ deployment. Keep the existing audience and Site ID. Record publication success
 and verify the deployed routes before reporting synchronization complete.
 ## Publication history
 
+### 2026-10-07 — Concise TTS_0.02 report
+
+- Report source: `3916809` on `Turino`; model implementation remains `e81f0bd`.
+- Website version **13**, published successfully at `2026-10-06T16:23:00.359077+00:00`
+  (UTC, Sites deployment response). Existing shared audience preserved.
+- Sites source: `9f4db61fee523eb8f9d46247ae1bd4b46cbca7eb`.
+- Saved version: `appgprj_6abd0e861660819185dd81f7ea9ad034~appgver_7b46d887a0fc8191900e7097d86c317c`.
+- Deployment: `appgdep_6ac520538d9c8191815532238764f88a`.
+- The report now contains only the implementation commit, differences from
+  TTS_0.01, intended model benefit and the not-yet-trained status. Report updates
+  synchronize local files, GitHub and the cloud site as requested by the maintainer.
+- This is a post-deployment provenance record; no model code or release changed.
+
 ### 2026-10-07 — TTS_0.02 speaker-ID conditioning
 
 - GitHub model source and tag: `e81f0bde3a0130e32e44f2e60c52358ada5943f6` on
