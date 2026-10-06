@@ -2,11 +2,38 @@
 
 ## Project overview
 
-STS2026 explores a VITS-based path from posterior-conditioned speech reconstruction to text-to-speech (TTS) and, ultimately, speech-to-speech voice conversion. The long-term goal is to take speech from a source speaker and generate it in a target speaker's voice while preserving the words and prosody. Reconstruction is the first stage: it lets the team study the acoustic encoder, latent representation and waveform decoder before adding text and multi-speaker conditioning.
+STS2026 explores a VITS-based path from posterior-conditioned speech reconstruction to text-to-speech (TTS) and, ultimately, speech-to-speech voice conversion. The long-term goal is to take speech from a source speaker and generate it in a target speaker's voice while preserving the words and prosody. Reconstruction is the first stage; the full-training notebook now also implements text-only inference and optional learned speaker-ID conditioning.
 
 The project studies the trade-offs among content preservation, target-speaker similarity and audio quality under different training objectives. Potential applications include assistive communication, accessible reading, audiobooks, virtual assistants, dubbing, personalized speech and speaker anonymization.
 
 The current work includes a measured reconstruction baseline on eight utterances and full-LJSpeech training runs both with and without GAN loss. These use different protocols and should be interpreted separately. Held-out TTS and voice-conversion performance have not yet been established. Planned evaluation includes reconstruction measures such as SI-SDR and STOI, and voice-conversion measures such as ASR word error rate, F0 and speaker-embedding similarity.
+
+## Latest model source: TTS_0.02
+
+**2026-10-07 · Turino · [Release `tts-v0.02`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.02).**
+This research pre-release adds **closed-set speaker-ID conditioning** to the
+full-training notebook. It does not include trained multi-speaker weights.
+
+- A learned embedding conditions the posterior encoder, forward/inverse flow,
+  duration predictor and waveform decoder during training and text-only inference.
+- A speaker manifest supplies named identities; the batch carries their numeric
+  IDs. Checkpoints and run records retain the exact name-to-ID mapping and
+  conditioning dimensions. Resume rejects incompatible mappings.
+- Reconstruction evaluation and generated listening samples use the same IDs.
+  Both standalone Kaggle exports include the updated model and evaluator.
+- Default LJSpeech mode remains unconditional. Regression checks against
+  `tts-v0.01` found identical state-dictionary keys, initialized weights, training
+  forward outputs and inference outputs with fixed CPU inputs and RNG seeds.
+
+**Validation:** 19 automated tests passed. The complete notebook also executed on
+an RTX 4070 Ti SUPER with two synthetic tones, saved after one optimizer update,
+resumed for the second update, and wrote conditioned evaluation/audio artifacts.
+These are implementation checks, **not speech-quality or speaker-similarity results**.
+Real multi-speaker training, held-out TTS, reference-audio conditioning, zero-shot
+cloning and voice conversion remain unverified or unimplemented.
+
+See the [setup, architecture and checkpoint contract](docs/SPEAKER_CONDITIONING.md)
+and [HTML version report](docs/site/index.html#version-speaker-conditioning).
 
 ## Notebook timeline
 
@@ -18,6 +45,7 @@ Dates below are Brisbane-local dates from the project history. The repository cu
 | 2026-09-20 (`c9f258c`) | First evaluated baseline (`notebooks/vits-light_v1.ipynb`) | Adds the shared reconstruction evaluator. The original comparison overfits eight fixed LJSpeech training utterances for 2,000 iterations with GAN disabled. This is the project's earliest evaluated baseline. |
 | 2026-09-23–24 (`07e663d`) | GAN-enabled revision of `notebooks/vits-light_v1.ipynb` | Extends the same notebook line with a discriminator and adversarial training. The recorded 2026-09-20 baseline remains the earlier GAN-disabled experiment; identify results by their configuration. |
 | 2026-09-30 (`3a5724b`) | Full-training notebook (`notebooks/vits-full-train.ipynb`) | Extends the model to full-corpus LJSpeech training with the complete training objective and evaluation/checkpoint workflow. The builder creates separate GAN-off and GAN-on Kaggle exports, differing only in `GAN_WEIGHT`; the exports are generated files, not additional tracked source notebooks. |
+| 2026-10-07 (`tts-v0.02`) | TTS_0.02 speaker-ID conditioning (`notebooks/vits-full-train.ipynb`) | Adds opt-in speaker conditions throughout training, inference, evaluation and checkpoint resume. Source/integration validated; no trained multi-speaker checkpoint or quality claim. |
 
 The full-training runs use 50,000 iterations and a different objective and data protocol from the eight-utterance baseline, so their metrics are not a direct baseline comparison. Both protocols evaluate fixed training utterances; neither establishes held-out quality.
 

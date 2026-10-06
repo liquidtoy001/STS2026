@@ -1,0 +1,65 @@
+{
+  "scope": "synthetic_tones_not_speech_quality",
+  "model_version": "TTS_0.02",
+  "torch": "2.7.1+cu118",
+  "sessions": [
+    {
+      "status": "stopped_time_budget",
+      "step": 1,
+      "total_steps": 2,
+      "gan_weight": 1.0,
+      "actual_optimizer_updates": 1,
+      "session_wall_seconds": 1.2,
+      "resumed": false,
+      "completion_time_source": "runtime_clock",
+      "peak_allocated_GiB": 0.356,
+      "ended_at_utc": "2026-10-06T15:12:43+00:00"
+    },
+    {
+      "status": "completed",
+      "step": 2,
+      "total_steps": 2,
+      "gan_weight": 1.0,
+      "actual_optimizer_updates": 2,
+      "session_wall_seconds": 0.4,
+      "resumed": true,
+      "completion_time_source": "runtime_clock",
+      "peak_allocated_GiB": 0.445,
+      "completed_at_utc": "2026-10-06T15:12:46+00:00"
+    }
+  ],
+  "device": "cuda:0",
+  "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "completed_at_utc": "2026-10-06T15:12:47+00:00",
+  "completion_time_source": "runtime_clock",
+  "automated_suite": {
+    "command": ".venv/Scripts/python.exe -m unittest discover -s tests -v",
+    "tests": 19,
+    "status": "passed",
+    "completed_at_utc": "2026-10-06T15:17:52+00:00",
+    "completion_time_source": "test_log_mtime"
+  },
+  "source_base_commit": "97062bebc79f8e46c669cc14bd10906f32542c18",
+  "source_state": "working tree before release commit; source hashes below identify validated implementation",
+  "sha256": {
+    "notebooks/vits-full-train.ipynb": "46ec481b29076b64f8951d4df6a16e9f3f1c16132a63bd1a421953d9a3114d78",
+    "sts_eval/reconstruction.py": "c4727aa9be4104a66378836f214b4af047a938242c38e62b78b7c7c074bf8798",
+    "tests/test_speaker_conditioning.py": "fe823e03d653a21ff699f28e75fdcccb84b76b47a38d47e8c2143bc96a6fddba",
+    "tools/check_speaker_notebook.py": "ef48bddfdef162e7a6fa74212c29aa81c0051c4d439ded4cd9f7b3ed03d26d5a",
+    "tools/build_kaggle_full_train.py": "a4c8b6ab46a12b15d53e02ed1e44eba771e3374798d80723a73a197ca16bd9d0"
+  },
+  "not_run": [
+    "real_multi_speaker_training",
+    "held_out_tts_quality",
+    "speaker_similarity",
+    "reference_audio_conditioning",
+    "zero_shot_cloning",
+    "voice_conversion"
+  ],
+  "hash_encoding": "UTF-8 text normalized to LF, matching Git source content",
+  "documentation_checks": [
+    "JavaScript syntax",
+    "unique HTML IDs and local links",
+    "browser sidebar navigation and rendered version section"
+  ]
+}

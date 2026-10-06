@@ -28,7 +28,7 @@
       <h1 id="overview">STS2026: a compact VITS-style speech model, built from scratch</h1>
       <div class="callout note">
         <div class="callout-title">Model naming</div>
-        <p><code>TTS_&lt;version&gt;</code> identifies revisions used to train and improve the TTS model. The integrated starting version is <code>TTS_0.01</code>. Earlier notebooks retain their descriptive historical names.</p>
+        <p><code>TTS_&lt;version&gt;</code> identifies revisions used to train and improve the TTS model. The integrated starting version is <code>TTS_0.01</code>. The latest source release, <a href="#version-speaker-conditioning">TTS_0.02</a>, adds speaker-ID conditioning; multi-speaker weights have not been trained. Earlier notebooks retain their descriptive historical names.</p>
         <p>The <code>d/m</code> prefix records a revision date or a task's setup date; it is separate from the model version number. RVC and other future models will use their own naming rules, to be defined when that work begins.</p>
       </div>
       <p class="lede">
@@ -129,7 +129,8 @@
       </div>
 
       <p><a href="#version-original-eval-gan">24/9 · Original_eval_gan</a> — GAN-enabled notebook revision.<br>
-      <a href="#version-full-training">30/9 · TTS_0.01</a> — full-corpus training notebook.</p>
+      <a href="#version-full-training">30/9 · TTS_0.01</a> — full-corpus training notebook.<br>
+      <a href="#version-speaker-conditioning">7/10 · TTS_0.02</a> — optional speaker-ID conditioning; source validated, real multi-speaker training not run.</p>
 
       <h2 id="architecture">Architecture</h2>
       <p>
@@ -551,6 +552,54 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
   <p><code>notebooks/vits-full-train.ipynb</code> extends the GAN/evaluation model to full-corpus LJSpeech training, with duration and KL losses enabled. GAN-on and GAN-off exports use the same source notebook.</p>
   <p class="small muted">Committed on 30/9 at <code>3a5724b</code>. The results below were run on 29/9 (UTC) using this full-training configuration before notebook integration.</p>
   <div id="gan-results"></div>
+</section>
+
+<section class="doc-section" id="version-speaker-conditioning">
+  <span class="eyebrow">7/10 · Turino · Model source release</span>
+  <h2>7/10 · TTS_0.02 — Speaker-ID conditioning</h2>
+  <div class="meta-row">
+    <span class="chip ok">Implemented and integration-tested</span>
+    <span class="chip">Real multi-speaker training: not run</span>
+  </div>
+  <p>The full-training model can now receive a speaker ID for each utterance. A learned embedding tells the posterior encoder, flow, duration predictor and waveform decoder which speaker to condition on. The original unconditional LJSpeech path remains the default.</p>
+  <div class="callout note">
+    <div class="callout-title">What this release establishes</div>
+    <p>Training, text-only inference, reconstruction evaluation and checkpoint resume carry the speaker condition consistently. This is a research source pre-release, not a trained multi-speaker model or a zero-shot voice-cloning system.</p>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Area</th><th>Change from TTS_0.01</th><th>Reason</th></tr></thead>
+    <tbody>
+      <tr><td>Data</td><td>Named-speaker manifest; deterministic ID mapping; seventh batch tensor</td><td>Keep each recording paired with its intended speaker.</td></tr>
+      <tr><td>Model</td><td>Learned embedding plus projections in posterior encoder, flow, duration predictor and decoder</td><td>Condition both latent transformation and waveform generation.</td></tr>
+      <tr><td>Inference and evaluation</td><td>Validate IDs and use them for text-only samples and posterior reconstruction</td><td>Prevent silent fallback to the wrong voice condition.</td></tr>
+      <tr><td>Checkpoints</td><td>Store dimensions, model version and name-to-ID mapping; reject incompatible resume</td><td>Prevent speaker names from silently changing identity after reload.</td></tr>
+      <tr><td>Compatibility</td><td>Conditioning remains optional; both Kaggle exports bundle the changes</td><td>Retain the original experiment path and a standalone training workflow.</td></tr>
+    </tbody>
+  </table></div>
+  <h3>From an ID to a voice condition</h3>
+  <pre><code>speaker_id → learned embedding g [B, D, 1]
+                              ├─ posterior encoder (training / reconstruction)
+                              ├─ forward and inverse flow
+                              ├─ duration predictor
+                              └─ waveform decoder
+
+text → text encoder → durations → expanded prior → inverse flow → decoder → audio</code></pre>
+  <p>Each module projects <code>g</code> to its own feature width and adds it across time. An ID is a learned label, not a voice description: labeled recordings and training are still required to associate that label with a real voice. Reference-audio embeddings and unseen-speaker cloning are outside this release.</p>
+  <h3>Using the new mode</h3>
+  <p>Set <code>STS_SPEAKER_MANIFEST</code> to a pipe-separated file with the header below, and <code>STS_DATA_DIR</code> to the folder containing <code>wavs/</code>. The existing English-oriented text frontend and 22,050 Hz audio requirement remain in effect.</p>
+  <pre><code>file_name|normalized_transcription|speaker_name
+alice_001|Hello there.|alice
+bob_001|Good morning.|bob</code></pre>
+  <p>Names are sorted to create the mapping and saved in checkpoints. Inference supplies one <code>torch.long</code> speaker ID per text sequence. Changing the mapping on resume is rejected. Omitting the manifest keeps the original six-tensor, unconditional mode.</p>
+  <h3>Verification and evidence limits</h3>
+  <ul>
+    <li><strong>19 automated tests passed:</strong> real forward/backward updates with and without GAN, speaker and projection gradients, ID validation, conditional-flow inversion, checkpoint restoration, conditioned evaluation and Kaggle exports.</li>
+    <li><strong>Exact disabled-path regression:</strong> compared with the actual <code>tts-v0.01</code> implementation using identical CPU inputs and RNG seeds; state keys, initialized weights, training-forward outputs and inference outputs matched exactly.</li>
+    <li><strong>Complete notebook integration:</strong> every code cell ran on an RTX 4070 Ti SUPER using two synthetic tones. The run saved after step 1, resumed to step 2, and wrote conditioned inference and reconstruction audio.</li>
+    <li><strong>No quality claim:</strong> synthetic signals only verify the implementation. Real multi-speaker training, held-out intelligibility, speaker similarity and zero-shot cloning were not evaluated.</li>
+  </ul>
+  <p class="small muted">Version date: 2026-10-07, Australia/Brisbane. Exact UTC validation timestamps and environment are retained in the linked evidence record. Historical TTS_0.01 training results above are not results for TTS_0.02.</p>
+  <p><a href="../SPEAKER_CONDITIONING.md">Setup and checkpoint contract</a> · <a href="../records/tts-0.02/validation.json">Validation record</a> · <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.02">GitHub release</a></p>
 </section>
 
 </article>

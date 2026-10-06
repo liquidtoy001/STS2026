@@ -27,6 +27,9 @@
       { group: "30/9 · TTS_0.01", items: [
         { href: "#version-full-training", label: "Notebook overview" },
         { href: "#full-train-gan", label: "GAN vs no GAN" }
+      ]},
+      { group: "7/10 · TTS_0.02", items: [
+        { href: "#version-speaker-conditioning", label: "Speaker-ID conditioning" }
       ]}
     ]}
   ];

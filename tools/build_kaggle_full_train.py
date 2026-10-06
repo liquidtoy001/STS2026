@@ -52,13 +52,17 @@ os.environ.setdefault("STS_RUN_ROOT", "/kaggle/working/sts2026-full-runs")
             raise RuntimeError(f"Expected one GAN_WEIGHT line, found {replaced}.")
         notebook["cells"][:0] = [
             {"cell_type": "markdown", "metadata": {}, "source":
-             f"# STS2026 full training — {arm} (GAN_WEIGHT = {weight})\n\n"
+             f"# STS2026 TTS_0.02 full training — {arm} (GAN_WEIGHT = {weight})\n\n"
              "1. Add Input: the LJSpeech-1.1 dataset. The notebook finds `metadata.csv` and `wavs/` itself.\n"
              "2. Settings: Accelerator = GPU, Internet on is not required.\n"
              "3. Save Version → **Save & Run All (Commit)**. The run continues after you close the browser.\n"
              "4. The log prints speed and ETA every 1,000 iterations. The run stops cleanly at 11.3 h "
              "if it is not finished; see the repository docs to resume.\n"
-             "5. When it finishes, download `sts2026-full-runs/` from the Output tab and upload it to the team Drive.\n"},
+             "5. When it finishes, download `sts2026-full-runs/` from the Output tab and upload it to the team Drive.\n\n"
+             "**Speaker-ID mode (optional):** attach your labeled corpus and set `STS_DATA_DIR` "
+             "and `STS_SPEAKER_MANIFEST` before the configuration cell. The manifest header is "
+             "`file_name|normalized_transcription|speaker_name`; WAV files belong in `wavs/`. "
+             "This is an untrained model source release, not pretrained voice-cloning weights.\n"},
             {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": bootstrap},
         ]
         output = root / f"output/kaggle/vits-full-train_{arm}.ipynb"

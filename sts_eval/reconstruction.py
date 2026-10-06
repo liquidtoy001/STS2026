@@ -2,7 +2,8 @@
 
 The model adapter contract is deliberately small: posterior_encoder, decoder,
 hop_length, segment_frames, and segment_samples. No training forward pass or MAS
-is needed. Inputs use the original notebook's six-tensor batch format.
+is needed. Inputs use the original six-tensor batch format, optionally followed
+by a seventh tensor containing speaker IDs for a conditioned model.
 """
 
 from dataclasses import asdict, dataclass
@@ -59,8 +60,8 @@ class ReconstructionEvaluator:
             raise ValueError("Invalid evaluation transform configuration.")
         if not c.resolutions or any(not 0 < w <= n or h <= 0 for n, h, w in c.resolutions):
             raise ValueError("Invalid STFT resolutions.")
-        if len(batch) != 6:
-            raise ValueError("Expected the notebook's six-tensor batch.")
+        if len(batch) not in (6, 7):
+            raise ValueError("Expected six tensors, optionally followed by speaker IDs.")
         self.batch = tuple(t.detach().cpu().clone() for t in batch)
         self.sample_ids = list(sample_ids)
         size = self.batch[2].shape[0]
@@ -68,6 +69,11 @@ class ReconstructionEvaluator:
             raise ValueError("Provide one unique sample ID per batch item.")
         if any(t.shape[0] != size for t in self.batch):
             raise ValueError("Batch dimensions differ.")
+        if len(self.batch) == 7:
+            speaker_ids = self.batch[6]
+            if (speaker_ids.dtype != torch.long or speaker_ids.shape != (size,)
+                    or (speaker_ids < 0).any()):
+                raise ValueError("Speaker IDs must be nonnegative torch.long values of shape [batch].")
         if self.batch[2].ndim != 3 or self.batch[4].ndim != 3 or self.batch[4].shape[1] != 1:
             raise ValueError("Expected spectrogram [B,F,T] and mono audio [B,1,T].")
         if any(not torch.isfinite(t).all() for t in self.batch):
@@ -109,6 +115,8 @@ class ReconstructionEvaluator:
                             "torchaudio": torchaudio.__version__},
             "provenance": provenance or {},
         }
+        if len(self.batch) == 7:
+            self.manifest["speaker_ids"] = self.batch[6].tolist()
         _write_json(self.output_dir / "manifest.json", self.manifest)
 
     def score(self, generated, target):
@@ -164,7 +172,13 @@ class ReconstructionEvaluator:
                 torch.manual_seed(c.seed)
                 spec = self.batch[2].to(device)
                 lengths = self.batch[3].to(device)
-                _, mean, log_scale, mask = model.posterior_encoder(spec, lengths)
+                conditioned = bool(getattr(model, "n_speakers", 0))
+                if conditioned != (len(self.batch) == 7):
+                    raise ValueError("Evaluation batch conditioning differs from model configuration.")
+                condition = {}
+                if conditioned:
+                    condition["g"] = model.speaker_condition(self.batch[6].to(device), spec.size(0))
+                _, mean, log_scale, mask = model.posterior_encoder(spec, lengths, **condition)
                 if mean.shape != log_scale.shape or mean.shape[0] != len(self.sample_ids):
                     raise ValueError("Posterior statistics have incompatible shapes.")
                 # Generate evaluation noise independently of encoder internals.
@@ -177,7 +191,7 @@ class ReconstructionEvaluator:
                     for i, start in enumerate(self.starts.tolist()):
                         crop = latent[i:i + 1, :, start:start + c.segment_frames]
                         segments.append(torch.nn.functional.pad(crop, (0, c.segment_frames - crop.shape[-1])))
-                    generated = model.decoder(torch.cat(segments))
+                    generated = model.decoder(torch.cat(segments), **condition)
                     expected_shape = (len(self.sample_ids), 1, c.segment_frames * c.hop_length)
                     if tuple(generated.shape) != expected_shape:
                         raise ValueError(f"Decoder returned {tuple(generated.shape)}, expected {expected_shape}.")
