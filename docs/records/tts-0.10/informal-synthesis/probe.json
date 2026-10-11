@@ -1,0 +1,91 @@
+{
+ "sentences": {
+  "train_LJ001-0002": "in being comparatively modern.",
+  "train_LJ050-0278": "the recommendations we have here suggested would greatly advance the security of the office without any impairment of our fundamental liberties.",
+  "novel_1": "The quick brown fox jumps over the lazy dog.",
+  "novel_2": "Our team trained this speech model from scratch for a university course project."
+ },
+ "results": {
+  "train_LJ001-0002|benlu40k": {
+   "sec": 1.96,
+   "rms": 0.0579,
+   "peak": 0.378,
+   "infer_s": 0.34
+  },
+  "train_LJ001-0002|gan1_50k": {
+   "sec": 1.5,
+   "rms": 0.0195,
+   "peak": 0.112,
+   "infer_s": 0.05
+  },
+  "train_LJ001-0002|gan0_50k": {
+   "sec": 1.43,
+   "rms": 0.0131,
+   "peak": 0.122,
+   "infer_s": 0.04
+  },
+  "train_LJ050-0278|benlu40k": {
+   "sec": 9.02,
+   "rms": 0.0543,
+   "peak": 0.484,
+   "infer_s": 0.05
+  },
+  "train_LJ050-0278|gan1_50k": {
+   "sec": 6.88,
+   "rms": 0.0176,
+   "peak": 0.137,
+   "infer_s": 0.03
+  },
+  "train_LJ050-0278|gan0_50k": {
+   "sec": 6.56,
+   "rms": 0.0138,
+   "peak": 0.138,
+   "infer_s": 0.02
+  },
+  "novel_1|benlu40k": {
+   "sec": 3.01,
+   "rms": 0.0476,
+   "peak": 0.348,
+   "infer_s": 0.04
+  },
+  "novel_1|gan1_50k": {
+   "sec": 2.15,
+   "rms": 0.0199,
+   "peak": 0.138,
+   "infer_s": 0.03
+  },
+  "novel_1|gan0_50k": {
+   "sec": 2.1,
+   "rms": 0.0141,
+   "peak": 0.174,
+   "infer_s": 0.03
+  },
+  "novel_2|benlu40k": {
+   "sec": 5.38,
+   "rms": 0.043,
+   "peak": 0.368,
+   "infer_s": 0.04
+  },
+  "novel_2|gan1_50k": {
+   "sec": 3.84,
+   "rms": 0.0183,
+   "peak": 0.149,
+   "infer_s": 0.03
+  },
+  "novel_2|gan0_50k": {
+   "sec": 3.78,
+   "rms": 0.0136,
+   "peak": 0.161,
+   "infer_s": 0.03
+  },
+  "recon|benlu40k": {
+   "logmel_L1": 0.5692
+  },
+  "recon|gan1_50k": {
+   "logmel_L1": 1.5105
+  },
+  "recon|gan0_50k": {
+   "logmel_L1": 1.4338
+  }
+ }
+}

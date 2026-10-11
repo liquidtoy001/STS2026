@@ -8,36 +8,32 @@ The project studies the trade-offs among content preservation, target-speaker si
 
 The current work includes a measured reconstruction baseline on eight utterances and full-LJSpeech training runs both with and without GAN loss. These use different protocols and should be interpreted separately. Held-out TTS and voice-conversion performance have not yet been established. Planned evaluation includes reconstruction measures such as SI-SDR and STOI, and voice-conversion measures such as ASR word error rate, F0 and speaker-embedding similarity.
 
-## Latest model source: TTS_0.02
+## Latest model source: TTS_0.10
 
-**2026-10-07 · Turino · [Release `tts-v0.02`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.02).**
-This research pre-release adds **closed-set speaker-ID conditioning** to the
-full-training notebook. It does not include trained multi-speaker weights.
+**2026-10-12 · integration: Turino · model and recipe: benlu.** TTS_0.10 adopts benlu's
+`final-vits` model and training recipe (WaveNet posterior encoder, multi-receptive-field decoder,
+multi-period + scale discriminator, mel × 45 with feature matching, batch 16 in fp16, text of at
+most 100 characters) inside the project's training harness, and keeps TTS_0.02 speaker-ID
+conditioning. Every change is a switch that can revert one component to TTS_0.02.
 
-- A learned embedding conditions the posterior encoder, forward/inverse flow,
-  duration predictor and waveform decoder during training and text-only inference.
-- A speaker manifest supplies named identities; the batch carries their numeric
-  IDs. Checkpoints and run records retain the exact name-to-ID mapping and
-  conditioning dimensions. Resume rejects incompatible mappings.
-- Reconstruction evaluation and generated listening samples use the same IDs.
-  Both standalone Kaggle exports include the updated model and evaluator.
-- Default LJSpeech mode remains unconditional. Regression checks against
-  `tts-v0.01` found identical state-dictionary keys, initialized weights, training
-  forward outputs and inference outputs with fixed CPU inputs and RNG seeds.
+- With benlu's 40,000-step weights loaded, its training forward pass and inference are identical
+  to his original code; with every switch at TTS_0.02 it is identical to the `tts-v0.02` release.
+- 100 LJSpeech clips are held out from all training (`sts_eval/splits/ljspeech_heldout_100.txt`).
+- benlu's 40,000-step checkpoint scores log-mel L1 0.562 on the fixed LJ001 probe, against
+  1.218–1.344 for the 50,000-step TTS_0.01 runs, and its text-only output shows the harmonic
+  structure that TTS_0.01 lacks. No listening test or intelligibility metric has been run.
+- Engineering: batch-vectorised alignment search and non-deterministic cuDNN kernels; a TTS_0.10
+  training step takes about 0.23 s on an RTX 4070 Ti SUPER (40,000 steps ≈ 2.5 h).
+- No run of this harness has been trained yet. The team's leave-one-out ablation (11 runs, five
+  trainers) measures which of the changes matter.
 
-**Validation:** 19 automated tests passed. The complete notebook also executed on
-an RTX 4070 Ti SUPER with two synthetic tones, saved after one optimizer update,
-resumed for the second update, and wrote conditioned evaluation/audio artifacts.
-These are implementation checks, **not speech-quality or speaker-similarity results**.
-Real multi-speaker training, held-out TTS, reference-audio conditioning, zero-shot
-cloning and voice conversion remain unverified or unimplemented.
-
-See the [setup, architecture and checkpoint contract](docs/SPEAKER_CONDITIONING.md)
-and [HTML version report](docs/site/index.html#version-speaker-conditioning).
+See [TTS_0.10](docs/TTS_0.10.md) and the [ablation plan](docs/ABLATION_TTS_0.10.md).
+The previous release, [`tts-v0.02`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.02),
+added [speaker-ID conditioning](docs/SPEAKER_CONDITIONING.md).
 
 ## Notebook timeline
 
-Dates below are Brisbane-local dates from the project history. The repository currently tracks two notebook source files; earlier stages are preserved in Git history, while Kaggle-specific GAN variants are generated from the full-training source.
+Dates below are Brisbane-local dates from the project history. The repository currently tracks two notebook source files; earlier stages are preserved in Git history, while Kaggle exports (one per TTS_0.10 ablation arm) are generated from the full-training source.
 
 | Date | Notebook stage | Purpose |
 | --- | --- | --- |
@@ -46,6 +42,7 @@ Dates below are Brisbane-local dates from the project history. The repository cu
 | 2026-09-23–24 (`07e663d`) | GAN-enabled revision of `notebooks/vits-light_v1.ipynb` | Extends the same notebook line with a discriminator and adversarial training. The recorded 2026-09-20 baseline remains the earlier GAN-disabled experiment; identify results by their configuration. |
 | 2026-09-30 (`3a5724b`) | Full-training notebook (`notebooks/vits-full-train.ipynb`) | Extends the model to full-corpus LJSpeech training with the complete training objective and evaluation/checkpoint workflow. The builder creates separate GAN-off and GAN-on Kaggle exports, differing only in `GAN_WEIGHT`; the exports are generated files, not additional tracked source notebooks. |
 | 2026-10-07 (`tts-v0.02`) | TTS_0.02 speaker-ID conditioning (`notebooks/vits-full-train.ipynb`) | Adds opt-in speaker conditions throughout training, inference, evaluation and checkpoint resume. Source/integration validated; no trained multi-speaker checkpoint or quality claim. |
+| 2026-10-12 | TTS_0.10 (`notebooks/vits-full-train.ipynb`) | benlu's model and recipe in the project harness, with switches that restore each TTS_0.02 component, a 100-clip held-out split and one export per ablation arm. Integration verified; ablation training not yet run. |
 
 The full-training runs use 50,000 iterations and a different objective and data protocol from the eight-utterance baseline, so their metrics are not a direct baseline comparison. Both protocols evaluate fixed training utterances; neither establishes held-out quality.
 
@@ -59,6 +56,7 @@ STS2026/
     vits-light_v1.ipynb       # Reconstruction baseline and later GAN-enabled revision
     vits-full-train.ipynb     # Full-corpus training source
   sts_eval/                   # Shared reconstruction metrics and runner
+    splits/                   # Fixed held-out split (TTS_0.10)
   tools/                      # Kaggle export, report and data-preparation utilities
   tests/                      # Behavioral and artifact checks
   requirements/
@@ -68,6 +66,8 @@ STS2026/
     SETUP.md                  # Environment and dataset details
     EVALUATION.md             # Evaluation workflow
     FULL_TRAINING.md          # Full-training and Kaggle workflow
+    TTS_0.10.md               # TTS_0.10 changes, verification and provenance
+    ABLATION_TTS_0.10.md      # Ablation arms, owners and run instructions
     records/                  # Small, versioned experiment evidence
     site/                     # Static project-site source
   output/                     # Generated notebooks, reports and run artifacts (local)
@@ -121,10 +121,10 @@ For documentation build and QA utilities, install the separate dependencies with
 
 For `vits-light_v1.ipynb`, obtain LJSpeech-1.1 through the team's approved source. The expected layout is `LJSpeech-1.1/metadata.csv` and `LJSpeech-1.1/wavs/<file_id>.wav`. Update `DATA_DIR` in the notebook to that directory; its checked-in default is a Kaggle path. The notebook uses 22,050 Hz audio and runs a 2,000-iteration overfit experiment on eight fixed training utterances.
 
-To prepare the full-training Kaggle notebooks, run this from the repository root:
+To train a TTS_0.10 arm (see [the ablation plan](docs/ABLATION_TTS_0.10.md)) on a GPU machine with the complete LJSpeech-1.1:
 
 ```sh
-python tools/build_kaggle_full_train.py
+python tools/train_tts010.py --arm R0 --data-dir /path/LJSpeech-1.1
 ```
 
-The command writes GAN-off and GAN-on exports under `output/kaggle/`. Import each export into Kaggle, attach LJSpeech-1.1, enable a GPU, and run all cells. The full run is compute-intensive; inspect its configuration and time budget before starting it. Generated notebooks, datasets, checkpoints and audio are experiment artifacts and should not be committed.
+For Kaggle, `python tools/build_kaggle_full_train.py` writes one export per arm under `output/kaggle/`. Import it, attach LJSpeech-1.1, enable a GPU, and run all cells. Generated notebooks, datasets, checkpoints and audio are experiment artifacts and should not be committed.

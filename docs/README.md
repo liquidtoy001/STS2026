@@ -9,6 +9,8 @@
 - [Reconstruction evaluation and Kaggle handoff](EVALUATION.md)
 - [Local GPU run and checkpoint reproduction](LOCAL_EVALUATION.md)
 - [Full training on Kaggle: GAN vs no-GAN](FULL_TRAINING.md)
+- [TTS_0.10: benlu's model with switchable components](TTS_0.10.md)
+- [TTS_0.10 ablation: arms, owners and run instructions](ABLATION_TTS_0.10.md)
 - [TTS_0.02: speaker-ID conditioning, setup and validation](SPEAKER_CONDITIONING.md)
 - [Jacques: original versus new encoder/decoder reconstruction study](JACQUES_EVAL.md)
 - [GitHub handbook: English, macOS and website-first](guides/STS2026_GitHub_Team_Handbook.pdf)

@@ -1,4 +1,4 @@
-"""Run every full-training notebook cell on two test tones, then resume once.
+"""Run every TTS_0.10 notebook cell on two test tones for arms R0 and E0, then resume once.
 
 This is an integration check, NOT training on real speakers or a quality result.
 Uses a temporary corpus and deletes its checkpoints when done. Run from the
@@ -20,7 +20,7 @@ def main():
     torch.set_num_threads(2)
     notebook = json.loads((root / "notebooks/vits-full-train.ipynb").read_text(encoding="utf-8"))
     previous_environment = dict(os.environ)
-    evidence = {"scope": "synthetic_tones_not_speech_quality", "model_version": "TTS_0.02",
+    evidence = {"scope": "synthetic_tones_not_speech_quality", "model_version": "TTS_0.10",
                 "torch": torch.__version__, "sessions": []}
     try:
         with tempfile.TemporaryDirectory(prefix="speaker-smoke-", dir=root / "output") as temporary:
@@ -41,8 +41,13 @@ def main():
                               STS_REPO_ROOT=str(root), STS_RUN_ROOT=str(corpus / "runs"),
                               STS_NUM_WORKERS="0", STS_TOTAL_STEPS="2", STS_EVAL_EVERY="1",
                               STS_SAVE_EVERY="1", STS_KEEP_EVERY="1", STS_LOG_EVERY="1",
-                              STS_GAN_WEIGHT="1.0", STS_TIME_BUDGET_HOURS="0", MPLBACKEND="Agg")
-            for session in range(2):
+                              STS_TIME_BUDGET_HOURS="0", MPLBACKEND="Agg")
+            for session in range(4):
+                arm = ("R0", "E0")[session // 2]
+                if session % 2 == 0:
+                    os.environ.pop("STS_RESUME_FROM", None)
+                    os.environ["STS_TIME_BUDGET_HOURS"] = "0"
+                os.environ["STS_ARM"] = arm
                 namespace = {"__name__": "__main__"}
                 for index, cell in enumerate(notebook["cells"]):
                     if cell["cell_type"] == "code":
@@ -50,16 +55,20 @@ def main():
                         exec(compile("".join(cell["source"]), f"notebook_cell_{index}", "exec"), namespace)
                 run_dir = namespace["RUN_DIR"]
                 status = json.loads((run_dir / "status.json").read_text(encoding="utf-8"))
-                expected = "stopped_time_budget" if session == 0 else "completed"
-                if status["status"] != expected or status["step"] != session + 1:
+                step = session % 2 + 1
+                expected = "stopped_time_budget" if step == 1 else "completed"
+                if status["status"] != expected or status["step"] != step or status["arm"] != arm:
                     raise AssertionError(status)
-                if status["actual_optimizer_updates"] != session + 1:
-                    raise AssertionError("Resume did not restore optimizer-update count.")
-                checkpoint = torch.load(run_dir / "checkpoints" / f"vits_step_{session + 1}.pt",
+                # Under fp16 the scaler may skip early updates; every step is either applied or counted.
+                if status["actual_optimizer_updates"] + status["amp_backoffs"] != step:
+                    raise AssertionError("Resume did not restore the update counters.")
+                checkpoint = torch.load(run_dir / "checkpoints" / f"vits_step_{step}.pt",
                                         map_location="cpu", weights_only=True)
                 if checkpoint["speaker_config"]["speaker_to_id"] != {"tone-a": 0, "tone-b": 1}:
                     raise AssertionError("Speaker mapping was not retained.")
-                if len(list((run_dir / "samples").glob(f"step_{session + 1}_sample_*.wav"))) != 2:
+                if checkpoint["switches"] != namespace["SWITCHES"]:
+                    raise AssertionError("Switches were not retained.")
+                if len(list((run_dir / "samples").glob(f"step_{step}_sample_*.wav"))) != 2:
                     raise AssertionError("Conditioned text-only samples were not written.")
                 evidence["sessions"].append(status)
                 evidence["device"] = str(namespace["DEVICE"])

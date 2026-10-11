@@ -57,14 +57,28 @@
       <section class="doc-section task-board" id="tasks">
         <span class="eyebrow">Team backlog</span>
         <h2>To-do</h2>
-        <p class="lede">Two workstreams await group allocation; the listening improvement proposal is also pending implementation.</p>
+        <p class="lede">The TTS workstream is allocated as the TTS_0.10 ablation; RVC awaits group allocation; the listening improvement proposal is pending implementation.</p>
 
-        <article class="task-card" id="task-tts">
+        <article class="task-card" id="task-tts010-ablation">
+          <span id="task-tts"></span>
           <div class="task-card-head">
-            <h3>1/10 · Continue training and improve the existing TTS model</h3>
-            <span class="chip warn">Group allocation: pending</span>
+            <h3>12/10 · TTS_0.10 ablation training</h3>
+            <span class="chip acc">Ready · training not started</span>
           </div>
-          <p>Continue from the current VITS-style TTS baseline and evaluate proposed improvements against the recorded reference.</p>
+          <p>Allocation of the 1/10 TTS task. Eleven runs measure which of the eight TTS_0.10 changes matter: each arm reverts one change to TTS_0.02 (leave-one-out). R0/R0b give the seed noise floor; E0 reverts everything.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Owner</th><th>Arms</th><th>Question</th><th>GPU</th></tr></thead>
+              <tbody>
+                <tr><td>Assigned by the team</td><td>R0, R0b</td><td>Reference and seed noise floor</td><td>L40S</td></tr>
+                <tr><td>Assigned by the team</td><td>G1, G2, G3</td><td>Text encoder, posterior encoder, decoder</td><td>L40S</td></tr>
+                <tr><td>Assigned by the team</td><td>A1, A2</td><td>Discriminator, feature matching</td><td>L40S</td></tr>
+                <tr><td>Assigned by the team</td><td>L1, O1</td><td>Reconstruction loss, optimisation</td><td>L40S</td></tr>
+                <tr><td>Turino</td><td>E0, D1</td><td>All TTS_0.02; text-length filter</td><td>RTX 4070 Ti SUPER</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Each run: <code>python tools/train_tts010.py --arm &lt;arm&gt; --data-dir &lt;LJSpeech-1.1&gt;</code>, 40,000 steps (1.6–3.0 h per arm on an RTX 4070 Ti SUPER). Upload the run folder to the team Drive; evaluation is run centrally. Step-by-step instructions, the run card and the reading rules: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md">ABLATION_TTS_0.10.md</a>.</p>
         </article>
 
         <article class="task-card" id="task-rvc">
@@ -130,7 +144,8 @@
 
       <p><a href="#version-original-eval-gan">24/9 · Original_eval_gan</a> — GAN-enabled notebook revision.<br>
       <a href="#version-full-training">30/9 · TTS_0.01</a> — full-corpus training notebook.<br>
-      <a href="#version-speaker-conditioning">7/10 · TTS_0.02</a> — optional speaker-ID conditioning; training not started.</p>
+      <a href="#version-speaker-conditioning">7/10 · TTS_0.02</a> — optional speaker-ID conditioning; training not started.<br>
+      <a href="#version-tts010">12/10 · TTS_0.10</a> — benlu's model in the project harness, with switchable components.</p>
 
       <h2 id="architecture">Architecture</h2>
       <p>
@@ -287,6 +302,8 @@
         <li class="wip"><span class="when">2026-09-23 · Mou and Warneke · gan-group</span><div class="what">GAN loss and discriminator</div><p>LSGAN losses, separate discriminator optimizer, <code>gan_weight = 1.0</code>. Completion commit 07e663d; subsequently used in the full-training pair.</p></li>
         <li class="wip"><span class="when">2026-09-24 · benlu (local notebook)</span><div class="what">GAN merged with the v1 evaluation</div><p>DataParallel and autocast removed. New loss weights: mel 1, STFT 0.5, wave 10, duration 1, KL 1, GAN 1. Used for the subsequent 50,000-iteration GAN-on/off runs.</p></li>
         <li class="done"><span class="when">2026-09-29 · tuirno · Kaggle T4</span><div class="what">GAN vs no-GAN, 50,000 iterations each</div><p>Both runs completed. Spectral probe metrics slightly favour no-GAN; the discriminator overpowers the generator late. See the <a href="#full-train-gan">experiment report</a>.</p></li>
+        <li class="done"><span class="when">2026-10-07 · Turino · tts-v0.02</span><div class="what">TTS_0.02 speaker-ID conditioning</div><p>Optional learned speaker embedding throughout training and inference. Source release; not trained.</p></li>
+        <li class="done"><span class="when">2026-10-12 · benlu, Turino</span><div class="what">TTS_0.10 integration</div><p>benlu's model and recipe in the project harness with switches back to TTS_0.02, a 100-clip held-out split and one export per ablation arm. See <a href="#version-tts010">TTS_0.10</a>.</p></li>
       </ul>
 
 <footer class="site-foot">STS2026 team coursework, 2026. Figures on this site come from committed records and the local baseline run; nothing is estimated.</footer>
@@ -561,6 +578,30 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
   <p>Compared with TTS_0.01, this revision adds optional speaker IDs and a learned speaker embedding. The condition is passed to the posterior encoder, flow, duration predictor and waveform decoder; the data loader and checkpoints also retain speaker identities. The existing model structure and default single-speaker mode are retained.</p>
   <p>This gives the model an explicit input for which speaker should speak, providing a basis for learning different voices within one model.</p>
   <p><strong>Training has not started. The effect on voice identity and audio quality has not been evaluated.</strong></p>
+</section>
+
+<section class="doc-section" id="version-tts010">
+  <span class="eyebrow">12/10 · benlu, Turino · Model revision</span>
+  <h2>12/10 · TTS_0.10 — benlu's model with switchable components</h2>
+  <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code> on <code>Turino</code> · 12/10/2026 (Australia/Brisbane). Model and training recipe: benlu (<code>final-vits</code>); integration: Turino.</p>
+  <p>Compared with TTS_0.02, TTS_0.10 changes eight things: a text encoder with convolutional feed-forward blocks, a gated WaveNet posterior encoder, a multi-receptive-field decoder, multi-period and scale discriminators, feature matching, a mel × 45 reconstruction loss, batch 16 with fp16 training, and training on transcripts of at most 100 characters. Each change is a switch that can restore the TTS_0.02 component; flow, duration predictor and speaker-ID conditioning are kept.</p>
+  <p>These are the standard VITS/HiFi-GAN components for modelling waveform detail and periodicity. With benlu's weights the integrated model reproduces his original code exactly; with every switch at TTS_0.02 it reproduces the <code>tts-v0.02</code> release.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Checkpoint</th><th class="num">Steps</th><th class="num">Probe log-mel L1</th><th class="num">STFT SC</th><th class="num">STFT log-mag</th></tr></thead>
+      <tbody>
+        <tr><td>benlu TTS_0.10</td><td class="num">40,000</td><td class="num"><strong>0.562</strong></td><td class="num"><strong>0.548</strong></td><td class="num"><strong>0.979</strong></td></tr>
+        <tr><td>TTS_0.01, no GAN</td><td class="num">50,000</td><td class="num">1.218</td><td class="num">0.941</td><td class="num">1.754</td></tr>
+        <tr><td>TTS_0.01, GAN</td><td class="num">50,000</td><td class="num">1.344</td><td class="num">0.948</td><td class="num">1.719</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Fixed-crop probe LJ001-0001…0008, posterior mean, lower is better; one RTX 4070 Ti SUPER, 12/10. benlu's run did not train on the four probe clips longer than 100 characters; its error there (0.550) is no higher than on the four it trained on (0.574).</p>
+  <figure class="task-figure">
+    <img src="assets/tts010-spectrograms.jpg" alt="Spectrograms of text-only synthesis and reconstruction: benlu TTS_0.10 at 40,000 steps shows harmonics; TTS_0.01 GAN and no-GAN at 50,000 steps do not." loading="lazy" decoding="async">
+    <figcaption>Text-only synthesis (rows 1–2) and full-utterance reconstruction (row 3); same seed and noise scale. A visual check, not a listening test.</figcaption>
+  </figure>
+  <p><strong>No run has been trained with this notebook yet.</strong> The ablation (<a href="#task-tts010-ablation">To-do</a>) trains eleven arms. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.10.md">TTS_0.10.md</a>.</p>
 </section>
 
 </article>

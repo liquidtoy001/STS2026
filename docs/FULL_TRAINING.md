@@ -1,5 +1,9 @@
 # Full training: GAN vs no-GAN on Kaggle
 
+> The notebook now implements TTS_0.10 ([TTS_0.10.md](TTS_0.10.md)). This page documents the
+> 2026-09-29 GAN comparison, which used the TTS_0.01 notebook (tag `tts-v0.01`, commit `3a5724b`).
+> Its storage and reporting conventions still apply.
+
 `notebooks/vits-full-train.ipynb` trains the complete model on all of LJSpeech. It
 combines the v1 model definitions with benlu's merged GAN + evaluation trainer
 (2026-09-24): no DataParallel, no autocast, loss weights mel 1, STFT 0.5, wave 10,

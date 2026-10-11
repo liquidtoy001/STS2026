@@ -9,7 +9,7 @@
       { href: "#overview", label: "Overview" }
     ]},
     { group: "To-do", defaultOpen: true, items: [
-      { href: "#task-tts", label: "Continue TTS training", ver: "1/10" },
+      { href: "#task-tts010-ablation", label: "TTS_0.10 ablation training", ver: "12/10" },
       { href: "#task-rvc", label: "Basic RVC implementation", ver: "1/10" },
       { href: "#turino-listening", label: "Listening improvements · Turino", ver: "1/10" }
     ]},
@@ -30,6 +30,9 @@
       ]},
       { group: "7/10 · TTS_0.02", items: [
         { href: "#version-speaker-conditioning", label: "Speaker-ID conditioning" }
+      ]},
+      { group: "12/10 · TTS_0.10", items: [
+        { href: "#version-tts010", label: "benlu's model, switchable components" }
       ]}
     ]}
   ];

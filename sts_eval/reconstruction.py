@@ -44,6 +44,49 @@ def _write_json(path, value):
     path.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n", encoding="utf-8")
 
 
+def minimum_samples(config):
+    """Reflect-padded STFT requires input longer than half the largest FFT."""
+    return max(config.n_fft, *(r[0] for r in config.resolutions)) // 2 + 1
+
+
+def mel_transform(config):
+    return torchaudio.transforms.MelSpectrogram(
+        sample_rate=config.sample_rate, n_fft=config.n_fft, hop_length=config.hop_length,
+        win_length=config.win_length, n_mels=config.n_mels, power=1.0,
+        center=True, pad_mode="reflect", norm=None, mel_scale="htk",
+    )
+
+
+def score_waveforms(generated, target, config, mel=None):
+    """Log-mel L1 and multi-resolution STFT metrics of equal-length 1-D waveforms."""
+    if generated.ndim != 1 or generated.shape != target.shape:
+        raise ValueError("Metrics require aligned, equal-length 1-D audio.")
+    if generated.numel() < minimum_samples(config):
+        raise ValueError("Audio too short for configured STFT.")
+    if not torch.isfinite(generated).all() or not torch.isfinite(target).all():
+        raise FloatingPointError("Non-finite evaluation audio.")
+    generated, target = generated.float(), target.float()
+    mel = (mel or mel_transform(config)).to(generated.device)
+    mel_l1 = (mel(generated).clamp_min(1e-5).log()
+              - mel(target).clamp_min(1e-5).log()).abs().mean()
+    convergence, log_magnitude = [], []
+    for n_fft, hop, win in config.resolutions:
+        window = torch.hann_window(win, device=generated.device)
+        spectra = [torch.stft(x, n_fft, hop, win, window, center=True,
+                             pad_mode="reflect", return_complex=True).abs().clamp_min(1e-7)
+                   for x in (generated, target)]
+        pred, ref = spectra
+        convergence.append(torch.linalg.vector_norm(pred - ref)
+                           / torch.linalg.vector_norm(ref).clamp_min(1e-7))
+        log_magnitude.append((pred.log() - ref.log()).abs().mean())
+    result = {"log_mel_l1": mel_l1.item(),
+              "stft_spectral_convergence": torch.stack(convergence).mean().item(),
+              "stft_log_magnitude": torch.stack(log_magnitude).mean().item()}
+    if not all(torch.isfinite(torch.tensor(v)) for v in result.values()):
+        raise FloatingPointError("Non-finite evaluation metric.")
+    return result
+
+
 class ReconstructionEvaluator:
     """Own a frozen batch and crop plan, then evaluate any compatible model.
 
@@ -52,7 +95,8 @@ class ReconstructionEvaluator:
     Both posterior-mean and seeded posterior-sample reconstructions are saved.
     """
 
-    def __init__(self, batch, sample_ids, output_dir, *, config=None, provenance=None):
+    def __init__(self, batch, sample_ids, output_dir, *, config=None, provenance=None,
+                 scope="training_batch_overfit_not_held_out"):
         self.config = config or EvaluationConfig()
         c = self.config
         if min(c.sample_rate, c.n_fft, c.hop_length, c.win_length,
@@ -91,22 +135,17 @@ class ReconstructionEvaluator:
             torch.minimum(spec_lengths - self.starts, torch.full_like(spec_lengths, c.segment_frames))
             * c.hop_length,
         ).long()
-        # Reflect-padded STFT requires input longer than half the largest FFT.
-        self.minimum_samples = max(c.n_fft, *(r[0] for r in c.resolutions)) // 2 + 1
+        self.minimum_samples = minimum_samples(c)
         if (self.lengths < self.minimum_samples).any():
             raise ValueError(f"Evaluation needs at least {self.minimum_samples} valid samples per crop.")
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=False)
-        self.mel = torchaudio.transforms.MelSpectrogram(
-            sample_rate=c.sample_rate, n_fft=c.n_fft, hop_length=c.hop_length,
-            win_length=c.win_length, n_mels=c.n_mels, power=1.0,
-            center=True, pad_mode="reflect", norm=None, mel_scale="htk",
-        )
+        self.mel = mel_transform(c)
         self.history = []
         self._last_step = -1
         self.manifest = {
             "protocol": "posterior_fixed_batch_reconstruction_v1",
-            "scope": "training_batch_overfit_not_held_out",
+            "scope": scope,
             "config": asdict(c), "batch_sha256": _fingerprint(self.batch),
             "sample_ids": self.sample_ids, "start_frames": self.starts.tolist(),
             "valid_samples": self.lengths.tolist(),
@@ -121,32 +160,7 @@ class ReconstructionEvaluator:
 
     def score(self, generated, target):
         """Score equal-length 1-D waveforms. Call after removing padding."""
-        if generated.ndim != 1 or generated.shape != target.shape:
-            raise ValueError("Metrics require aligned, equal-length 1-D audio.")
-        if generated.numel() < self.minimum_samples:
-            raise ValueError("Audio too short for configured STFT.")
-        if not torch.isfinite(generated).all() or not torch.isfinite(target).all():
-            raise FloatingPointError("Non-finite evaluation audio.")
-        generated, target = generated.float(), target.float()
-        self.mel.to(generated.device)
-        mel_l1 = (self.mel(generated).clamp_min(1e-5).log()
-                  - self.mel(target).clamp_min(1e-5).log()).abs().mean()
-        convergence, log_magnitude = [], []
-        for n_fft, hop, win in self.config.resolutions:
-            window = torch.hann_window(win, device=generated.device)
-            spectra = [torch.stft(x, n_fft, hop, win, window, center=True,
-                                 pad_mode="reflect", return_complex=True).abs().clamp_min(1e-7)
-                       for x in (generated, target)]
-            pred, ref = spectra
-            convergence.append(torch.linalg.vector_norm(pred - ref)
-                               / torch.linalg.vector_norm(ref).clamp_min(1e-7))
-            log_magnitude.append((pred.log() - ref.log()).abs().mean())
-        result = {"log_mel_l1": mel_l1.item(),
-                  "stft_spectral_convergence": torch.stack(convergence).mean().item(),
-                  "stft_log_magnitude": torch.stack(log_magnitude).mean().item()}
-        if not all(torch.isfinite(torch.tensor(v)) for v in result.values()):
-            raise FloatingPointError("Non-finite evaluation metric.")
-        return result
+        return score_waveforms(generated, target, self.config, self.mel)
 
     @torch.inference_mode()
     def evaluate(self, model, step, *, save_audio=False):
@@ -251,8 +265,10 @@ def plot_history(evaluation_history, training_history, output_path):
     fig, axes = plt.subplots(1, 3, figsize=(15, 4))
     if training_history:
         for key in ("total", "mel", "stft", "wave"):
-            axes[0].plot([r["step"] for r in training_history],
-                         [r[key] for r in training_history], label=key)
+            values = [r.get(key) for r in training_history]
+            if any(value for value in values):  # skip terms a loss recipe does not use
+                axes[0].plot([r["step"] for r in training_history],
+                             [float("nan") if value is None else value for value in values], label=key)
         axes[0].legend()
     axes[0].set_title("Training losses (random crops)")
     for axis, metric in zip(axes[1:], ("log_mel_l1", "stft_spectral_convergence")):
