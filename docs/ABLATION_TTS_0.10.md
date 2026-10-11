@@ -72,8 +72,12 @@ python tools/train_tts010.py --arm G1 --data-dir /path/LJSpeech-1.1 --run-root r
 ```
 
 The run folder is printed at the start: `runs/tts010_G1_<UTC time>/`. Do not pass any other
-setting; the arm fixes everything else. On a 48 GB GPU two arms may run at the same time
-(results are unaffected; per-arm speed is measured separately with the benchmark).
+setting; the arm fixes everything else. On a 48 GB GPU several arms may run at the same time
+(about 3.3 GB each; results are unaffected, and per-arm speed is measured separately with the benchmark).
+
+**Metered GPU time:** add `--time-budget-hours <hours you can still spend minus 0.5>`; the run
+saves a checkpoint and stops cleanly before that, and can be resumed. Shut the instance down as
+soon as `status.json` says `completed` and the run folder is copied off.
 
 **Kaggle instead:** `python tools/build_kaggle_full_train.py` writes `output/kaggle/tts010_<arm>.ipynb`.
 Import it, add LJSpeech-1.1 as input, enable a GPU, Save & Run All (Commit).
