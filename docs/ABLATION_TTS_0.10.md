@@ -1,7 +1,7 @@
 # TTS_0.10 ablation: which changes made the difference
 
 Status: training not started. Plan agreed by the team on 2026-10-12 (Australia/Brisbane).
-Model: [TTS_0.10](TTS_0.10.md). Source: `notebooks/vits-full-train.ipynb` on branch `Turino`.
+Model: [TTS_0.10](TTS_0.10.md), pre-release [`tts-v0.10`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10). Source: `notebooks/vits-full-train.ipynb`.
 
 ## Question
 
@@ -46,8 +46,9 @@ TTS_0.02 baseline and data filter (E0, D1).
 
 ## Before you start (every trainer)
 
-1. Get the code: `git fetch origin && git checkout Turino && git pull`. Record the commit with
-   `git rev-parse --short HEAD`; every arm must use the same commit (it is also written to
+1. Get the code: `git fetch origin --tags && git checkout tts-v0.10` (the release every arm uses;
+   later commits only change documentation). Check with `git rev-parse --short HEAD`; every arm
+   must use the same commit (it is also written to
    `run_config.json`).
 2. Environment: Python 3.10+ with PyTorch and TorchAudio (CUDA build), then
    `python -m pip install -r requirements/notebook.txt`. librosa is not needed.

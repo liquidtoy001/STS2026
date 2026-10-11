@@ -10,7 +10,8 @@ The current work includes a measured reconstruction baseline on eight utterances
 
 ## Latest model source: TTS_0.10
 
-**2026-10-12 · integration: Turino · model and recipe: benlu.** TTS_0.10 adopts benlu's
+**2026-10-12 · integration: Turino · model and recipe: benlu · pre-release [`tts-v0.10`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10), merged to `main`.**
+TTS_0.10 adopts benlu's
 `final-vits` model and training recipe (WaveNet posterior encoder, multi-receptive-field decoder,
 multi-period + scale discriminator, mel × 45 with feature matching, batch 16 in fp16, text of at
 most 100 characters) inside the project's training harness, and keeps TTS_0.02 speaker-ID

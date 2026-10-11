@@ -78,7 +78,7 @@
               </tbody>
             </table>
           </div>
-          <p>Each run: <code>python tools/train_tts010.py --arm &lt;arm&gt; --data-dir &lt;LJSpeech-1.1&gt;</code>, 40,000 steps (1.6–3.0 h per arm on an RTX 4070 Ti SUPER). Upload the run folder to the team Drive; evaluation is run centrally. Step-by-step instructions, the run card and the reading rules: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md">ABLATION_TTS_0.10.md</a>.</p>
+          <p>Each run, from release <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10"><code>tts-v0.10</code></a>: <code>python tools/train_tts010.py --arm &lt;arm&gt; --data-dir &lt;LJSpeech-1.1&gt;</code>, 40,000 steps (1.6–3.0 h per arm on an RTX 4070 Ti SUPER). Upload the run folder to the team Drive; evaluation is run centrally. Step-by-step instructions, the run card and the reading rules: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md">ABLATION_TTS_0.10.md</a>.</p>
         </article>
 
         <article class="task-card" id="task-rvc">
@@ -583,7 +583,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
 <section class="doc-section" id="version-tts010">
   <span class="eyebrow">12/10 · benlu, Turino · Model revision</span>
   <h2>12/10 · TTS_0.10 — benlu's model with switchable components</h2>
-  <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code>. Commit <a href="https://github.com/liquidtoy001/STS2026/commit/c06d618"><code>c06d618</code></a> · 12/10/2026 (Australia/Brisbane). Model and training recipe: benlu (<code>final-vits</code>, 40,000 steps in about 10 h on Kaggle T4 ×2); integration: Turino.</p>
+  <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code>. Commit <a href="https://github.com/liquidtoy001/STS2026/commit/c06d618"><code>c06d618</code></a>, pre-release <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10"><code>tts-v0.10</code></a>, merged to <code>main</code> · 12/10/2026 (Australia/Brisbane). Model and training recipe: benlu (<code>final-vits</code>, 40,000 steps in about 10 h on Kaggle T4 ×2); integration: Turino.</p>
   <p>Compared with TTS_0.02, TTS_0.10 changes eight things: a text encoder with convolutional feed-forward blocks, a gated WaveNet posterior encoder, a multi-receptive-field decoder, multi-period and scale discriminators, feature matching, a mel × 45 reconstruction loss, batch 16 with fp16 training, and training on transcripts of at most 100 characters. Each change is a switch that can restore the TTS_0.02 component; flow, duration predictor and speaker-ID conditioning are kept.</p>
   <p>These are the standard VITS/HiFi-GAN components for modelling waveform detail and periodicity. With benlu's weights the integrated model reproduces his original code exactly; with every switch at TTS_0.02 it reproduces the <code>tts-v0.02</code> release.</p>
   <div class="table-wrap">

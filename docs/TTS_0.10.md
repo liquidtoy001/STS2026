@@ -1,7 +1,8 @@
 # TTS_0.10 — benlu's model in the project harness, with switchable components
 
 Integration: Turino. Model and training recipe: benlu (`final-vits`). Version date: 2026-10-12
-(Australia/Brisbane). Status: implemented and integration-tested; the ablation runs
+(Australia/Brisbane). Status: implemented and integration-tested; released as the research
+pre-release [`tts-v0.10`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10) and merged into `main` on 2026-10-12. The ablation runs
 ([ABLATION_TTS_0.10.md](ABLATION_TTS_0.10.md)) have not started.
 Source: `notebooks/vits-full-train.ipynb`, implementation commit [`c06d618`](https://github.com/liquidtoy001/STS2026/commit/c06d618).
 
@@ -54,8 +55,9 @@ feature-matching objective is the VITS training recipe.
 - Every arm completes training steps on synthetic tones; checkpoints round-trip; mismatched
   switches are refused on resume. 30 automated tests pass.
 - The complete notebook ran on an RTX 4070 Ti SUPER for arms R0 (fp16) and E0 (fp32), stopped
-  at the time budget and resumed (`tools/check_speaker_notebook.py`). These are wiring checks,
-  not quality results.
+  at the time budget and resumed (`tools/check_speaker_notebook.py`). On the complete LJSpeech-1.1,
+  a 20-step R0 smoke run found all 100 held-out recordings, trained on 6,208 clips and ran both
+  probes. These are wiring checks, not quality results (`docs/records/tts-0.10/validation.json`).
 
 ## Measured so far
 

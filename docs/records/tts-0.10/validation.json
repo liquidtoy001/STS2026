@@ -1,0 +1,102 @@
+{
+  "version": "TTS_0.10",
+  "release": "tts-v0.10",
+  "implementation_commit": "c06d618b1b0dc1b21af5ec8868e4f59839e2582c",
+  "recorded": "2026-10-12 (Australia/Brisbane)",
+  "scope": "implementation and integration checks only; no TTS_0.10 run of this harness has been trained, and nothing here is a speech-quality result",
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.7.1+cu118",
+    "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER"
+  },
+  "automated_tests": {
+    "command": "python -m unittest discover -s tests",
+    "tests_run": 30,
+    "result": "OK"
+  },
+  "equivalence_checks": [
+    "benlu's archived AudioSyn (docs/records/tts-0.10/benlu-source) with converted weights: training forward outputs (audio, alignment, segment starts, prior/posterior statistics) and text-only inference identical to TTS_0.10 defaults, CPU, fixed seeds",
+    "benlu's MultiPeriodDiscriminator outputs and LSGAN/feature-matching losses identical",
+    "every switch at tts002: initial weights, forward pass, inference, discriminator and loss terms identical to tts-v0.02",
+    "batch-vectorised MAS: identical paths to benlu's per-item loop on 40 random cases including ties",
+    "Slaney mel filterbank (torchaudio) matches the librosa definition"
+  ],
+  "integration_runs": {
+    "synthetic_tones_full_notebook": {
+      "arms": [
+        "R0",
+        "E0"
+      ],
+      "sessions": [
+        {
+          "arm": "R0",
+          "status": "stopped_time_budget",
+          "step": 1,
+          "actual_optimizer_updates": 0,
+          "amp_backoffs": 1,
+          "nonfinite_skips": 0,
+          "resumed": false
+        },
+        {
+          "arm": "R0",
+          "status": "completed",
+          "step": 2,
+          "actual_optimizer_updates": 0,
+          "amp_backoffs": 2,
+          "nonfinite_skips": 0,
+          "resumed": true
+        },
+        {
+          "arm": "E0",
+          "status": "stopped_time_budget",
+          "step": 1,
+          "actual_optimizer_updates": 1,
+          "amp_backoffs": 0,
+          "nonfinite_skips": 0,
+          "resumed": false
+        },
+        {
+          "arm": "E0",
+          "status": "completed",
+          "step": 2,
+          "actual_optimizer_updates": 2,
+          "amp_backoffs": 0,
+          "nonfinite_skips": 0,
+          "resumed": true
+        }
+      ],
+      "completed_at_utc": "2026-10-11T15:21:44+00:00"
+    },
+    "full_ljspeech_smoke": {
+      "arm": "R0",
+      "steps": 20,
+      "status": "completed",
+      "training_clips": 6208,
+      "corpus_clips": 13100,
+      "heldout_probe_ids": [
+        "LJ001-0056",
+        "LJ001-0156",
+        "LJ002-0128",
+        "LJ004-0125",
+        "LJ004-0129",
+        "LJ005-0053",
+        "LJ005-0142",
+        "LJ005-0252"
+      ],
+      "probe_membership": {
+        "LJ001-0001": "not_trained",
+        "LJ001-0002": "trained",
+        "LJ001-0003": "not_trained",
+        "LJ001-0004": "trained",
+        "LJ001-0005": "not_trained",
+        "LJ001-0006": "trained",
+        "LJ001-0007": "not_trained",
+        "LJ001-0008": "trained"
+      },
+      "completed_at_utc": "2026-10-11T16:43:31+00:00",
+      "note": "20-step smoke test via tools/train_tts010.py --smoke-steps 20; not a training result"
+    }
+  },
+  "benchmark": "docs/records/tts-0.10/benchmark/arms_rtx4070tisuper.json (synthetic audio with LJSpeech-like lengths)",
+  "release_assets": "one Kaggle export per arm (tools/build_kaggle_full_train.py) and this file; no model weights"
+}
