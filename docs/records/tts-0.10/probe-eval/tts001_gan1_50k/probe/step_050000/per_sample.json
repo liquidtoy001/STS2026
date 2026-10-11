@@ -1,0 +1,162 @@
+[
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0001",
+    "mode": "mean",
+    "start_frame": 399,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.512477993965149,
+    "stft_spectral_convergence": 0.9434437155723572,
+    "stft_log_magnitude": 1.7750091552734375
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0002",
+    "mode": "mean",
+    "start_frame": 65,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.5296529531478882,
+    "stft_spectral_convergence": 0.9456815123558044,
+    "stft_log_magnitude": 1.8519477844238281
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0003",
+    "mode": "mean",
+    "start_frame": 400,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.253334641456604,
+    "stft_spectral_convergence": 0.9337514638900757,
+    "stft_log_magnitude": 1.7438809871673584
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0004",
+    "mode": "mean",
+    "start_frame": 205,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.616977334022522,
+    "stft_spectral_convergence": 0.9701066017150879,
+    "stft_log_magnitude": 2.015110731124878
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0005",
+    "mode": "mean",
+    "start_frame": 333,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.0010792016983032,
+    "stft_spectral_convergence": 0.9528908729553223,
+    "stft_log_magnitude": 1.5828807353973389
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0006",
+    "mode": "mean",
+    "start_frame": 228,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.4958387613296509,
+    "stft_spectral_convergence": 0.9813222885131836,
+    "stft_log_magnitude": 1.7880548238754272
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0007",
+    "mode": "mean",
+    "start_frame": 345,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.1450834274291992,
+    "stft_spectral_convergence": 0.9629608392715454,
+    "stft_log_magnitude": 1.4876089096069336
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0008",
+    "mode": "mean",
+    "start_frame": 60,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.1993778944015503,
+    "stft_spectral_convergence": 0.8895556330680847,
+    "stft_log_magnitude": 1.5094294548034668
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0001",
+    "mode": "sample",
+    "start_frame": 399,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.1042873859405518,
+    "stft_spectral_convergence": 0.9239130020141602,
+    "stft_log_magnitude": 1.2968367338180542
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0002",
+    "mode": "sample",
+    "start_frame": 65,
+    "valid_samples": 8192,
+    "log_mel_l1": 0.9813215732574463,
+    "stft_spectral_convergence": 0.8916928172111511,
+    "stft_log_magnitude": 1.2090165615081787
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0003",
+    "mode": "sample",
+    "start_frame": 400,
+    "valid_samples": 8192,
+    "log_mel_l1": 0.9741639494895935,
+    "stft_spectral_convergence": 0.932586133480072,
+    "stft_log_magnitude": 1.206059217453003
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0004",
+    "mode": "sample",
+    "start_frame": 205,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.0174483060836792,
+    "stft_spectral_convergence": 0.9553043246269226,
+    "stft_log_magnitude": 1.2162163257598877
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0005",
+    "mode": "sample",
+    "start_frame": 333,
+    "valid_samples": 8192,
+    "log_mel_l1": 0.8155115842819214,
+    "stft_spectral_convergence": 0.9076602458953857,
+    "stft_log_magnitude": 1.0195090770721436
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0006",
+    "mode": "sample",
+    "start_frame": 228,
+    "valid_samples": 8192,
+    "log_mel_l1": 0.9560398459434509,
+    "stft_spectral_convergence": 0.9437596201896667,
+    "stft_log_magnitude": 1.1449073553085327
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0007",
+    "mode": "sample",
+    "start_frame": 345,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.0977706909179688,
+    "stft_spectral_convergence": 0.9277521967887878,
+    "stft_log_magnitude": 1.2713602781295776
+  },
+  {
+    "step": 50000,
+    "sample_id": "LJ001-0008",
+    "mode": "sample",
+    "start_frame": 60,
+    "valid_samples": 8192,
+    "log_mel_l1": 1.053249716758728,
+    "stft_spectral_convergence": 0.8983258605003357,
+    "stft_log_magnitude": 1.1786556243896484
+  }
+]

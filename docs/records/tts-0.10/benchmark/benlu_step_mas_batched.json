@@ -1,0 +1,18 @@
+{
+ "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+ "torch": "2.7.1+cu118",
+ "batch": 16,
+ "mas": "batched",
+ "workers": 4,
+ "steps": 60,
+ "s_per_step_mean": 0.2377,
+ "s_per_step_median": 0.2363,
+ "data_wait_mean": 0.0015,
+ "mas_mean": 0.0238,
+ "peak_alloc_gib": 3.63,
+ "peak_reserved_gib": 3.8,
+ "params_g": 21146625,
+ "params_d": 46747132,
+ "hours_20k": 1.32,
+ "hours_40k": 2.64
+}

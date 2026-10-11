@@ -1,0 +1,61 @@
+{
+  "label": "tts001_gan1_50k",
+  "checkpoint": "E:\\Documents\\STS2026\\checkpoints\\full-train\\full_gan1_20260929T170528763415Z\\vits_step_50000.pt",
+  "checkpoint_step": 50000,
+  "model_version": null,
+  "switches": {
+    "text_encoder": "tts002",
+    "posterior_encoder": "tts002",
+    "decoder": "tts002",
+    "discriminator": "tts002",
+    "feature_matching": false,
+    "recon_loss": "tts002",
+    "optim": "tts002",
+    "max_text_chars": 0
+  },
+  "device": "cuda:0",
+  "torch": "2.7.1+cu118",
+  "noise_scale": 0.667,
+  "eval_seed": 1234,
+  "spectrogram": "|X| (TTS_0.01/0.02 input)",
+  "heldout_recordings_found": 0,
+  "heldout_ids_total": 100,
+  "scope": "LJSpeech single speaker; held-out = sts_eval/splits/ljspeech_heldout_100.txt",
+  "probe": [
+    {
+      "step": 50000,
+      "mode": "mean",
+      "count": 8,
+      "log_mel_l1": 1.3442277759313583,
+      "stft_spectral_convergence": 0.9474641159176826,
+      "stft_log_magnitude": 1.7192403227090836
+    },
+    {
+      "step": 50000,
+      "mode": "sample",
+      "count": 8,
+      "log_mel_l1": 0.9999741315841675,
+      "stft_spectral_convergence": 0.9226242750883102,
+      "stft_log_magnitude": 1.1928201466798782
+    }
+  ],
+  "heldout_crops": null,
+  "heldout_full": {
+    "count": 0,
+    "log_mel_l1": null,
+    "stft_spectral_convergence": null,
+    "stft_log_magnitude": null
+  },
+  "heldout_tts": {
+    "count": 0,
+    "duration_ratio_mean": null,
+    "rms_ratio_mean": null
+  },
+  "listening_sentences": [
+    "The quick brown fox jumps over the lazy dog.",
+    "Our team trained this speech model from scratch for a university course project.",
+    "Please call Stella and ask her to bring these things with her from the store.",
+    "How much wood would a woodchuck chuck if a woodchuck could chuck wood?"
+  ],
+  "completed_at_utc": "2026-10-11T15:30:12+00:00"
+}

@@ -49,6 +49,12 @@ An existing version section may have its own anchored entry. Do not bury new
 proposals only in the comparison board or experiment reports. Update related
 links and check that the sidebar destination exists in the same change.
 
+For TTS_0.02 and subsequent version reports, link the exact implementation
+commit. Keep the initial report brief: describe the changes from the previous
+version, their intended benefit to the model, and whether training has started.
+Add training results only after they exist; do not fill an untrained version's
+report with setup instructions, test inventories or speculative quality claims.
+
 ## Handbook
 
 The [23-page handbook](docs/guides/STS2026_GitHub_Team_Handbook.pdf) covers invitations (page 5), normal website operations (pages 6–10), conflict/recovery scenarios (pages 14–18), a practice PR (page 19), a checklist (page 22), and optional Mac setup (page 23).
@@ -64,3 +70,8 @@ GitHub pushes and GPT Sites publication are separate operations; verify both
 and record the deployed version. Preserve teammates' branches. Merge a PR to `main` only with maintainer authorization;
 never rewrite `main`. If the maintainer asks you to wait for a decision, pause
 commits, pushes, PR changes and deployment until that decision.
+
+Requests to update a report authorize synchronizing that report locally, on
+GitHub (`Turino`), and on the existing cloud site without another confirmation.
+This authorization is limited to reports; model changes, training and new model
+releases require their own authorization.

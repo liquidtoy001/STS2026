@@ -38,6 +38,40 @@ deployment. Keep the existing audience and Site ID. Record publication success
 and verify the deployed routes before reporting synchronization complete.
 ## Publication history
 
+### 2026-10-07 — Concise TTS_0.02 report
+
+- Report source: `3916809` on `Turino`; model implementation remains `e81f0bd`.
+- Website version **13**, published successfully at `2026-10-06T16:23:00.359077+00:00`
+  (UTC, Sites deployment response). Existing shared audience preserved.
+- Sites source: `9f4db61fee523eb8f9d46247ae1bd4b46cbca7eb`.
+- Saved version: `appgprj_6abd0e861660819185dd81f7ea9ad034~appgver_7b46d887a0fc8191900e7097d86c317c`.
+- Deployment: `appgdep_6ac520538d9c8191815532238764f88a`.
+- The report now contains only the implementation commit, differences from
+  TTS_0.01, intended model benefit and the not-yet-trained status. Report updates
+  synchronize local files, GitHub and the cloud site as requested by the maintainer.
+- This is a post-deployment provenance record; no model code or release changed.
+
+### 2026-10-07 — TTS_0.02 speaker-ID conditioning
+
+- GitHub model source and tag: `e81f0bde3a0130e32e44f2e60c52358ada5943f6` on
+  `Turino`, pre-release [`tts-v0.02`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.02).
+- Uploaded assets: GAN-off and GAN-on standalone Kaggle notebooks and the
+  validation JSON. Their SHA-256 digests were verified against GitHub's asset
+  metadata. No trained multi-speaker weights were uploaded.
+- Published successfully at `2026-10-06T15:22:12.081924+00:00` (UTC; source:
+  Sites deployment response), website version **12**.
+- Deployment ID: `appgdep_6ac5120970448191a0d1993b9647568c`.
+- Saved version: `appgprj_6abd0e861660819185dd81f7ea9ad034~appgver_97f64c39f128819197adf41c224e9998`.
+- Sites source commit: `8a5a2cc96719eb5684d3f832ee701d5588ad431c`.
+- Added the dated TTS_0.02 sidebar entry, architecture/change report, usage
+  contract and explicit untrained/unevaluated limits. Verified local browser
+  navigation/rendering, JavaScript syntax, link destinations and byte-identical
+  mirroring of the six intended source/report files before packaging.
+- The live Site currently has an existing custom shared audience, superseding
+  earlier owner-only snapshots. That audience was preserved without access edits.
+- This post-deployment provenance entry is maintained in GitHub; it is not a
+  claim that the website archive contains its own subsequent deployment receipt.
+
 Navigation rules (updated 2026-10-01): **Versions** owns notebook revisions and
 all related result blocks. Display each experiment once, using a comparison title
 such as **GAN vs no GAN**; do not create independent report trees or subsection

@@ -1,0 +1,22 @@
+{
+  "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "torch": "2.7.1+cu118",
+  "scope": "synthetic audio with LJSpeech-like lengths; timing only",
+  "cudnn_deterministic": false,
+  "results": [
+    {
+      "arm": "R0",
+      "batch_size": 16,
+      "autocast_fp16": true,
+      "training_clips": 6208,
+      "steps_timed": 40,
+      "sec_per_step_mean": 0.262,
+      "sec_per_step_median": 0.2543,
+      "hours_for_40k_steps": 2.91,
+      "peak_allocated_GiB": 3.25,
+      "generator_parameters": 21146625,
+      "discriminator_parameters": 46747132
+    }
+  ],
+  "completed_at_utc": "2026-10-11T15:31:21+00:00"
+}

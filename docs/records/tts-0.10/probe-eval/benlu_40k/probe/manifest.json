@@ -1,0 +1,68 @@
+{
+  "protocol": "posterior_fixed_batch_reconstruction_v1",
+  "scope": "fixed_lj001_probe",
+  "config": {
+    "sample_rate": 22050,
+    "n_fft": 1024,
+    "hop_length": 256,
+    "win_length": 1024,
+    "n_mels": 80,
+    "segment_frames": 32,
+    "seed": 1234,
+    "resolutions": [
+      [
+        512,
+        128,
+        512
+      ],
+      [
+        1024,
+        256,
+        1024
+      ],
+      [
+        2048,
+        512,
+        2048
+      ]
+    ]
+  },
+  "batch_sha256": "44221eee5768898e0dee8150219d53832b6eafff737a0eb3d4f3a9cbd4e82d7c",
+  "sample_ids": [
+    "LJ001-0001",
+    "LJ001-0002",
+    "LJ001-0003",
+    "LJ001-0004",
+    "LJ001-0005",
+    "LJ001-0006",
+    "LJ001-0007",
+    "LJ001-0008"
+  ],
+  "start_frames": [
+    399,
+    65,
+    400,
+    205,
+    333,
+    228,
+    345,
+    60
+  ],
+  "valid_samples": [
+    8192,
+    8192,
+    8192,
+    8192,
+    8192,
+    8192,
+    8192,
+    8192
+  ],
+  "aggregation": "arithmetic mean over utterances, separately by mode",
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.7.1+cu118",
+    "torchaudio": "2.7.1+cu118"
+  },
+  "provenance": {}
+}
