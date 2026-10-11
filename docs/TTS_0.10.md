@@ -3,7 +3,7 @@
 Integration: Turino. Model and training recipe: benlu (`final-vits`). Version date: 2026-10-12
 (Australia/Brisbane). Status: implemented and integration-tested; the ablation runs
 ([ABLATION_TTS_0.10.md](ABLATION_TTS_0.10.md)) have not started.
-Source: `notebooks/vits-full-train.ipynb`.
+Source: `notebooks/vits-full-train.ipynb`, implementation commit [`c06d618`](https://github.com/liquidtoy001/STS2026/commit/c06d618).
 
 ## What changed from TTS_0.02
 
@@ -87,6 +87,24 @@ outputs show harmonics and formant structure; the TTS_0.01 outputs show a broadb
 harmonics. Output RMS level: 0.043–0.058 (benlu) vs 0.013–0.020 (TTS_0.01); a reference LJSpeech
 recording measures 0.083. This is a visual and level check, not a listening test or an
 intelligibility measurement.
+
+### Intelligibility of new sentences (informal, Whisper medium)
+
+`tools/asr_wer.py` (openai-whisper 20240930, `medium`, locked decoding) on the four fixed new
+sentences of `tools/eval_tts010.py`, one synthesis each. Eight real LJSpeech recordings
+(LJ001-0001…0008) give the natural-speech level. Four sentences are far too few for a reliable
+rate; the held-out evaluation uses 100.
+
+| Audio | Words wrong (WER) | Characters wrong (CER) |
+|---|---:|---:|
+| benlu TTS_0.10, 40,000 steps | 32% | 23% |
+| TTS_0.01, no GAN, 50,000 steps | 98% | 84% |
+| TTS_0.01, GAN, 50,000 steps | 100% | 94% |
+| Real LJSpeech recordings | 0.8% | 0.2% |
+
+Whisper returned either nothing or "thanks for watching" for every TTS_0.01 sentence, its usual
+output for non-speech; for benlu's checkpoint most errors are substitutions of similar-sounding
+words. Records: `docs/records/tts-0.10/asr-informal/`.
 
 ### Training cost (`tools/benchmark_tts010.py`)
 

@@ -583,7 +583,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
 <section class="doc-section" id="version-tts010">
   <span class="eyebrow">12/10 · benlu, Turino · Model revision</span>
   <h2>12/10 · TTS_0.10 — benlu's model with switchable components</h2>
-  <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code> on <code>Turino</code> · 12/10/2026 (Australia/Brisbane). Model and training recipe: benlu (<code>final-vits</code>); integration: Turino.</p>
+  <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code>. Commit <a href="https://github.com/liquidtoy001/STS2026/commit/c06d618"><code>c06d618</code></a> · 12/10/2026 (Australia/Brisbane). Model and training recipe: benlu (<code>final-vits</code>, 40,000 steps in about 10 h on Kaggle T4 ×2); integration: Turino.</p>
   <p>Compared with TTS_0.02, TTS_0.10 changes eight things: a text encoder with convolutional feed-forward blocks, a gated WaveNet posterior encoder, a multi-receptive-field decoder, multi-period and scale discriminators, feature matching, a mel × 45 reconstruction loss, batch 16 with fp16 training, and training on transcripts of at most 100 characters. Each change is a switch that can restore the TTS_0.02 component; flow, duration predictor and speaker-ID conditioning are kept.</p>
   <p>These are the standard VITS/HiFi-GAN components for modelling waveform detail and periodicity. With benlu's weights the integrated model reproduces his original code exactly; with every switch at TTS_0.02 it reproduces the <code>tts-v0.02</code> release.</p>
   <div class="table-wrap">
@@ -601,6 +601,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
     <img src="assets/tts010-spectrograms.jpg" alt="Spectrograms of text-only synthesis and reconstruction: benlu TTS_0.10 at 40,000 steps shows harmonics; TTS_0.01 GAN and no-GAN at 50,000 steps do not." loading="lazy" decoding="async">
     <figcaption>Text-only synthesis (rows 1–2) and full-utterance reconstruction (row 3); same seed and noise scale. A visual check, not a listening test.</figcaption>
   </figure>
+  <p>On four new sentences, Whisper medium gets 32% of the words wrong for benlu's checkpoint and 98–100% for TTS_0.01, whose outputs it does not recognise as speech; real LJSpeech recordings score 0.8%. Four sentences give only a first indication; the held-out evaluation uses 100.</p>
   <p><strong>No run has been trained with this notebook yet.</strong> The ablation (<a href="#task-tts010-ablation">To-do</a>) trains eleven arms. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.10.md">TTS_0.10.md</a>.</p>
 </section>
 

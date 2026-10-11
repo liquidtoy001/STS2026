@@ -1,0 +1,74 @@
+[
+ {
+  "id": "new_1",
+  "channel": "synthesized_new",
+  "wav": "E:\\Documents\\STS2026\\output\\tts010-eval-v2\\benlu_40k\\audio\\new_1.wav",
+  "reference": "The quick brown fox jumps over the lazy dog."
+ },
+ {
+  "id": "new_2",
+  "channel": "synthesized_new",
+  "wav": "E:\\Documents\\STS2026\\output\\tts010-eval-v2\\benlu_40k\\audio\\new_2.wav",
+  "reference": "Our team trained this speech model from scratch for a university course project."
+ },
+ {
+  "id": "new_3",
+  "channel": "synthesized_new",
+  "wav": "E:\\Documents\\STS2026\\output\\tts010-eval-v2\\benlu_40k\\audio\\new_3.wav",
+  "reference": "Please call Stella and ask her to bring these things with her from the store."
+ },
+ {
+  "id": "new_4",
+  "channel": "synthesized_new",
+  "wav": "E:\\Documents\\STS2026\\output\\tts010-eval-v2\\benlu_40k\\audio\\new_4.wav",
+  "reference": "How much wood would a woodchuck chuck if a woodchuck could chuck wood?"
+ },
+ {
+  "id": "LJ001-0001",
+  "channel": "natural",
+  "wav": "E:/Documents/STS2026/data/LJSpeech-1.1/wavs/LJ001-0001.wav",
+  "reference": "Printing, in the only sense with which we are at present concerned, differs from most if not from all the arts and crafts represented in the Exhibition"
+ },
+ {
+  "id": "LJ001-0002",
+  "channel": "natural",
+  "wav": "E:/Documents/STS2026/data/LJSpeech-1.1/wavs/LJ001-0002.wav",
+  "reference": "in being comparatively modern."
+ },
+ {
+  "id": "LJ001-0003",
+  "channel": "natural",
+  "wav": "E:/Documents/STS2026/data/LJSpeech-1.1/wavs/LJ001-0003.wav",
+  "reference": "For although the Chinese took impressions from wood blocks engraved in relief for centuries before the woodcutters of the Netherlands, by a similar process"
+ },
+ {
+  "id": "LJ001-0004",
+  "channel": "natural",
+  "wav": "E:/Documents/STS2026/data/LJSpeech-1.1/wavs/LJ001-0004.wav",
+  "reference": "produced the block books, which were the immediate predecessors of the true printed book,"
+ },
+ {
+  "id": "LJ001-0005",
+  "channel": "natural",
+  "wav": "E:/Documents/STS2026/data/LJSpeech-1.1/wavs/LJ001-0005.wav",
+  "reference": "the invention of movable metal letters in the middle of the fifteenth century may justly be considered as the invention of the art of printing."
+ },
+ {
+  "id": "LJ001-0006",
+  "channel": "natural",
+  "wav": "E:/Documents/STS2026/data/LJSpeech-1.1/wavs/LJ001-0006.wav",
+  "reference": "And it is worth mention in passing that, as an example of fine typography,"
+ },
+ {
+  "id": "LJ001-0007",
+  "channel": "natural",
+  "wav": "E:/Documents/STS2026/data/LJSpeech-1.1/wavs/LJ001-0007.wav",
+  "reference": "the earliest book printed with movable types, the Gutenberg, or \"forty-two line Bible\" of about fourteen fifty-five,"
+ },
+ {
+  "id": "LJ001-0008",
+  "channel": "natural",
+  "wav": "E:/Documents/STS2026/data/LJSpeech-1.1/wavs/LJ001-0008.wav",
+  "reference": "has never been surpassed."
+ }
+]

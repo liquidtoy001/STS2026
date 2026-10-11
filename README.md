@@ -21,7 +21,8 @@ conditioning. Every change is a switch that can revert one component to TTS_0.02
 - 100 LJSpeech clips are held out from all training (`sts_eval/splits/ljspeech_heldout_100.txt`).
 - benlu's 40,000-step checkpoint scores log-mel L1 0.562 on the fixed LJ001 probe, against
   1.218–1.344 for the 50,000-step TTS_0.01 runs, and its text-only output shows the harmonic
-  structure that TTS_0.01 lacks. No listening test or intelligibility metric has been run.
+  structure that TTS_0.01 lacks. On four new sentences Whisper misrecognises 32% of its words,
+  against 98–100% for TTS_0.01 (real recordings: 0.8%); held-out evaluation has not been run.
 - Engineering: batch-vectorised alignment search and non-deterministic cuDNN kernels; a TTS_0.10
   training step takes about 0.23 s on an RTX 4070 Ti SUPER (40,000 steps ≈ 2.5 h).
 - No run of this harness has been trained yet. The team's leave-one-out ablation (11 runs, five
