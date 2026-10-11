@@ -23,23 +23,21 @@ Three reference runs make the result interpretable:
 
 All arms: 40,000 steps, LJSpeech-1.1 minus the 100 held-out clips, the same code commit.
 
-| Arm | Reverts to TTS_0.02 | What it tests | Owner | Hardware | Hours (RTX 4070 Ti SUPER) |
-|---|---|---|---|---|---:|
-| R0 | nothing (seed 2026) | reference | assigned by the team | L40S 48 GB | 2.5 |
-| R0b | nothing (seed 2027) | noise floor | assigned by the team | same GPU type as R0 | 2.5 |
-| G1 | `text_encoder` | conv-FFN Transformer text encoder | assigned by the team | L40S 48 GB | 2.5 |
-| G2 | `posterior_encoder` | gated WaveNet posterior encoder | assigned by the team | L40S 48 GB | 2.4 |
-| G3 | `decoder` | multi-receptive-field decoder | assigned by the team | L40S 48 GB | 2.4 |
-| A1 | `discriminator` | multi-period + scale discriminator | assigned by the team | L40S 48 GB | 1.7 |
-| A2 | `feature_matching` | feature-matching loss | assigned by the team | L40S 48 GB | 2.6 |
-| L1 | `recon_loss` | mel ×45 instead of mel + STFT + waveform | assigned by the team | L40S 48 GB | 2.4 |
-| O1 | `optim` | batch 16, lr 2e-4, fp16 vs batch 8, lr 1e-4, fp32 | assigned by the team | L40S 48 GB | 2.2 |
-| E0 | all eight | total improvement | Turino | RTX 4070 Ti SUPER 16 GB | 1.6 |
-| D1 | `max_text_chars` | the ≤100-character filter | Turino | RTX 4070 Ti SUPER 16 GB | 3.0 |
+| Arm | Reverts to TTS_0.02 | What it tests | Owner | Hardware |
+|---|---|---|---|---|
+| R0 | nothing (seed 2026) | reference | assigned by the team | L40S 48 GB |
+| R0b | nothing (seed 2027) | noise floor | assigned by the team | same GPU type as R0 |
+| G1 | `text_encoder` | conv-FFN Transformer text encoder | assigned by the team | L40S 48 GB |
+| G2 | `posterior_encoder` | gated WaveNet posterior encoder | assigned by the team | L40S 48 GB |
+| G3 | `decoder` | multi-receptive-field decoder | assigned by the team | L40S 48 GB |
+| A1 | `discriminator` | multi-period + scale discriminator | assigned by the team | L40S 48 GB |
+| A2 | `feature_matching` | feature-matching loss | assigned by the team | L40S 48 GB |
+| L1 | `recon_loss` | mel ×45 instead of mel + STFT + waveform | assigned by the team | L40S 48 GB |
+| O1 | `optim` | batch 16, lr 2e-4, fp16 vs batch 8, lr 1e-4, fp32 | assigned by the team | L40S 48 GB |
+| E0 | all eight | total improvement | Turino | RTX 4070 Ti SUPER 16 GB |
+| D1 | `max_text_chars` | the ≤100-character filter | Turino | RTX 4070 Ti SUPER 16 GB |
 
-Hours are 40,000 steps at the speed measured with `tools/benchmark_tts010.py` on Turino's GPU
-(see [TTS_0.10](TTS_0.10.md#training-cost-toolsbenchmark_tts010py)); measure your own GPU before
-starting. The team assigns the remaining arms and the central evaluation; Turino runs E0 and D1.
+Measure your own GPU with `tools/benchmark_tts010.py` before starting. The team assigns the remaining arms and the central evaluation; Turino runs E0 and D1.
 The report chapters follow the arm groups: reference and noise floor (R0, R0b), generator
 architecture (G1–G3), adversarial training (A1, A2), loss and optimisation (L1, O1), and the
 TTS_0.02 baseline and data filter (E0, D1).
