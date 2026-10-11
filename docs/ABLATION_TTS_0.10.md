@@ -39,7 +39,7 @@ All arms: 40,000 steps, LJSpeech-1.1 minus the 100 held-out clips, the same code
 
 Hours are 40,000 steps at the speed measured with `tools/benchmark_tts010.py` on Turino's GPU
 (see [TTS_0.10](TTS_0.10.md#training-cost-toolsbenchmark_tts010py)); measure your own GPU before
-starting. The team assigns the remaining arms; Turino runs E0 and D1 and the central evaluation.
+starting. The team assigns the remaining arms and the central evaluation; Turino runs E0 and D1.
 The report chapters follow the arm groups: reference and noise floor (R0, R0b), generator
 architecture (G1–G3), adversarial training (A1, A2), loss and optimisation (L1, O1), and the
 TTS_0.02 baseline and data filter (E0, D1).
@@ -103,7 +103,7 @@ and exercises evaluation, checkpointing and sampling. Never report a smoke run.
 2. Upload the **whole run folder** to the team Google Drive under
    `tts010-ablation/<arm>/` (checkpoints at 10k/20k/30k/40k, samples, both evaluation folders,
    training history, `curves.png`, your log).
-3. Post the run card below in the team chat (copy, fill, send) and tell Turino the Drive path.
+3. Post the run card below in the team chat (copy, fill, send), including the Drive path.
 4. Listen to `samples/step_40000_sample_{1,2}.wav` and write one or two sentences of notes.
 
 ```text
@@ -120,7 +120,7 @@ Deviations:               (anything that differed from this document, or "none")
 Listening notes:          (optional, English)
 ```
 
-## Central evaluation (Turino)
+## Central evaluation
 
 All checkpoints are evaluated on one machine with one script, so differences come from training,
 not from evaluation:
