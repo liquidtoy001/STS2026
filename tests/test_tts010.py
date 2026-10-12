@@ -323,6 +323,47 @@ class TTS010Tests(unittest.TestCase):
                 {"word_n": 6, "word_s": 0, "word_d": 0, "word_i": 0}]
         self.assertAlmostEqual(corpus_rates(rows, "word")["rate"], 0.2)  # corpus rate, not mean of 0.5 and 0
 
+    def test_evaluate_runs_discovery_labels_and_noise_floor(self):
+        from tools import evaluate_runs as er
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            values = {"R0": (0.50, 0.10), "R0b": (0.52, 0.12), "G1": (0.60, 0.30), "D1": (0.51, 0.11)}
+            for arm, (mel, wer) in values.items():
+                run = root / "drive" / arm / f"tts010_{arm}_20261012T000000Z"
+                (run / "checkpoints").mkdir(parents=True)
+                (run / "checkpoints" / "vits_step_40000.pt").write_bytes(b"")
+                (run / "run_config.json").write_text(json.dumps({"model_version": "TTS_0.10", "arm": arm}))
+                (run / "status.json").write_text(json.dumps({"status": "completed", "step": 40000}))
+                label = root / "eval" / f"{arm}_40k"
+                label.mkdir(parents=True)
+                (label / "metrics.json").write_text(json.dumps({
+                    "checkpoint": str(run / "checkpoints" / "vits_step_40000.pt"), "checkpoint_step": 40000,
+                    "switches": {"optim": "tts010"},
+                    "heldout_full": {"log_mel_l1": mel, "stft_spectral_convergence": 0.5, "count": 100},
+                    "heldout_tts": {"duration_ratio_mean": 1.0, "rms_ratio_mean": 0.9}}))
+                channel = {"wer": {"rate": wer}, "cer": {"rate": wer / 2}, "failures": 0}
+                (label / "asr.json").write_text(json.dumps({"asr": {"model": "medium"}, "summary": {
+                    "synthesized": channel, "natural": {"wer": {"rate": 0.03}}, "delta_wer": wer - 0.03}}))
+            unfinished = root / "drive" / "A1" / "tts010_A1_x"
+            (unfinished / "checkpoints").mkdir(parents=True)
+            (unfinished / "run_config.json").write_text(json.dumps({"model_version": "TTS_0.10", "arm": "A1"}))
+            (unfinished / "status.json").write_text(json.dumps({"status": "stopped_time_budget", "step": 20000}))
+            runs = er.find_runs(root / "drive", 40000)
+            self.assertEqual(sorted(r["arm"] for r in runs), ["D1", "G1", "R0", "R0b"])
+            self.assertEqual(er.label_for(runs[0], root / "eval", 40000), f"{runs[0]['arm']}_40k")
+            other = dict(runs[0], checkpoint=root / "elsewhere.pt", run=root / "tts010_X_20261013T000000Z")
+            self.assertEqual(er.label_for(other, root / "eval", 40000), f"{runs[0]['arm']}_40k_20261013T000000Z")
+            rows, has_r0, has_r0b = er.build_table(root / "eval")
+            self.assertTrue(has_r0 and has_r0b)
+            self.assertEqual([r["arm"] for r in rows], ["R0", "R0b", "G1", "D1"])
+            by_arm = {r["arm"]: r for r in rows}
+            self.assertAlmostEqual(by_arm["G1"]["wer_vs_R0"], 0.20)
+            self.assertTrue(by_arm["G1"]["wer_beyond_noise"])      # 0.20 > |0.12 - 0.10|
+            self.assertFalse(by_arm["D1"]["wer_beyond_noise"])     # 0.01 <= 0.02
+            self.assertNotIn("wer_beyond_noise", by_arm["R0b"])
+            summary = er.write_outputs(rows, has_r0, has_r0b, root / "eval").read_text(encoding="utf-8")
+            self.assertIn("+20.0 pt*", summary)
+
     def test_converter_round_trip(self):
         torch.manual_seed(13)
         generator = self.benlu["AudioSyn"](76, 192, 192, 768, 513)

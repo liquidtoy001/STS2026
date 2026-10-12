@@ -134,6 +134,16 @@ python tools/eval_tts010.py --checkpoint <run>/checkpoints/vits_step_40000.pt \
 python tools/asr_wer.py output/tts010-eval/G1_40k --model medium
 ```
 
+To evaluate every finished run in a folder (any depth, e.g. a Drive download) and rebuild the
+comparison table in one command, re-runnable as runs arrive:
+
+```sh
+python tools/evaluate_runs.py --runs-dir <runs> --eval-dir output/tts010-eval \n    --data-dir /path/LJSpeech-1.1 --asr-python <python with openai-whisper>
+```
+
+It writes `summary.md`/`.csv`/`.json`: each arm's difference from R0, flagged when it exceeds the
+R0/R0b difference.
+
 `asr_wer.py` follows the team's ASR back-transcription protocol: a locked Whisper model
 (`transcribe`, `language=en`, `temperature=0`, beam 5, no prompt), one shared text normalisation,
 corpus WER/CER with substitution/deletion/insertion rates, and the LJSpeech recording of every
