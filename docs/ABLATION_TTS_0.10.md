@@ -1,6 +1,8 @@
 # TTS_0.10 ablation: which changes made the difference
 
-Status: training not started. Plan agreed by the team on 2026-10-12 (Australia/Brisbane).
+Status 2026-10-20: R0, O1, E0 and D1 trained and evaluated centrally; R0b trained, upload
+incomplete; G1–G3, A1, A2 and L1 not received. Plan agreed by the team on 2026-10-12
+(Australia/Brisbane).
 Model: [TTS_0.10](TTS_0.10.md), pre-release [`tts-v0.10`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10). Source: `notebooks/vits-full-train.ipynb`.
 
 ## Question

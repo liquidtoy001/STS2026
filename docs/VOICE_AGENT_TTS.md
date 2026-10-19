@@ -1,9 +1,8 @@
 # TTS for voice agents: speaking before the sentence is finished
 
 Turino, 2026-10-19 (Australia/Brisbane). Model: TTS_0.10 arm R0 at 40,000 steps. Measurements
-on one RTX 4070 Ti SUPER; intelligibility by Whisper medium (`tools/asr_wer.py`). This page
-records a direction under discussion in the team and what has been measured for it; the team
-has not decided to adopt it.
+on one RTX 4070 Ti SUPER; intelligibility by Whisper medium (`tools/asr_wer.py`). Since
+2026-10-20 this is the project's direction; this page records what has been measured for it.
 
 ## The problem
 
@@ -111,5 +110,5 @@ other=<dir> --out comparison.json`.
 
 ## Team decisions
 
-Whether the project adopts this framing, and which configuration an application would use, is
-for the team to decide.
+On 2026-10-20 Turino moved the project to this direction. Which configuration an application
+would use is still for the team to decide.

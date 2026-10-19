@@ -6,12 +6,12 @@
      Prefix dates use d/m: version creation or task setup, not run completion. */
   var NAV = [
     { group: "Project", defaultOpen: true, items: [
-      { href: "#overview", label: "Overview" }
+      { href: "#overview", label: "Overview" },
+      { href: "#direction", label: "Project direction: TTS for voice agents", ver: "20/10" },
+      { href: "#webui", label: "WebUI: how to use it", ver: "20/10" }
     ]},
     { group: "To-do", defaultOpen: true, items: [
-      { href: "#task-tts010-ablation", label: "TTS_0.10 ablation training", ver: "12/10" },
-      { href: "#task-rvc", label: "Basic RVC implementation", ver: "1/10" },
-      { href: "#turino-listening", label: "Listening improvements · Turino", ver: "1/10" }
+      { href: "#task-tts010-ablation", label: "TTS_0.10 ablation training", ver: "12/10" }
     ]},
     { group: "Versions", defaultOpen: true, groups: [
       { group: "17/9 · Original", items: [

@@ -28,14 +28,14 @@
       <h1 id="overview">STS2026: a compact VITS-style speech model, built from scratch</h1>
       <div class="callout note">
         <div class="callout-title">Model naming</div>
-        <p><code>TTS_&lt;version&gt;</code> identifies revisions used to train and improve the TTS model. The integrated starting version is <code>TTS_0.01</code>. The latest source release, <a href="#version-speaker-conditioning">TTS_0.02</a>, adds speaker-ID conditioning; multi-speaker weights have not been trained. Earlier notebooks retain their descriptive historical names.</p>
+        <p><code>TTS_&lt;version&gt;</code> identifies revisions used to train and improve the TTS model. The integrated starting version is <code>TTS_0.01</code>. <a href="#version-speaker-conditioning">TTS_0.02</a> added speaker-ID conditioning; multi-speaker weights have not been trained. The latest pre-release, <a href="#version-tts010">TTS_0.10</a>, is benlu's model with switchable components. Earlier notebooks retain their descriptive historical names.</p>
         <p>The <code>d/m</code> prefix records a revision date or a task's setup date; it is separate from the model version number. RVC and other future models will use their own naming rules, to be defined when that work begins.</p>
       </div>
       <p class="lede">
         STS2026 implements the main ideas of VITS in one readable PyTorch notebook: a text encoder with a learned prior,
         a posterior encoder, a normalizing flow, monotonic alignment search, a duration predictor and a waveform decoder.
-        The current work measures how well the posterior encoder and decoder reconstruct speech, and compares every
-        architectural change against one frozen baseline.
+        Since 20/10 the project is a TTS for voice agents: the model should start speaking before a language model has
+        finished the sentence and still be understood (<a href="#direction">Project direction</a>).
       </p>
       <div class="meta-row">
         <span class="chip ok"><span class="dot"></span>Baseline measured</span>
@@ -54,75 +54,94 @@
         <div class="stat"><div class="k">Baseline log-mel L1</div><div class="v">0.5601</div><div class="s">mean mode, iter 2,000</div></div>
       </div>
 
+      <section class="doc-section" id="direction">
+        <span class="eyebrow">20/10 · Turino · Project direction</span>
+        <h2>20/10 · Project direction: a VITS TTS for voice agents</h2>
+        <p>A voice agent answers in three stages: speech recognition turns the user's speech into text, a language model writes the reply word by word, and a TTS speaks it. A TTS that needs the whole sentence can start only when the language model has finished that sentence. Since 20/10 the project asks: <strong>how few words can the TTS wait for and still be as intelligible as when it synthesizes the whole sentence?</strong></p>
+        <div class="grid-2">
+          <a class="card" href="#versions">
+            <span class="chip" style="align-self:flex-start">Part 1</span>
+            <h3>Making the TTS intelligible</h3>
+            <p>TTS_0.01 → TTS_0.10 and the leave-one-out ablation of TTS_0.10's eight changes. Whisper medium WER on the 100 held-out sentences: R0 16.9%, the recordings 3.3%; TTS_0.01 scored 98–100% on four new sentences.</p>
+            <span class="card-foot">Versions · TTS_0.10 ablation in To-do</span>
+          </a>
+          <a class="card" href="#voice-agent-tts">
+            <span class="chip acc" style="align-self:flex-start">Part 2</span>
+            <h3>Speaking before the sentence is finished</h3>
+            <p>Chunked synthesis of the held-out sentences: context-aware chunks with two words of lookahead wait for 3 words and are not distinguishable from whole sentences (17.8% against 16.7%); independent 2-word chunks score 35.4%.</p>
+            <span class="card-foot">Chunk study · WebUI Agent mode</span>
+          </a>
+        </div>
+        <p><strong>Known gap: sentence length.</strong> The arms trained with the length filter, R0 among them, see only clips of at most 100 characters, and the 100 held-out sentences come from the same range (at most 20 words). LJSpeech clips have a median of 102 characters (17 words) and reach 187 characters (39 words). Chunked synthesis of longer sentences is being measured.</p>
+        <p><strong>Next, as announced on 20/10:</strong> train a model adapted to long sentences on a new long-sentence dataset, together with further model improvements and a new evaluation framework.</p>
+      </section>
+
+      <section class="doc-section" id="webui">
+        <span class="eyebrow">20/10 · Turino · Tool</span>
+        <h2>WebUI: live TTS and the voice-agent demo</h2>
+        <p class="small muted">Source: <code>webui/</code> on branch <code>Turino</code>, commits <a href="https://github.com/liquidtoy001/STS2026/commit/9107730"><code>9107730</code></a> and <a href="https://github.com/liquidtoy001/STS2026/commit/cb12459"><code>cb12459</code></a>; not merged to <code>main</code>. Full reference: the Web UI section of the <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/README.md">README</a>.</p>
+        <h3 id="webui-start">Start it</h3>
+        <ol class="list">
+          <li>Check out branch <code>Turino</code> and pull.</li>
+          <li>Put the run folders from the team Drive anywhere under <code>output/</code>, for example <code>output/runs/tts010_R0_…/checkpoints/vits_step_40000.pt</code>. The model list (<code>webui/config.example.json</code>) finds checkpoints by glob pattern and uses the newest match; a checkpoint that is not found is listed as unavailable.</li>
+          <li>With the project environment active (PyTorch, TorchAudio, NumPy), run the server from the repository root. It loads the default checkpoint, serves <code>http://127.0.0.1:8000/</code> and opens it in the browser.</li>
+        </ol>
+<pre><code>git checkout Turino
+git pull
+python webui/server.py</code></pre>
+        <p>Options: <code>--port</code>, <code>--device cpu</code>, <code>--config PATH</code>, <code>--no-browser</code>, <code>--host</code> (default <code>127.0.0.1</code>; the API has no authentication). To change the model list, copy <code>webui/config.example.json</code> to <code>webui/config.json</code> (ignored by Git) and edit it.</p>
+        <h3 id="webui-agent">Agent mode</h3>
+        <ol class="list">
+          <li>Under <em>Agent reply</em>, pick a preset reply or type one.</li>
+          <li>Set the simulated language model's time to first token and its speed in words per second. No real language model runs, so a run is offline and repeatable.</li>
+          <li>Under <em>TTS strategies</em>, choose the model and up to three strategies: whole sentence, independent N-word chunks, or context-aware N-word chunks with lookahead K. The default is whole sentence, independent 2-word chunks and context-aware 1-word chunks with lookahead 2. <em>Fixed seed</em> keeps runs repeatable.</li>
+          <li>Press <em>Send</em>. <em>Listen to</em> selects which strategy is audible during the run.</li>
+          <li>The <em>Timeline</em> shows when words arrive, each TTS call and the playback, with the silence before the first audio and stalls (the audio ran out before the next chunk was ready).</li>
+          <li><em>Results of this run</em> shows each strategy's time to first audio, total stall and finish time, next to its WER from the chunk study. Afterwards each strategy can be played, replayed with its waits, or played as an A/B pair.</li>
+        </ol>
+        <p>Below the results, two charts show the chunk study's WER against waiting, and how much waiting each strategy saves for a chosen sentence length at each language-model speed.</p>
+        <h3 id="webui-reader">Reader</h3>
+        <p>Reads any English text sentence by sentence and highlights the current sentence and word. A second checkpoint can be selected for A/B comparison. For the current sentence the page shows the mel spectrogram, the text-to-frame alignment and the inference time; the read text can be downloaded as one WAV file.</p>
+        <h3 id="webui-limits">Read with care</h3>
+        <ul class="list">
+          <li>The WER on the result cards is taken from the chunk study (<code>docs/records/chunk-study/R0_40k/analysis.json</code>); it is never computed live.</li>
+          <li>The strategies share one GPU, so their calls queue behind each other. Live times also rise when the computer is busy, for example with a Whisper job.</li>
+          <li>Text preparation writes out numbers, money, times, percentages and common abbreviations in the LJSpeech style; it does not handle acronyms, roman numerals, units, dates with slashes or URLs.</li>
+        </ul>
+      </section>
+
       <section class="doc-section task-board" id="tasks">
         <span class="eyebrow">Team backlog</span>
         <h2>To-do</h2>
-        <p class="lede">The TTS workstream is allocated as the TTS_0.10 ablation; RVC awaits group allocation; the listening improvement proposal is pending implementation.</p>
+        <p class="lede">Open team task: the TTS_0.10 ablation.</p>
 
         <article class="task-card" id="task-tts010-ablation">
           <span id="task-tts"></span>
           <div class="task-card-head">
             <h3>12/10 · TTS_0.10 ablation training</h3>
-            <span class="chip acc">Ready · training not started</span>
+            <span class="chip acc">4 of 11 arms evaluated</span>
           </div>
-          <p>Allocation of the 1/10 TTS task. Eleven runs measure which of the eight TTS_0.10 changes matter: each arm reverts one change to TTS_0.02 (leave-one-out). R0/R0b give the seed noise floor; E0 reverts everything.</p>
+          <p>Eleven runs measure which of the eight TTS_0.10 changes matter. Each arm trains the complete TTS_0.10 for 40,000 steps with one change reverted to its TTS_0.02 form (leave-one-out). R0 and R0b differ only in the seed and give the noise floor; E0 reverts everything.</p>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Owner</th><th>Arms</th><th>Question</th><th>GPU</th></tr></thead>
+              <thead><tr><th>Arm</th><th>What is reverted: TTS_0.10 → TTS_0.02</th><th>Status, 20/10</th></tr></thead>
               <tbody>
-                <tr><td>Assigned by the team</td><td>R0, R0b</td><td>Reference and seed noise floor</td><td>L40S</td></tr>
-                <tr><td>Assigned by the team</td><td>G1, G2, G3</td><td>Text encoder, posterior encoder, decoder</td><td>L40S</td></tr>
-                <tr><td>Assigned by the team</td><td>A1, A2</td><td>Discriminator, feature matching</td><td>L40S</td></tr>
-                <tr><td>Assigned by the team</td><td>L1, O1</td><td>Reconstruction loss, optimisation</td><td>L40S</td></tr>
-                <tr><td>Turino</td><td>E0, D1</td><td>All TTS_0.02; text-length filter</td><td>RTX 4070 Ti SUPER</td></tr>
+                <tr><td>R0</td><td>nothing: complete TTS_0.10, seed 2026; the reference for every arm</td><td>evaluated · RTX PRO 6000</td></tr>
+                <tr><td>R0b</td><td>nothing: complete TTS_0.10, seed 2027; noise floor</td><td>trained · L40S; upload incomplete</td></tr>
+                <tr><td>G1</td><td>text encoder: post-norm attention with kernel-3 convolutional feed-forward → <code>nn.TransformerEncoder</code> with a GELU linear feed-forward</td><td>not received</td></tr>
+                <tr><td>G2</td><td>posterior encoder: 8 gated WaveNet blocks with skip sum → 1×1 projection + 4 dilated convolutions</td><td>not received</td></tr>
+                <tr><td>G3</td><td>decoder: two residual blocks (kernels 3 and 7) per upsampling stage, HiFi-GAN MRF → one kernel-3 block per stage</td><td>not received</td></tr>
+                <tr><td>A1</td><td>discriminator: scale + period (2, 3, 5, 7, 11) discriminators, 46.7 M parameters → one 1-D convolution stack, 7.1 M</td><td>not received</td></tr>
+                <tr><td>A2</td><td>feature-matching loss, weight 2 → off</td><td>not received</td></tr>
+                <tr><td>L1</td><td>reconstruction loss: Slaney log-mel L1 × 45 → HTK log-mel 1 + multi-resolution STFT 0.5 + waveform L1 10</td><td>not received</td></tr>
+                <tr><td>O1</td><td>optimisation: batch 16, learning rate 2e-4, fp16, no clipping → batch 8, 1e-4, fp32, gradient clipping 1.0</td><td>evaluated · RTX PRO 6000</td></tr>
+                <tr><td>E0</td><td>all eight changes: TTS_0.02 throughout</td><td>evaluated · Turino, RTX 4070 Ti SUPER</td></tr>
+                <tr><td>D1</td><td>text-length filter: clips of 1–100 characters (6,208) → all 13,000 training clips, long ones included</td><td>evaluated · Turino, RTX 4070 Ti SUPER</td></tr>
               </tbody>
             </table>
           </div>
           <p>Each run, from release <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10"><code>tts-v0.10</code></a>: <code>python tools/train_tts010.py --arm &lt;arm&gt; --data-dir &lt;LJSpeech-1.1&gt;</code>, 40,000 steps. Upload the run folder to the team Drive; evaluation is run centrally. Step-by-step instructions, the run card and the reading rules: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md">ABLATION_TTS_0.10.md</a>.</p>
         </article>
-
-        <article class="task-card" id="task-rvc">
-          <div class="task-card-head">
-            <h3>1/10 · Implement a basic RVC system from the architecture diagram</h3>
-            <span class="chip warn">Group allocation: pending</span>
-          </div>
-          <p>Build the basic voice-conversion training path around the data flow below. The diagram is a reference architecture; confirm its assumptions against the chosen implementation before training.</p>
-          <div class="callout note task-assumptions">
-            <div class="callout-title">Reference configuration shown</div>
-            <p>RVC v2 + F0 · 40 kHz output · latent channels 192 · 32-frame training segments · FFT 2048 / hop 400 · coarse F0 embedding 256.</p>
-          </div>
-          <figure class="task-figure">
-            <img src="assets/rvc-training-flow-original.png" alt="Original RVC training data flow and tensor shapes diagram supplied for this task." loading="lazy" decoding="async">
-            <figcaption>Original training data flow and tensor shapes diagram supplied for the RVC task. <a href="assets/rvc-training-flow-original.png">Open the original image</a>.</figcaption>
-          </figure>
-        </article>
-<span id="v2-turino-2026-10-01-listening"></span>
-<section class="doc-section" id="turino-listening">
-<span class="eyebrow">To-do · listening improvement proposal</span>
-      <h2>1/10 · Listening improvements · Turino</h2>
-      <div class="exp-head">
-        <span class="chip">Author: Turino</span>
-        <span class="chip">Proposed: 2026-10-01 · Australia/Brisbane</span>
-        <span class="chip warn">Planned · implementation pending</span>
-      </div>
-      <p>The original evaluation notebook plays only the first exported example. Its 8,192-sample crop at 22,050 Hz lasts approximately 0.37 seconds, which limits listening to local noise and distortion. Expand the listening interface so the team can inspect more samples and complete utterances.</p>
-      <h4 id="proposal-turino-listening-plan">Proposed work</h4>
-      <ol class="list">
-        <li>Expose all eight existing samples, labeled by utterance ID, with matched target, posterior-mean reconstruction and posterior-sample reconstruction players. Reuse the exported crops without retraining.</li>
-        <li>Add full-utterance posterior reconstruction from a saved checkpoint: encode the complete reference spectrogram and decode both the posterior mean and a reproducibly seeded posterior sample. Export aligned reference and reconstruction audio with valid lengths and sample rates recorded.</li>
-        <li>Present the full-utterance outputs in a sample selector or per-sample player groups. Use the same utterances and sampling settings when comparing original and new models.</li>
-        <li>Retain the existing fixed-crop numerical evaluation as a separate protocol. Label full-utterance listening outputs clearly and verify the memory requirements and behavior of a decoder trained on short segments before drawing conclusions.</li>
-      </ol>
-      <h4 id="proposal-turino-listening-acceptance">Acceptance criteria</h4>
-      <ul class="list">
-        <li>Each of the eight utterance IDs exposes a target / mean / sample listening group, with no silent truncation or padding presented as valid audio.</li>
-        <li>A compatible checkpoint produces complete reference-length reconstructions without another training run, or reports an explicit compatibility or resource limitation.</li>
-        <li>Sampling is reproducible and does not disturb the training random-number state. Original/new model listening comparisons use matching inputs and settings.</li>
-        <li>Listening notes are written in English and include completion times. No MOS score or perceptual improvement is claimed unless actually assessed.</li>
-      </ul>
-      <p class="small muted">Scope: posterior reconstruction conditioned on real audio. Full-utterance playback is an additional diagnostic; its quality remains to be measured. This proposal does not establish text-only synthesis quality, convergence or generalization.</p>
-<footer class="site-foot">Proposal by Turino · 2026-10-01 · Australia/Brisbane. Status: implementation pending.</footer>
-</section>
       </section>
 
       <h2 id="versions">Versions</h2>
@@ -305,6 +324,8 @@
         <li class="done"><span class="when">2026-10-07 · Turino · tts-v0.02</span><div class="what">TTS_0.02 speaker-ID conditioning</div><p>Optional learned speaker embedding throughout training and inference. Source release; not trained.</p></li>
         <li class="done"><span class="when">2026-10-12 · benlu, Turino</span><div class="what">TTS_0.10 integration</div><p>benlu's model and recipe in the project harness with switches back to TTS_0.02, a 100-clip held-out split and one export per ablation arm. See <a href="#version-tts010">TTS_0.10</a>.</p></li>
         <li class="done"><span class="when">2026-10-19 · Turino · 0b11e47</span><div class="what">Chunked-synthesis study and chunk-aware fine-tuning</div><p>R0 at 40,000 steps measured under 17 chunk conditions; <code>--init-from</code> and optional chunk-aware training, off by default. See <a href="#voice-agent-tts">TTS for voice agents</a>.</p></li>
+        <li class="done"><span class="when">2026-10-20 · Turino · 9107730, cb12459</span><div class="what">WebUI with Agent mode</div><p>Live TTS with A/B comparison, and a simulated language model streaming a reply into up to three chunking strategies, with time to first audio and stalls. See <a href="#webui">WebUI</a>.</p></li>
+        <li class="done"><span class="when">2026-10-20 · Turino</span><div class="what">Project direction: a VITS TTS for voice agents</div><p>How few words can the TTS wait for and stay as intelligible as with the whole sentence? See <a href="#direction">Project direction</a>.</p></li>
       </ul>
 
 <footer class="site-foot">STS2026 team coursework, 2026. Figures on this site come from committed records and the local baseline run; nothing is estimated.</footer>
@@ -603,7 +624,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
     <figcaption>Text-only synthesis (rows 1–2) and full-utterance reconstruction (row 3); same seed and noise scale. A visual check, not a listening test.</figcaption>
   </figure>
   <p>On four new sentences, Whisper medium gets 32% of the words wrong for benlu's checkpoint and 98–100% for TTS_0.01, whose outputs it does not recognise as speech; real LJSpeech recordings score 0.8%. Four sentences give only a first indication; the held-out evaluation uses 100.</p>
-  <p><strong>No run has been trained with this notebook yet.</strong> The ablation (<a href="#task-tts010-ablation">To-do</a>) trains eleven arms. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.10.md">TTS_0.10.md</a>.</p>
+  <p>The ablation arms and their status: <a href="#task-tts010-ablation">To-do</a>. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.10.md">TTS_0.10.md</a>.</p>
 </section>
 
 <section class="doc-section" id="voice-agent-tts">
@@ -612,10 +633,10 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
   <div class="exp-head">
     <span class="chip">Author: Turino</span>
     <span class="chip">Measured: 2026-10-19 · Australia/Brisbane</span>
-    <span class="chip warn">Direction under discussion · not adopted by the team</span>
+    <span class="chip acc">Project direction since 20/10</span>
   </div>
   <p class="small muted">Source: commit <a href="https://github.com/liquidtoy001/STS2026/commit/0b11e47"><code>0b11e47</code></a> on <code>Turino</code>; not merged or released. Model: TTS_0.10 arm R0 at 40,000 steps (run <code>tts010_R0_20261014T070647303632Z</code>). Measurements on one RTX 4070 Ti SUPER; intelligibility by Whisper medium (<code>tools/asr_wer.py</code>).</p>
-  <p>This section records a direction under discussion in the team and what has been measured for it.</p>
+  <p>This section records what has been measured for the project's voice-agent direction (<a href="#direction">Project direction</a>).</p>
 
   <h3 id="voice-agent-problem">The problem</h3>
   <p>A voice agent answers in three stages: speech recognition turns the user's speech into text, a language model writes the answer, and a TTS speaks it. The language model produces its answer word by word. A TTS that needs a whole sentence can start only when the language model has finished that sentence; the 100 held-out LJSpeech sentences have about 12 words on average. To speak earlier, the TTS must synthesize a few words at a time, but each piece then lacks the rest of the sentence, which can make it harder to understand.</p>
@@ -706,8 +727,8 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
 
   <h3 id="voice-agent-decision">Team decisions</h3>
   <div class="callout note">
-    <div class="callout-title">For the team</div>
-    <p>Whether the project adopts this framing, and which configuration an application would use, is for the team to decide.</p>
+    <div class="callout-title">Decided and open</div>
+    <p>On 20/10 the project moved to this direction (<a href="#direction">Project direction</a>). Which configuration an application would use is still for the team to decide.</p>
   </div>
   <p>Details, reproduction commands and records: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/VOICE_AGENT_TTS.md">VOICE_AGENT_TTS.md</a> (study), <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE.md">CHUNK_FINETUNE.md</a> (fine-tuning options and local check), <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE_RUNBOOK.md">CHUNK_FINETUNE_RUNBOOK.md</a> (run manual for full-size runs).</p>
 <footer class="site-foot">Sources: docs/VOICE_AGENT_TTS.md, docs/CHUNK_FINETUNE.md, docs/records/chunk-study/R0_40k/ and docs/records/chunk-finetune/ at commit 0b11e47.</footer>
