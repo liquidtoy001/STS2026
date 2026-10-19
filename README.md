@@ -60,6 +60,7 @@ STS2026/
   sts_eval/                   # Shared reconstruction metrics and runner
     splits/                   # Fixed held-out split (TTS_0.10)
   tools/                      # Kaggle export, report and data-preparation utilities
+  webui/                      # Local TTS visualiser: python webui/server.py
   tests/                      # Behavioral and artifact checks
   requirements/
     notebook.txt              # Unpinned notebook dependency inventory
@@ -132,3 +133,17 @@ python tools/train_tts010.py --arm R0 --data-dir /path/LJSpeech-1.1
 To fine-tune a finished checkpoint, optionally on word chunks for chunked synthesis, see [chunk-aware fine-tuning](docs/CHUNK_FINETUNE.md) and its [run manual](docs/CHUNK_FINETUNE_RUNBOOK.md). Why chunked synthesis matters for voice agents, and how R0 performs when it speaks a few words at a time: [TTS for voice agents](docs/VOICE_AGENT_TTS.md).
 
 For Kaggle, `python tools/build_kaggle_full_train.py` writes one export per arm under `output/kaggle/`. Import it, attach LJSpeech-1.1, enable a GPU, and run all cells. Generated notebooks, datasets, checkpoints and audio are experiment artifacts and should not be committed.
+
+## Local TTS visualiser
+
+`webui/` is a local web page for live text-to-speech with trained checkpoints. It needs only the notebook environment (PyTorch, TorchAudio, NumPy) and Python's standard-library HTTP server. With the project environment active, run from the repository root:
+
+```sh
+python webui/server.py
+```
+
+The server loads the default checkpoint, serves `http://127.0.0.1:8000/` and opens it in the browser. Type or open English text and press **Read aloud**: the text is split into sentences, each sentence is synthesised and played, and the current sentence and word are highlighted. A second checkpoint can be selected for A/B comparison. For the current sentence the page shows the mel spectrogram, the text-to-frame alignment returned by `model.infer(...)["attention"]` and the inference time; it also shows each checkpoint's measured WER and downloads the read text as one WAV file.
+
+The model list is `webui/config.example.json`. Paths are relative to the repository root and may be glob patterns (the newest match is used); a checkpoint that is not found is listed as unavailable. To change the list, copy the file to `webui/config.json` (git-ignored) and edit the labels, paths, descriptions and WER values. Each checkpoint is rebuilt from the switches and speaker configuration stored in it, so a speaker-conditioned checkpoint gets a speaker selector; it must use the notebook's symbol table. Text preparation (`webui/text_en.py`) writes out numbers, money, times, percentages and common abbreviations in the LJSpeech style; it does not handle acronyms, roman numerals, units, dates with slashes or URLs.
+
+Options: `--port`, `--device cpu`, `--config PATH`, `--no-browser`, and `--host` (default `127.0.0.1`; the API has no authentication).

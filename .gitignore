@@ -46,3 +46,6 @@ generated_samples*/
 
 # Runtime output is local; curated PDFs live in docs/guides/.
 /output/
+
+# Local web UI model list (machine-specific checkpoint paths)
+/webui/config.json

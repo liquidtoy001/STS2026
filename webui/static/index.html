@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>STS2026 TTS Visualiser</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <h1>STS2026 TTS Visualiser</h1>
+      <p class="sub">Live text-to-speech with the team's VITS checkpoints, sentence by sentence.</p>
+    </div>
+    <div class="chip" id="device" title="Inference device">connecting…</div>
+  </header>
+
+  <div class="banner" id="error" role="alert" hidden></div>
+
+  <main class="layout">
+    <section class="panel input" aria-labelledby="h-text">
+      <div class="panel-head">
+        <h2 id="h-text">Text</h2>
+        <div class="tools">
+          <label class="sr-only" for="examples">Insert an example</label>
+          <select id="examples"><option value="">Examples…</option></select>
+          <label class="btn">Open .txt<input id="file" type="file" accept=".txt,text/plain" hidden></label>
+        </div>
+      </div>
+      <label class="sr-only" for="text">Text to read aloud</label>
+      <textarea id="text" rows="8" spellcheck="true"
+        placeholder="Type or paste English text, or open a .txt file. Ctrl+Enter reads it aloud."></textarea>
+      <div class="actions">
+        <button id="speak" class="primary" type="button">Read aloud</button>
+        <button id="stop" type="button">Stop</button>
+        <span class="progress" id="progress" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <section class="panel controls" aria-labelledby="h-controls">
+      <h2 id="h-controls">Model and voice</h2>
+      <div class="field">
+        <label for="model-a"><span class="swatch a"></span>Model A</label>
+        <select id="model-a"></select>
+      </div>
+      <div class="field">
+        <label for="model-b"><span class="swatch b"></span>Compare with (B)</label>
+        <select id="model-b"><option value="">None</option></select>
+      </div>
+      <div class="field" id="speaker-field" hidden>
+        <label for="speaker">Speaker</label>
+        <select id="speaker"></select>
+      </div>
+      <div class="field">
+        <label for="length-scale">Duration scale <output id="length-out">1.00</output></label>
+        <input id="length-scale" type="range" min="0.5" max="2" step="0.05" value="1">
+        <p class="hint">length_scale: above 1 speaks slower, below 1 faster.</p>
+      </div>
+      <div class="field">
+        <label for="noise-scale">Noise scale <output id="noise-out">0.667</output></label>
+        <input id="noise-scale" type="range" min="0" max="1.2" step="0.001" value="0.667">
+        <p class="hint">Sampling noise in the prior; 0.667 is the evaluation setting.</p>
+      </div>
+      <div class="field row">
+        <label class="check"><input id="fixed-seed" type="checkbox" checked> Fixed seed</label>
+        <label class="sr-only" for="seed">Seed</label>
+        <input id="seed" type="number" min="0" max="2147483647" step="1" value="1234">
+      </div>
+      <div class="field row">
+        <label class="check"><input id="show-norm" type="checkbox" checked> Show the text the model reads</label>
+      </div>
+      <p class="hint">Changes apply the next time you press Read aloud.</p>
+    </section>
+
+    <section class="panel reader" aria-labelledby="h-reader">
+      <div class="panel-head">
+        <h2 id="h-reader">Reader</h2>
+        <div class="tools">
+          <button id="download-a" type="button" disabled>Download A</button>
+          <button id="download-b" type="button" disabled hidden>Download B</button>
+        </div>
+      </div>
+      <div class="player" role="group" aria-label="Playback">
+        <button id="prev" type="button" aria-label="Previous sentence" title="Previous sentence (←)">&#9664;&#9664;</button>
+        <button id="play" type="button" class="primary" aria-label="Play" title="Play / pause (Space)">Play</button>
+        <button id="next" type="button" aria-label="Next sentence" title="Next sentence (→)">&#9654;&#9654;</button>
+        <div class="track-toggle" id="track-toggle" role="radiogroup" aria-label="Which model to hear" hidden>
+          <label><input type="radio" name="track" value="0" aria-label="Hear model A" checked><span class="swatch a"></span>A</label>
+          <label><input type="radio" name="track" value="1" aria-label="Hear model B"><span class="swatch b"></span>B</label>
+        </div>
+        <span class="clock" id="clock"></span>
+      </div>
+      <ol class="segments" id="segments" aria-live="off">
+        <li class="empty">Sentences appear here. Click one to play it.</li>
+      </ol>
+    </section>
+
+    <section class="panel visuals" aria-labelledby="h-visuals">
+      <div class="panel-head">
+        <h2 id="h-visuals">What the model produced</h2>
+        <span class="muted" id="visual-caption"></span>
+      </div>
+      <div id="figures">
+        <p class="muted empty">The mel spectrogram and the text-to-frame alignment of the current sentence appear here.</p>
+      </div>
+      <p class="hint">
+        Mel spectrogram: 80 mel bands of the generated waveform, natural-log magnitude on a fixed scale shared
+        by every model. Alignment: the hard monotonic path returned by <code>model.infer(...)["attention"]</code>;
+        each character occupies the frames the duration predictor gave it. A and B share one time axis.
+      </p>
+    </section>
+
+    <section class="panel about" aria-labelledby="h-about">
+      <h2 id="h-about">About these models</h2>
+      <p class="muted" id="eval-note"></p>
+      <div class="cards" id="cards"></div>
+      <h3>Limitations</h3>
+      <ul id="limitations"></ul>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip" hidden></div>
+  <audio id="audio" preload="auto"></audio>
+  <script src="/static/app.js"></script>
+</body>
+</html>
