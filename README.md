@@ -129,4 +129,6 @@ To train a TTS_0.10 arm (see [the ablation plan](docs/ABLATION_TTS_0.10.md)) on 
 python tools/train_tts010.py --arm R0 --data-dir /path/LJSpeech-1.1
 ```
 
+To fine-tune a finished checkpoint, optionally on word chunks for chunked synthesis, see [chunk-aware fine-tuning](docs/CHUNK_FINETUNE.md) and its [run manual](docs/CHUNK_FINETUNE_RUNBOOK.md). Why chunked synthesis matters for voice agents, and how R0 performs when it speaks a few words at a time: [TTS for voice agents](docs/VOICE_AGENT_TTS.md).
+
 For Kaggle, `python tools/build_kaggle_full_train.py` writes one export per arm under `output/kaggle/`. Import it, attach LJSpeech-1.1, enable a GPU, and run all cells. Generated notebooks, datasets, checkpoints and audio are experiment artifacts and should not be committed.

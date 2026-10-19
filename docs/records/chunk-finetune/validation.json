@@ -1,0 +1,95 @@
+{
+  "scope": "chunk-aware fine-tuning and --init-from for TTS_0.10: implementation checks and the local 5,000-step check; wiring checks are not quality results",
+  "recorded": "2026-10-19 (Australia/Brisbane)",
+  "base_commit": "0ff5b308c5129d90c5d5f65c4af0ab05a500c624 (runs used the uncommitted working tree on top of it; see run_config.json repository)",
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.7.1+cu118",
+    "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "asr": "openai-whisper 20240930, medium, CPU (separate Python 3.10)"
+  },
+  "automated_tests": {
+    "command": "python -m unittest discover -s tests -p \"test_*.py\"",
+    "tests_run": 39,
+    "result": "OK",
+    "new_tests": [
+      "test_init_from_checkpoint_starts_a_new_run",
+      "test_word_crop_keeps_whole_words_and_their_audio",
+      "test_chunk_dataset_off_matches_release_and_on_crops_text_and_audio_together",
+      "test_chunk_alignment_durations_equal_training_mas",
+      "test_training_step_without_chunks_matches_release",
+      "test_conditions_and_chunk_spans",
+      "test_waiting_words",
+      "test_analyze_and_compare"
+    ]
+  },
+  "mutation_checks": {
+    "note": "each deliberate fault was applied to the code, the named test run, the fault removed",
+    "audio crop shifted by one frame": "FAILED test_chunk_dataset_off_matches_release_and_on_crops_text_and_audio_together",
+    "random number drawn when chunk training is off": "FAILED test_chunk_dataset_off_matches_release_and_on_crops_text_and_audio_together",
+    "crop keeps the trailing space": "FAILED test_word_crop_keeps_whole_words_and_their_audio",
+    "alignment tool uses the posterior sample instead of the mean": "FAILED test_chunk_alignment_durations_equal_training_mas"
+  },
+  "integration_synthetic_tones_full_notebook": {
+    "arm": "E0",
+    "script": "scratch integration check (all notebook cells in-process, 8 one-second tones, 2 steps per session)",
+    "sessions": [
+      "train from scratch: completed at step 2; run_config chunk_training and init_from null; checkpoint has no init_from key",
+      "tools/chunk_alignments.py on that checkpoint: 8 clips, durations sum to 86 frames each",
+      "--init-from + chunk training (prob 1, 1-2 words): stopped_time_budget at step 1; run_config init_from step 2, optimizer carried; checkpoint stores init_from; cropped token lengths of clip 0 over 20 draws [11, 14, 20, 23] of 23",
+      "resume of that run: completed at step 2, init_from kept, resumed_from step 1",
+      "resume with chunk prob 0.5 instead of 1: refused (chunk_training differs)",
+      "STS_RESUME_FROM and STS_INIT_FROM together: refused"
+    ]
+  },
+  "real_data_smoke": {
+    "command": "train_tts010.py --arm R0 --init-from R0 40k --steps 30 --chunk-prob 0.5 --chunk-durations chunk_durations_R0_40k.json",
+    "result": "completed, 30 updates, 0 non-finite steps; probe log-mel L1 at step 0 = 0.5637 (R0 40k); process exited after 53 s",
+    "found": "before the fix the process wrote status.json but never exited: pyplot was imported (tkagg) before MPLBACKEND=Agg was set, so plt.show() in the last cell opened a window; the same hang occurred with chunk training off. tools/train_tts010.py now sets the backend before the import."
+  },
+  "alignment_durations": {
+    "tool": "tools/chunk_alignments.py",
+    "clips": 13000,
+    "seconds": 126,
+    "file_sha256": "cec409275b4d589e7b9fef3ce743ffcf310f6be14798fc94826f55f617fc30ba",
+    "sanity_check_300_random_clips": {
+      "mean_log_energy_letter_frames": 5.54,
+      "mean_log_energy_space_frames": 3.91,
+      "mean_log_energy_punctuation_frames": 0.36,
+      "crops_at_p_settings_1_8_words": {
+        "median_frames": 104,
+        "mean_seconds": 1.4,
+        "mean_words": 3.91,
+        "share_of_crops_with_at_most_2_words": 0.19
+      }
+    }
+  },
+  "local_runs": {
+    "settings": "arm R0 (seed 2026), --init-from R0 40k (optimizer carried), 5,000 steps, batch 16, fp16; chunk: --chunk-prob 0.5, 1-8 words, prefix share 0.5; control: chunk training off",
+    "conditions": "CPU shared with a Whisper job of another session during both runs",
+    "chunk": {
+      "run": "tts010_R0_ftchunk5k_20261019T034438400533Z",
+      "status": "completed",
+      "wall_seconds": 1215.0,
+      "median_seconds_per_step": 0.24,
+      "amp_backoffs": 3,
+      "nonfinite_skips": 0,
+      "peak_allocated_GiB": 3.438
+    },
+    "control": {
+      "run": "tts010_R0_ftctrl5k_20261019T040523871800Z",
+      "status": "completed",
+      "wall_seconds": 1274.5,
+      "median_seconds_per_step": 0.251,
+      "amp_backoffs": 3,
+      "nonfinite_skips": 0,
+      "peak_allocated_GiB": 3.443
+    },
+    "notebook": "both runs: notebook sha256 3dd85cec...; the committed notebook differs only in one markdown sentence (code cells identical)"
+  },
+  "chunk_study_tools": {
+    "tools/chunk_study.py": "R0 40k, first 3 held-out sentences x 17 conditions: 51 of 51 WAVs bit-identical to the recorded R0 study",
+    "tools/chunk_analysis.py analyze": "on the recorded R0 asr.json and timing.json: analysis.json identical to the recorded one"
+  },
+  "asr_wer_fix": "the first chunk-study scoring of both fine-tunes stopped at 355/500 utterances: print() of a hypothesis with U+FFFD on a GBK console; tools/asr_wer.py now reconfigures stdout with errors=backslashreplace"
+}

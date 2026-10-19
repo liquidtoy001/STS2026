@@ -137,6 +137,13 @@ With deterministic cuDNN kernels R0 took 0.876 s per step (3.3× slower); TTS_0.
   LJSpeech recordings are not yet on the evaluation machine.
 - Single speaker (LJSpeech). Speaker-ID conditioning is wired into the new modules but untrained.
 
+## Later additions
+
+- 2026-10-19: `--init-from` (a new run from a finished checkpoint) and optional chunk-aware
+  training for chunked synthesis, both off by default; the off path is identical to the
+  `tts-v0.10` release (39 tests). See [CHUNK_FINETUNE.md](CHUNK_FINETUNE.md) and, for the
+  voice-agent direction it serves, [VOICE_AGENT_TTS.md](VOICE_AGENT_TTS.md).
+
 ## Provenance
 
 benlu's inputs (received 2026-10-11): `final-vits.ipynb` (sha256 `633790cb…`), module archive

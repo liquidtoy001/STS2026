@@ -6,17 +6,21 @@ Synthetic tones and random weights establish equivalence and wiring only, never 
 import ast
 import contextlib
 import csv
+import hashlib
 import importlib
 import json
 from pathlib import Path
+import random
 import subprocess
 import sys
 import tempfile
 import types
 import unittest
+from unittest import mock
 
 import numpy as np
 import torch
+import torchaudio
 
 from tools.build_kaggle_full_train import build
 from tools.convert_benlu_checkpoint import convert, convert_generator_state
@@ -278,6 +282,196 @@ class TTS010Tests(unittest.TestCase):
                 self.make_trainer({**switches, "feature_matching": False}, Path(root) / "x").load_checkpoint(path)
             fresh.save_samples(self.batch)
             self.assertEqual(len(list(fresh.sample_dir.glob("*.wav"))), 2)
+
+    def test_init_from_checkpoint_starts_a_new_run(self):
+        with tempfile.TemporaryDirectory() as root:
+            switches = self.arm_switches("A1")
+            source = self.make_trainer(switches, Path(root) / "source")
+            source._training_step(self.batch)
+            source.step = 7
+            source.save_checkpoint()
+            path = source.checkpoint_dir / "vits_step_7.pt"
+            stored = torch.load(path, map_location="cpu", weights_only=True)
+            self.assertNotIn("init_from", stored)  # ordinary runs keep the checkpoint format
+
+            torch.manual_seed(99)  # different initial weights, replaced by the checkpoint's
+            tuned = self.make_trainer(switches, Path(root) / "tuned")
+            record = tuned.init_from_checkpoint(path)
+            self.assertEqual((tuned.step, tuned.optimizer_update_stats["updates"]), (0, 0))
+            self.assertEqual(tuned.counters, {"nonfinite_skips": 0, "amp_backoffs": 0})
+            self.assertEqual((record["step"], record["optimizer"]), (7, "carried"))
+            self.assertEqual(record["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+            for name in ("model", "discriminator"):
+                for key, value in stored[name].items():
+                    state = (tuned.base_model if name == "model" else tuned.discriminator).state_dict()
+                    self.assertTrue(torch.equal(state[key], value), key)
+            moments = tuned.generator_optimizer.state_dict()["state"]
+            self.assertTrue(all(torch.equal(moments[k]["exp_avg"], v["exp_avg"])
+                                for k, v in stored["optimizer"]["state"].items()))
+
+            fresh = self.make_trainer(switches, Path(root) / "fresh")
+            self.assertEqual(fresh.init_from_checkpoint(path, carry_optimizer=False)["optimizer"], "fresh")
+            self.assertEqual(fresh.generator_optimizer.state_dict()["state"], {})
+            with self.assertRaisesRegex(ValueError, "switches.*initialisation"):
+                self.make_trainer({**switches, "feature_matching": False},
+                                  Path(root) / "x").init_from_checkpoint(path)
+            weights_only = Path(root) / "weights_only.pt"
+            torch.save({k: v for k, v in stored.items() if "optimizer" not in k and k != "scaler"}, weights_only)
+            with self.assertRaisesRegex(ValueError, "no optimizer state"):
+                self.make_trainer(switches, Path(root) / "y").init_from_checkpoint(weights_only)
+
+            # The new run counts its own steps and records its source in every checkpoint; resume keeps it.
+            tuned._training_step(self.batch)
+            tuned.step = 1
+            tuned.save_checkpoint()
+            resumed = self.make_trainer(switches, Path(root) / "resumed")
+            resumed.load_checkpoint(tuned.checkpoint_dir / "vits_step_1.pt")
+            self.assertEqual(resumed.init_from, record)
+            self.assertEqual(resumed.step, 1)
+
+    def test_word_crop_keeps_whole_words_and_their_audio(self):
+        ns, space = self.ns, self.ns["symbol_to_id"][" "]
+        text = "Ab cd, efg h ij klm no."
+        tokens = ns["encode_text"](text)
+        rng = np.random.default_rng(0)
+        durations = rng.integers(2, 9, tokens.numel()).tolist()
+        bounds = np.concatenate([[0], np.cumsum(durations)])
+        self.assertEqual(ns["word_spans"](tokens, space), [(0, 2), (3, 6), (7, 10), (11, 12), (13, 15),
+                                                           (16, 19), (20, 23)])
+        self.assertIsNone(ns["word_crop_bounds"](ns["encode_text"]("Hello."), [3] * 6, space, random.Random(0)))
+        words = text.split()
+        prefixes = 0
+        for seed in range(300):
+            min_frames = (0, 10, 40)[seed % 3]
+            t0, t1, f0, f1 = ns["word_crop_bounds"](tokens, durations, space, random.Random(seed), 1, 3, 0.3,
+                                                    min_frames)
+            kept = text[t0:t1]
+            first = len(text[:t0].split())
+            self.assertEqual(kept.split(), words[first:first + len(kept.split())], seed)  # whole words
+            self.assertFalse(kept.startswith(" ") or kept.endswith(" "), seed)
+            self.assertEqual((f0, f1), (bounds[t0], bounds[t1]), seed)
+            self.assertTrue(f1 - f0 >= min_frames or len(kept.split()) == len(words), seed)
+            if min_frames == 0:
+                self.assertLessEqual(len(kept.split()), 3, seed)
+            prefixes += t0 == 0
+        self.assertTrue(80 < prefixes < 200, prefixes)  # prefix share 0.3 plus spans that start at word 0
+        self.assertTrue(all(ns["word_crop_bounds"](tokens, durations, space, random.Random(s), 1, 3, 1.0)[0] == 0
+                            for s in range(20)))
+        self.assertEqual(ns["word_crop_bounds"](tokens, durations, space, random.Random(1), 1, 1, 0.0, 10**6)[:2],
+                         (0, tokens.numel()))
+
+    def test_chunk_dataset_off_matches_release_and_on_crops_text_and_audio_together(self):
+        ns, space = self.ns, self.ns["symbol_to_id"][" "]
+        text = "Ab cd, efg h ij klm no."
+        tokens = ns["encode_text"](text)
+        durations = np.random.default_rng(1).integers(3, 12, tokens.numel()).tolist()
+        bounds = np.concatenate([[0], np.cumsum(durations)]) * 256
+        frequency = [200.0 + 150.0 * index for index in range(tokens.numel())]
+        wave = torch.zeros(1, int(bounds[-1]) + 100)  # frames = (samples - 256) // 256 + 1 = sum(durations)
+        for index, (start, end) in enumerate(zip(bounds[:-1], bounds[1:])):
+            time = torch.arange(int(end - start)) / 22050
+            wave[0, int(start):int(end)] = 0.3 * torch.sin(2 * torch.pi * frequency[index] * time)
+        release = load_definitions(source=subprocess.run(
+            ["git", "show", "tts-v0.10:notebooks/vits-full-train.ipynb"], cwd=ROOT, check=True,
+            capture_output=True).stdout.decode("utf-8"))
+        release["symbol_to_id"] = ns["symbol_to_id"]
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            (root / "wavs").mkdir()
+            torchaudio.save(str(root / "wavs" / "A.wav"), wave, 22050)
+            torchaudio.save(str(root / "wavs" / "B.wav"), wave[:, :30000], 22050)
+            metadata = __import__("pandas").DataFrame({"file_name": ["A", "B"],
+                                                       "normalized_transcription": [text, "Hi there!"]})
+            # Off: identical to the tts-v0.10 release and no random numbers drawn.
+            state = random.getstate()
+            for index in range(2):
+                for a, b in zip(ns["LJSpeechDataset"](metadata, root / "wavs")[index],
+                                release["LJSpeechDataset"](metadata, root / "wavs")[index]):
+                    self.assertTrue(torch.equal(a, b))
+            self.assertEqual(random.getstate(), state)
+
+            # The durations file format written by tools/chunk_alignments.py is the one the notebook reads.
+            from tools.chunk_alignments import FORMAT
+            cache = root / "durations.json"
+            cache.write_text(json.dumps({"format": FORMAT, "hop_length": 256, "durations": {"A": durations}}))
+            loaded, provenance = ns["load_chunk_durations"](cache, 256)
+            self.assertEqual((loaded, provenance["clips"]), ({"A": durations}, 1))
+            settings = {"prob": 1.0, "min_words": 1, "max_words": 2, "prefix_share": 0.5, "min_frames": 8,
+                        "space_id": space, "durations": provenance}
+            with self.assertRaisesRegex(ValueError, "lack 1 clips"):
+                ns["LJSpeechDataset"](metadata, root / "wavs", chunk_training=settings, chunk_durations=loaded)
+            with self.assertRaisesRegex(ValueError, "do not match its text"):
+                ns["LJSpeechDataset"](metadata.iloc[:1], root / "wavs", chunk_training=settings,
+                                      chunk_durations={"A": durations[:-1]})
+            dataset = ns["LJSpeechDataset"](metadata.iloc[:1], root / "wavs", chunk_training=settings,
+                                            chunk_durations=loaded)
+            symbols = {i: s for s, i in ns["symbol_to_id"].items()}
+            seen = set()
+            random.seed(5)
+            for _ in range(40):
+                cropped, spectrogram, audio = dataset[0]
+                kept = "".join(symbols[int(i)] for i in cropped)
+                self.assertIn(kept, text)
+                self.assertTrue(1 <= len(kept.split()) <= 2 or audio.size(-1) >= 8 * 256, kept)
+                start = text.index(kept)
+                self.assertTrue(start == 0 or text[start - 1] == " ")
+                self.assertEqual(spectrogram.size(-1), sum(durations[start:start + len(kept)]))
+                self.assertTrue(torch.equal(spectrogram, ns["waveform_to_spectrogram"](audio)))
+                # Every kept character's frames carry that character's tone.
+                offset = 0
+                for index in range(start, start + len(kept)):
+                    segment = audio[0, offset * 256:(offset + durations[index]) * 256]
+                    offset += durations[index]
+                    peak = torch.fft.rfft(segment).abs().argmax().item() * 22050 / segment.numel()
+                    self.assertLess(abs(peak - frequency[index]), 22050 / segment.numel() + 1, (kept, index))
+                seen.add(kept)
+            self.assertGreater(len(seen), 5)
+            bad = ns["LJSpeechDataset"](metadata.iloc[:1], root / "wavs", chunk_training=settings,
+                                        chunk_durations={"A": [durations[0] + 1] + durations[1:]})
+            with self.assertRaisesRegex(ValueError, "frames"):
+                bad[0]
+
+    def test_chunk_alignment_durations_equal_training_mas(self):
+        from tools.chunk_alignments import alignment_durations
+        torch.manual_seed(3)
+        model = self.ns["VITSModel"](vocab_size=76, spec_channels=513, latent_channels=8, hidden_channels=8,
+                                     feedforward_channels=16).eval()
+        x, x_lengths, spec, spec_lengths = self.batch[:4]
+        durations = alignment_durations(self.ns, model, self.batch)
+        with torch.no_grad(), mock.patch("torch.randn_like", side_effect=torch.zeros_like):
+            attention = model(x, x_lengths, spec, spec_lengths)["attention"]  # posterior mean, as the tool
+        expected = attention.sum(dim=2)[:, 0].long()
+        for index, values in enumerate(durations):
+            self.assertEqual(values, expected[index, :int(x_lengths[index])].tolist())
+            self.assertEqual(sum(values), int(spec_lengths[index]))
+            self.assertGreaterEqual(min(values), 1)
+
+    def test_training_step_without_chunks_matches_release(self):
+        release = load_definitions(source=subprocess.run(
+            ["git", "show", "tts-v0.10:notebooks/vits-full-train.ipynb"], cwd=ROOT, check=True,
+            capture_output=True).stdout.decode("utf-8"))
+        release["PAD_ID"] = 0
+        switches = self.arm_switches("A1")
+        results = []
+        with tempfile.TemporaryDirectory() as root:
+            for index, ns in enumerate((release, self.ns)):
+                torch.manual_seed(21)
+                model = ns["VITSModel"](vocab_size=76, spec_channels=513, latent_channels=8, hidden_channels=8,
+                                        feedforward_channels=16, text_encoder="tts010", posterior_encoder="tts010",
+                                        decoder="tts010")
+                trainer = ns["VITSTrainer"](
+                    model, ns["LegacyDiscriminator"](base_channels=4), ns["VITSLoss"](), [self.batch],
+                    learning_rate=2e-4, use_amp=False, device="cpu", switches=switches,
+                    checkpoint_dir=Path(root) / str(index) / "c", sample_dir=Path(root) / str(index) / "s")
+                torch.manual_seed(8)
+                _, _, losses = trainer._training_step(self.batch)
+                results.append((losses, trainer.model.state_dict(), trainer.discriminator.state_dict()))
+        (old_losses, old_model, old_disc), (new_losses, new_model, new_disc) = results
+        for key, value in old_losses.items():
+            self.assertTrue(torch.equal(value, new_losses[key]) or (value.isnan() & new_losses[key].isnan()).all(),
+                            key)
+        for old, new in ((old_model, new_model), (old_disc, new_disc)):
+            self.assertTrue(all(torch.equal(value, new[key]) for key, value in old.items()))
 
     def test_nonfinite_steps_are_skipped_then_stop(self):
         with tempfile.TemporaryDirectory() as root:

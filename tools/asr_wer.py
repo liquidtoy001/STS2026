@@ -19,6 +19,7 @@ python tools/asr_wer.py output/tts010-eval/R0_40k --model medium
 import argparse
 import hashlib
 import json
+import sys
 import unicodedata
 from datetime import datetime, timezone
 from math import gcd
@@ -87,10 +88,12 @@ def score(reference, hypothesis, normalizer):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("eval_dir", help="a folder written by tools/eval_tts010.py")
+    parser.add_argument("eval_dir", help="a folder written by tools/eval_tts010.py or tools/chunk_study.py")
     parser.add_argument("--model", default="medium", help="openai-whisper model name")
     parser.add_argument("--device", default=None)
     args = parser.parse_args()
+    # A console code page that cannot encode a hypothesis (e.g. GBK and U+FFFD) must not stop a long run.
+    sys.stdout.reconfigure(errors="backslashreplace")
     import whisper
     from whisper.normalizers import EnglishTextNormalizer
 
