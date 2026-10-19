@@ -10,13 +10,123 @@
   <header class="top">
     <div class="brand">
       <h1>STS2026 TTS Visualiser</h1>
-      <p class="sub">Live text-to-speech with the team's VITS checkpoints, sentence by sentence.</p>
+      <p class="sub">Live text-to-speech with the team's VITS checkpoints.</p>
     </div>
+    <nav class="tabs" role="tablist" aria-label="Mode">
+      <button type="button" role="tab" id="tab-btn-agent" aria-controls="tab-agent" aria-selected="true">Agent mode</button>
+      <button type="button" role="tab" id="tab-btn-reader" aria-controls="tab-reader" aria-selected="false"
+        tabindex="-1">Reader</button>
+    </nav>
     <div class="chip" id="device" title="Inference device">connecting…</div>
   </header>
 
   <div class="banner" id="error" role="alert" hidden></div>
 
+  <div id="tab-agent" role="tabpanel" aria-labelledby="tab-btn-agent">
+  <main class="layout agent">
+    <section class="panel a-reply" aria-labelledby="h-reply">
+      <div class="panel-head">
+        <h2 id="h-reply">Agent reply <span class="muted">(simulated LLM stream)</span></h2>
+        <div class="tools">
+          <label class="sr-only" for="a-preset">Preset reply</label>
+          <select id="a-preset"></select>
+        </div>
+      </div>
+      <label class="sr-only" for="a-text">Reply text</label>
+      <textarea id="a-text" rows="3" spellcheck="true" placeholder="Type the reply the agent should speak."></textarea>
+      <div class="sliders">
+        <div class="field">
+          <label for="a-ttft">Time to first token <output id="a-ttft-out">300 ms</output></label>
+          <input id="a-ttft" type="range" min="0" max="2000" step="50" value="300">
+        </div>
+        <div class="field">
+          <label for="a-rate">LLM speed <output id="a-rate-out">10 words/s</output></label>
+          <input id="a-rate" type="range" min="0" max="1000" step="1" value="500">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="a-run" class="primary" type="button">Send</button>
+        <button id="a-stop" type="button">Stop</button>
+        <div class="listen" id="a-listen" role="radiogroup" aria-label="Strategy to listen to during the run"></div>
+        <span class="progress" id="a-progress" aria-live="polite"></span>
+      </div>
+      <div class="bubble" id="a-bubble"><span class="muted">The reply appears here word by word.</span></div>
+      <p class="hint">No language model runs: the reply is normalised and split into sentences first (as if the
+        LLM wrote spoken-form text), then its words arrive one by one after the first-token delay at the set speed.
+        Each strategy speaks it with real TTS calls as soon as it has the words it needs.</p>
+    </section>
+
+    <section class="panel a-strategies" aria-labelledby="h-strategies">
+      <h2 id="h-strategies">TTS strategies</h2>
+      <div class="field">
+        <label for="a-model">Model</label>
+        <select id="a-model"></select>
+      </div>
+      <div id="a-lanes"></div>
+      <div class="field row">
+        <label class="check"><input id="a-fixed-seed" type="checkbox" checked> Fixed seed</label>
+        <label class="sr-only" for="a-seed">Seed</label>
+        <input id="a-seed" type="number" min="0" max="2147000000" step="1" value="1234">
+      </div>
+      <p class="hint">As in the chunk study, a chunk starting at word <i>i</i> of a sentence uses seed + <i>i</i>;
+        the three strategies share one GPU, so their calls queue behind each other.</p>
+    </section>
+
+    <section class="panel a-timeline" aria-labelledby="h-timeline">
+      <div class="panel-head">
+        <h2 id="h-timeline">Timeline</h2>
+        <span class="muted" id="a-timeline-caption"></span>
+      </div>
+      <canvas id="a-canvas" role="img" aria-label="Timeline of text arrival, TTS calls and playback"></canvas>
+      <div class="key">
+        <span><i class="k word"></i>word arrives</span>
+        <span><i class="k call"></i>TTS call (request to audio)</span>
+        <span><i class="k play"></i>audio playing</span>
+        <span><i class="k wait"></i>silence before the first audio</span>
+        <span><i class="k stall"></i>stall: audio ran out</span>
+      </div>
+    </section>
+
+    <section class="panel a-results" aria-labelledby="h-results">
+      <div class="panel-head">
+        <h2 id="h-results">Results of this run</h2>
+        <div class="tools ab">
+          <label for="a-ab-a">A/B</label>
+          <select id="a-ab-a" aria-label="First strategy"></select>
+          <span class="muted">then</span>
+          <select id="a-ab-b" aria-label="Second strategy"></select>
+          <button id="a-ab-play" type="button" disabled>Play both</button>
+        </div>
+      </div>
+      <div class="cards" id="a-cards"></div>
+      <p class="hint" id="a-study-note"></p>
+    </section>
+
+    <div class="a-charts">
+    <section class="panel a-tradeoff" aria-labelledby="h-tradeoff">
+      <h2 id="h-tradeoff">Intelligibility against waiting</h2>
+      <div id="a-tradeoff" class="chart"></div>
+      <p class="hint" id="a-tradeoff-note"></p>
+    </section>
+
+    <section class="panel a-speed" aria-labelledby="h-speed">
+      <h2 id="h-speed">Where the saving matters</h2>
+      <div class="field row">
+        <label for="a-length">Sentence length</label>
+        <input id="a-length" type="number" min="1" max="60" step="1" value="12">
+        <span class="muted">words</span>
+      </div>
+      <div id="a-speed-chart" class="chart"></div>
+      <p id="a-speed-text" class="speed-text"></p>
+      <p class="hint">Time the TTS waits for the LLM's text before it can speak the first words of a sentence:
+        the words a strategy needs divided by the LLM speed. Time to first token and synthesis (about 10 ms per
+        call on the study's GPU) come on top for every strategy.</p>
+    </section>
+    </div>
+  </main>
+  </div>
+
+  <div id="tab-reader" role="tabpanel" aria-labelledby="tab-btn-reader" hidden>
   <main class="layout">
     <section class="panel input" aria-labelledby="h-text">
       <div class="panel-head">
@@ -118,9 +228,11 @@
       <ul id="limitations"></ul>
     </section>
   </main>
+  </div>
 
   <div class="tooltip" id="tooltip" hidden></div>
   <audio id="audio" preload="auto"></audio>
   <script src="/static/app.js"></script>
+  <script src="/static/agent.js"></script>
 </body>
 </html>

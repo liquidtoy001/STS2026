@@ -1,4 +1,4 @@
-"""Web UI checks: text preparation, checkpoint loading and the HTTP routes.
+"""Web UI checks: text preparation, checkpoint loading, chunked synthesis and the HTTP routes.
 
 Random-weight checkpoints establish wiring only (shapes, alignment, seeds, speaker handling),
 never speech quality.
@@ -17,9 +17,10 @@ import wave
 
 import torch
 
+from tools import chunk_study
 from tools.notebook_defs import literal_assignment, load_definitions
 from webui import text_en
-from webui.engine import Engine
+from webui.engine import Engine, chunk_span
 from webui.server import Handler, ThreadingHTTPServer
 
 SYMBOLS = frozenset(literal_assignment("PUNCTUATION") + literal_assignment("LETTERS"))
@@ -129,6 +130,40 @@ class EngineTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.engine.synthesize("single", "Hi.", seed=1, speaker="speaker_1")
 
+    def test_chunk_span_matches_the_study(self):
+        words = "The quick brown fox jumps over the lazy dog.".split()
+        for start, end, lookahead, context in [(0, 1, 2, True), (3, 5, 2, True), (8, 9, 4, True), (2, 4, 0, False),
+                                               (0, 9, 0, True), (7, 9, 0, False)]:
+            self.assertEqual(chunk_span(words, start, end, lookahead, context),
+                             chunk_study.spans(words, start, end, context, lookahead))
+        text, span = chunk_span(words, 2, 4, 2, True)
+        self.assertEqual((text, text[span[0]:span[1]]), ("The quick brown fox jumps over", "brown fox "))
+        for bad in [(4, 4, 0, True), (0, 10, 0, True), (0, 1, 2, False), (0, 1, -1, True)]:
+            with self.assertRaises(ValueError):
+                chunk_span(words, *bad)
+
+    def test_chunk_synthesis_reproduces_the_study_and_the_whole_sentence(self):
+        loaded = self.engine.loaded.get("single") or (self.engine.load("single"), self.engine.loaded["single"])[1]
+        words = "Hi there, how are you?".split()
+        for start, end, lookahead, context in [(0, 1, 2, True), (1, 3, 2, True), (2, 4, 0, False), (4, 5, 4, True)]:
+            text, span = chunk_span(words, start, end, lookahead, context)
+            expected = chunk_study.synth(self.engine.ns, loaded["model"], text, span, 40 + start, self.engine.device)
+            audio, _ = self.engine._infer_span(loaded, text, span, 0.667, 1.0, 40 + start, None)
+            self.assertTrue(torch.equal(audio.cpu(), expected))
+        # Only the chunk is voiced, with the seed shifted by its first word as in the study.
+        result = self.engine.synthesize_chunk("single", " ".join(words), 1, 3, lookahead=2, seed=40)
+        self.assertEqual((result["voiced"], result["encoder_text"], result["seed"]),
+                         ("there, how", "Hi there, how are you?", 41))
+        # The whole sentence as one chunk is the reader's whole-sentence synthesis.
+        whole = self.engine.synthesize_chunk("single", " ".join(words), 0, len(words), seed=9)
+        self.assertEqual(whole["wav"], self.engine.synthesize("single", " ".join(words), seed=9)["wav"])
+        with self.assertRaises(ValueError):
+            self.engine.synthesize_chunk("single", " ".join(words), 0, 1, lookahead=2, mode="independent")
+        with self.assertRaises(ValueError):
+            self.engine.synthesize_chunk("multi", "Hi there.", 0, 1, seed=1)
+        self.assertGreater(self.engine.synthesize_chunk("multi", "Hi there.", 0, 1, seed=1,
+                                                        speaker="speaker_0")["seconds"], 0)
+
     def test_prepare_marks_segments_without_letters(self):
         segments = self.engine.prepare("First one. §§\n\nSecond 2.")
         self.assertEqual([s["normalized"] for s in segments], ["First one.", "", "Second two."])
@@ -159,6 +194,16 @@ class EngineTest(unittest.TestCase):
             status, body = call("/api/synthesize", {"model": "nope", "text": "Hi."})
             self.assertEqual(status, 400)
             self.assertIn("nope", json.loads(body)["error"])
+            status, body = call("/api/synthesize_chunk", {"model": "single", "text": "Hi there, how", "start": 1,
+                                                          "end": 2, "lookahead": 1, "mode": "context", "seed": 3})
+            result = json.loads(body)
+            self.assertEqual((status, result["voiced"], result["encoder_text"]), (200, "there,", "Hi there, how"))
+            with wave.open(io.BytesIO(base64.b64decode(result["wav"]))) as handle:
+                self.assertEqual(handle.getnframes() / handle.getframerate(), result["seconds"])
+            status, body = call("/api/synthesize_chunk", {"model": "single", "text": "Hi there", "start": 1, "end": 5})
+            self.assertEqual(status, 400)
+            self.assertIn("outside", json.loads(body)["error"])
+            self.assertEqual(call("/api/synthesize_chunk", {"model": "single", "text": "Hi"})[0], 400)
         finally:
             server.shutdown()
             server.server_close()

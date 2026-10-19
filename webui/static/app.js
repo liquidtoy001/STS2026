@@ -106,6 +106,21 @@ async function init() {
   $("limitations").replaceChildren(...s.limitations.map((item) => el("li", {text: item})));
   renderCards();
   modelChanged();
+  document.dispatchEvent(new CustomEvent("sts-status", {detail: s}));
+}
+
+function selectTab(name, focus = false) {
+  for (const button of document.querySelectorAll('[role="tab"]')) {
+    const on = button.getAttribute("aria-controls") === `tab-${name}`;
+    button.setAttribute("aria-selected", String(on));
+    button.tabIndex = on ? 0 : -1;
+    $(button.getAttribute("aria-controls")).hidden = !on;
+    if (on && focus) button.focus();
+  }
+  document.dispatchEvent(new CustomEvent("sts-tab", {detail: name}));
+  if (name === "reader") renderFigures();
+  else stopPlayback();
+  history.replaceState(null, "", name === "agent" ? location.pathname : `#${name}`);
 }
 
 function fillModelSelects() {
@@ -820,6 +835,17 @@ function download(t) {
 // ----------------------------------------------------------------------------------- controls
 
 function bindControls() {
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  tabs.forEach((button, index) => {
+    const name = button.getAttribute("aria-controls").slice(4);
+    button.addEventListener("click", () => selectTab(name));
+    button.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+      const next = tabs[(index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+      selectTab(next.getAttribute("aria-controls").slice(4), true);
+    });
+  });
+  if (location.hash === "#reader") selectTab("reader");
   $("speak").addEventListener("click", speak);
   $("stop").addEventListener("click", () => {
     state.run++;
@@ -858,6 +884,7 @@ function bindControls() {
   });
   document.addEventListener("keydown", (e) => {
     if (e.target.closest("textarea, input, select, button") || e.ctrlKey || e.metaKey || e.altKey) return;
+    if ($("tab-reader").hidden) return;
     if (e.key === " ") {
       e.preventDefault();
       togglePlay();

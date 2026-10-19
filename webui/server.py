@@ -32,6 +32,9 @@ warnings.filterwarnings("ignore", message="The PyTorch API of nested tensors")
 
 class Handler(BaseHTTPRequestHandler):
     engine = None
+    # Keep-alive: the agent demo makes many small requests; a new connection each time costs more
+    # than a chunk's synthesis. Every response sets Content-Length.
+    protocol_version = "HTTP/1.1"
 
     def log_message(self, format, *args):
         if not self.path.startswith("/static/"):
@@ -78,6 +81,7 @@ class Handler(BaseHTTPRequestHandler):
         route = urlparse(self.path).path
         length = int(self.headers.get("Content-Length") or 0)
         if length > MAX_BODY:
+            self.close_connection = True  # the unread body must not be parsed as the next request
             return self.send_json({"error": "Request too large"}, 413)
         try:
             request = json.loads(self.rfile.read(length) or b"{}")
@@ -91,8 +95,14 @@ class Handler(BaseHTTPRequestHandler):
                     request["model"], request["text"], noise_scale=request.get("noise_scale", 0.667),
                     length_scale=request.get("length_scale", 1.0), seed=request.get("seed"),
                     speaker=request.get("speaker")))
+            if route == "/api/synthesize_chunk":
+                return self.send_json(self.engine.synthesize_chunk(
+                    request["model"], request["text"], request["start"], request["end"],
+                    lookahead=request.get("lookahead", 0), mode=request.get("mode", "context"),
+                    seed=request.get("seed"), noise_scale=request.get("noise_scale", 0.667),
+                    length_scale=request.get("length_scale", 1.0), speaker=request.get("speaker")))
             return self.send_json({"error": "Not found"}, 404)
-        except (KeyError, ValueError, FileNotFoundError) as error:
+        except (KeyError, ValueError, TypeError, FileNotFoundError) as error:
             return self.send_json({"error": f"{type(error).__name__}: {error}"}, 400)
         except Exception as error:  # report, keep serving
             traceback.print_exc()

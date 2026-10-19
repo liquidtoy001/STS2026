@@ -4,12 +4,16 @@ Models are listed in a JSON config (webui/config.json, or the committed config.e
 Each checkpoint is rebuilt from the switches and speaker configuration stored in it, with
 the notebook's own class definitions, so a run trained on another dataset or with speaker
 conditioning loads without code changes as long as it uses the notebook's symbol table.
+
+Chunked synthesis for the voice-agent demo follows tools/chunk_study.py (synth and spans): the
+text encoder reads the chunk with its context, and only the chunk's characters receive frames.
 """
 
 import base64
 import glob
 import io
 import json
+import math
 import random
 import threading
 import time
@@ -40,6 +44,24 @@ def resolve_checkpoint(pattern, base):
     matches = [Path(p) for p in glob.glob(str(path), recursive=True)]
     matches = [p for p in matches if p.is_file()]
     return max(matches, key=lambda p: p.stat().st_mtime) if matches else None
+
+
+def chunk_span(words, start, end, lookahead, context):
+    """Encoder text and the voiced character span of words[start:end], as in tools/chunk_study.spans.
+
+    Context mode reads all earlier words, the chunk and up to `lookahead` following words; the
+    span includes the space after the chunk unless the chunk ends the text. Independent mode
+    reads the chunk alone.
+    """
+    if not 0 <= start < end <= len(words):
+        raise ValueError(f"Chunk words [{start}, {end}) outside the {len(words)} words received.")
+    if lookahead < 0 or (lookahead and not context):
+        raise ValueError("lookahead must be >= 0, and 0 for independent chunks.")
+    low = 0 if context else start
+    text = " ".join(words[low:end + lookahead])
+    begin = len(" ".join(words[low:start])) + (1 if start > low else 0)
+    finish = begin + len(" ".join(words[start:end])) + (1 if end < len(words) else 0)
+    return text, (begin, finish)
 
 
 def wav_bytes(audio, sample_rate):
@@ -78,6 +100,32 @@ class Engine:
         self.loaded = {}
         self.lock = threading.Lock()
         self.mel_transforms = {}
+        self.studies = {}
+        for study in self.config.get("chunk_studies", []):
+            path = self.find_record(study["analysis"])
+            if path is None:
+                continue  # e.g. a study whose Whisper scoring has not finished
+            analysis = json.loads(path.read_text(encoding="utf-8"))
+            timing_path = self.find_record(study.get("timing", ""))
+            timing = json.loads(timing_path.read_text(encoding="utf-8")) if timing_path else {}
+            self.studies[study["model"]] = {
+                "label": study.get("label"), "source": study.get("source"), "analysis": str(path),
+                "sentences": analysis.get("sentences"), "natural_wer": analysis.get("natural_wer"),
+                "conditions": analysis["conditions"],
+                "mean_words": timing.get("mean_words"),
+                "gpu_ms_per_call": {name: row.get("gpu_ms_per_call_mean")
+                                    for name, row in timing.get("summary", {}).items()},
+            }
+
+    def find_record(self, pattern):
+        """A study file (path or glob) in the repository, e.g. docs/records, or under the checkpoint root."""
+        if not pattern:
+            return None
+        for base in (ROOT, self.checkpoint_root):
+            path = resolve_checkpoint(pattern, base)
+            if path is not None:
+                return path
+        return None
 
     # -- registry -----------------------------------------------------------------------------
 
@@ -107,6 +155,8 @@ class Engine:
             "max_segment_chars": MAX_SEGMENT_CHARS,
             "mel_range": MEL_RANGE,
             "models": self.model_list(),
+            "agent": self.config.get("agent", {}),
+            "chunk_studies": self.studies,
         }
 
     def load(self, model_id):
@@ -189,24 +239,32 @@ class Engine:
             return self._infer(self.loaded[model_id], text, float(noise_scale), float(length_scale), int(seed),
                                speaker)
 
-    def _infer(self, loaded, text, noise_scale, length_scale, seed, speaker):
-        model, info = loaded["model"], loaded["info"]
+    def _check(self, loaded, text, noise_scale, length_scale, speaker):
+        """Validate settings; return the encoded tokens and the speaker IDs (or None)."""
         if not 0 <= noise_scale <= 2 or not 0.25 <= length_scale <= 4:
             raise ValueError("noise_scale must be in [0, 2] and length_scale in [0.25, 4].")
         tokens = self.ns["encode_text"](text, self.symbol_to_id)
         if tokens.numel() == 0 or (tokens == self.ns["PAD_ID"]).any():
             raise ValueError("Nothing to synthesize: the text has no characters from the symbol table.")
-        if info["max_tokens"] and tokens.numel() > info["max_tokens"]:
-            raise ValueError(f"{tokens.numel()} characters exceed this model's limit of {info['max_tokens']}.")
-        speaker_ids = None
+        limit = loaded["info"]["max_tokens"]
+        if limit and tokens.numel() > limit:
+            raise ValueError(f"{tokens.numel()} characters exceed this model's limit of {limit}.")
         if loaded["speaker_to_id"]:
             if speaker not in loaded["speaker_to_id"]:
                 raise ValueError(f"Choose a speaker: {sorted(loaded['speaker_to_id'])}")
-            speaker_ids = torch.tensor([loaded["speaker_to_id"][speaker]], device=self.device)
-        elif speaker:
+            return tokens, torch.tensor([loaded["speaker_to_id"][speaker]], device=self.device)
+        if speaker:
             raise ValueError("This checkpoint has no speaker conditioning.")
+        return tokens, None
 
-        sync = torch.cuda.synchronize if self.device.type == "cuda" else (lambda: None)
+    def _sync(self):
+        if self.device.type == "cuda":
+            torch.cuda.synchronize(self.device)
+
+    def _infer(self, loaded, text, noise_scale, length_scale, seed, speaker):
+        model, info = loaded["model"], loaded["info"]
+        tokens, speaker_ids = self._check(loaded, text, noise_scale, length_scale, speaker)
+        sync = self._sync
         torch.manual_seed(seed)
         sync()
         started = time.perf_counter()
@@ -243,3 +301,59 @@ class Engine:
                           "frames": int(attention.shape[0]), "hop_length": info["hop_length"],
                           "hard": bool(((attention == 0) | (attention == 1)).all())},
         }
+
+    # -- chunked synthesis (voice-agent demo) -------------------------------------------------
+
+    def synthesize_chunk(self, model_id, text, start, end, lookahead=0, mode="context", seed=None,
+                         noise_scale=0.667, length_scale=1.0, speaker=None):
+        """Audio of words[start:end] of `text` (the words received so far, already normalised).
+
+        mode "context": the encoder reads all earlier words, the chunk and `lookahead` following
+        words (as many as have arrived); "independent": the chunk alone. As in the chunk study,
+        the chunk's seed is seed + start, so seed 1234 reproduces the study's audio.
+        """
+        if mode not in ("context", "independent"):
+            raise ValueError("mode must be 'context' or 'independent'.")
+        words = text.split()
+        encoder_text, span = chunk_span(words, int(start), int(end), int(lookahead), mode == "context")
+        self.load(model_id)
+        if seed is None:
+            seed = random.randrange(2 ** 31 - 10_000)
+        chunk_seed = int(seed) + int(start)
+        with self.lock:
+            audio, infer_seconds = self._infer_span(self.loaded[model_id], encoder_text, span, float(noise_scale),
+                                                    float(length_scale), chunk_seed, speaker)
+        sample_rate = self.loaded[model_id]["info"]["sample_rate"]
+        return {
+            "wav": base64.b64encode(wav_bytes(audio, sample_rate)).decode("ascii"),
+            "sample_rate": sample_rate, "seconds": audio.numel() / sample_rate, "seed": chunk_seed,
+            "infer_seconds": infer_seconds, "device": str(self.device),
+            "encoder_text": encoder_text, "voiced": encoder_text[span[0]:span[1]].strip(),
+        }
+
+    def _infer_span(self, loaded, text, span, noise_scale, length_scale, seed, speaker):
+        """tools/chunk_study.synth with speaker conditioning and length_scale; returns (audio, seconds)."""
+        model = loaded["model"]
+        tokens, speaker_ids = self._check(loaded, text, noise_scale, length_scale, speaker)
+        kept = [i for i, c in enumerate(text) if c in self.symbol_to_id]
+        target = torch.tensor([[[1.0 if span[0] <= i < span[1] else 0.0 for i in kept]]], device=self.device)
+        tokens = tokens.unsqueeze(0).to(self.device)
+        lengths = torch.tensor([tokens.size(1)], device=self.device)
+        self._sync()
+        started = time.perf_counter()
+        with torch.inference_mode():
+            g = model.speaker_condition(speaker_ids, 1)
+            torch.manual_seed(seed)
+            x, m_p, logs_p, x_mask = model.text_encoder(tokens, lengths)
+            logw = model.duration_predictor(x, x_mask, g=g).clamp(min=-5.0, max=math.log(50))
+            w = torch.ceil(torch.exp(logw) * length_scale) * x_mask * target
+            y_len = w.sum(dim=(1, 2)).long().clamp(min=1)
+            y_mask = self.ns["create_sequence_mask"](y_len, int(y_len.max())).unsqueeze(1).to(x.dtype)
+            attn = self.ns["make_inference_path"](w, y_mask.unsqueeze(-1) * x_mask.unsqueeze(2))
+            m = self.ns["expand_with_alignment"](m_p, attn)
+            logs = self.ns["expand_with_alignment"](logs_p, attn)
+            z_p = m + torch.randn_like(m) * torch.exp(logs) * noise_scale
+            z = model.flow(z_p, y_mask, reverse=True, g=g)
+            audio = model.decoder(z * y_mask, g=g)[0, 0, :int(y_len) * model.hop_length].float()
+        self._sync()
+        return audio, time.perf_counter() - started
