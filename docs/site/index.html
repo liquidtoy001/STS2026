@@ -304,6 +304,7 @@
         <li class="done"><span class="when">2026-09-29 · tuirno · Kaggle T4</span><div class="what">GAN vs no-GAN, 50,000 iterations each</div><p>Both runs completed. Spectral probe metrics slightly favour no-GAN; the discriminator overpowers the generator late. See the <a href="#full-train-gan">experiment report</a>.</p></li>
         <li class="done"><span class="when">2026-10-07 · Turino · tts-v0.02</span><div class="what">TTS_0.02 speaker-ID conditioning</div><p>Optional learned speaker embedding throughout training and inference. Source release; not trained.</p></li>
         <li class="done"><span class="when">2026-10-12 · benlu, Turino</span><div class="what">TTS_0.10 integration</div><p>benlu's model and recipe in the project harness with switches back to TTS_0.02, a 100-clip held-out split and one export per ablation arm. See <a href="#version-tts010">TTS_0.10</a>.</p></li>
+        <li class="done"><span class="when">2026-10-19 · Turino · 0b11e47</span><div class="what">Chunked-synthesis study and chunk-aware fine-tuning</div><p>R0 at 40,000 steps measured under 17 chunk conditions; <code>--init-from</code> and optional chunk-aware training, off by default. See <a href="#voice-agent-tts">TTS for voice agents</a>.</p></li>
       </ul>
 
 <footer class="site-foot">STS2026 team coursework, 2026. Figures on this site come from committed records and the local baseline run; nothing is estimated.</footer>
@@ -603,6 +604,113 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
   </figure>
   <p>On four new sentences, Whisper medium gets 32% of the words wrong for benlu's checkpoint and 98–100% for TTS_0.01, whose outputs it does not recognise as speech; real LJSpeech recordings score 0.8%. Four sentences give only a first indication; the held-out evaluation uses 100.</p>
   <p><strong>No run has been trained with this notebook yet.</strong> The ablation (<a href="#task-tts010-ablation">To-do</a>) trains eleven arms. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.10.md">TTS_0.10.md</a>.</p>
+</section>
+
+<section class="doc-section" id="voice-agent-tts">
+  <span class="eyebrow">19/10 · Turino · Study on TTS_0.10</span>
+  <h2>19/10 · TTS for voice agents — speaking before the sentence is finished</h2>
+  <div class="exp-head">
+    <span class="chip">Author: Turino</span>
+    <span class="chip">Measured: 2026-10-19 · Australia/Brisbane</span>
+    <span class="chip warn">Direction under discussion · not adopted by the team</span>
+  </div>
+  <p class="small muted">Source: commit <a href="https://github.com/liquidtoy001/STS2026/commit/0b11e47"><code>0b11e47</code></a> on <code>Turino</code>; not merged or released. Model: TTS_0.10 arm R0 at 40,000 steps (run <code>tts010_R0_20261014T070647303632Z</code>). Measurements on one RTX 4070 Ti SUPER; intelligibility by Whisper medium (<code>tools/asr_wer.py</code>).</p>
+  <p>This section records a direction under discussion in the team and what has been measured for it.</p>
+
+  <h3 id="voice-agent-problem">The problem</h3>
+  <p>A voice agent answers in three stages: speech recognition turns the user's speech into text, a language model writes the answer, and a TTS speaks it. The language model produces its answer word by word. A TTS that needs a whole sentence can start only when the language model has finished that sentence; the 100 held-out LJSpeech sentences have about 12 words on average. To speak earlier, the TTS must synthesize a few words at a time, but each piece then lacks the rest of the sentence, which can make it harder to understand.</p>
+  <p><strong>Question:</strong> how few words can the TTS wait for and still be as intelligible as when it synthesizes the whole sentence?</p>
+
+  <h3 id="voice-agent-method">How it is measured</h3>
+  <p>The chunk study (<code>tools/chunk_study.py</code>) synthesizes each of the 100 held-out sentences (never trained on) under 17 conditions, with the same random seed per sentence.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Condition</th><th>What the TTS gets</th><th>Words it must wait for before speaking</th></tr></thead>
+      <tbody>
+        <tr><td>whole sentence</td><td>the complete sentence, one call</td><td>the whole sentence (about 12)</td></tr>
+        <tr><td>independent N-word chunks (<code>naive_N</code>)</td><td>each N-word chunk on its own; the pieces' audio is concatenated</td><td>N</td></tr>
+        <tr><td>context-aware N-word chunks, lookahead K (<code>ctx_N_kK</code>)</td><td>all previous words + the chunk + the next K words; only the chunk is voiced</td><td>N + K</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Example, “The quick brown fox jumps over the lazy dog.”, context-aware 2-word chunks with lookahead 2: the first call reads “The quick brown fox” and voices “The quick”; the second reads “The quick brown fox jumps over” and voices “brown fox”; and so on. The text encoder sees the longer text, and the durations of all characters outside the chunk are set to zero, so only the chunk receives audio frames.</p>
+  <p>Each condition's audio is transcribed by Whisper medium with the project's locked protocol; the word error rate (WER) is a corpus rate over the 100 sentences. The LJSpeech recordings of the same sentences score 3.3%, the floor set by Whisper itself. Differences between conditions come with 95% intervals from 2,000 paired bootstrap resamples of the sentences (<code>tools/chunk_analysis.py</code>).</p>
+
+  <h3 id="voice-agent-results">Results for R0</h3>
+  <div class="stat-row">
+    <div class="stat"><div class="k">Whole sentence</div><div class="v">16.7%</div><div class="s">waits for 11.9 words</div></div>
+    <div class="stat"><div class="k">Independent 2-word chunks</div><div class="v">35.4%</div><div class="s">waits for 2 words</div></div>
+    <div class="stat"><div class="k">Context-aware 2 words, lookahead 2</div><div class="v">17.3%</div><div class="s">waits for 3.9 words</div></div>
+    <div class="stat"><div class="k">LJSpeech recordings</div><div class="v">3.3%</div><div class="s">Whisper's own floor</div></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Condition</th><th class="num">Wait</th><th class="num">WER</th><th class="num">vs whole [95% CI]</th><th class="num">Duration</th></tr></thead>
+      <tbody>
+        <tr><td>whole sentence</td><td class="num">11.9</td><td class="num"><strong>16.7%</strong></td><td class="num">–</td><td class="num">0.96</td></tr>
+        <tr><td>independent 1-word chunks</td><td class="num">1.0</td><td class="num">56.1%</td><td class="num">+39.4 [+34.6, +44.0]</td><td class="num">1.31</td></tr>
+        <tr><td>independent 2-word chunks</td><td class="num">2.0</td><td class="num">35.4%</td><td class="num">+18.7 [+14.0, +23.7]</td><td class="num">1.13</td></tr>
+        <tr><td>independent 4-word chunks</td><td class="num">3.9</td><td class="num">25.6%</td><td class="num">+8.9 [+5.0, +12.7]</td><td class="num">1.02</td></tr>
+        <tr><td>independent 8-word chunks</td><td class="num">7.5</td><td class="num">20.5%</td><td class="num">+3.8 [+0.9, +6.8]</td><td class="num">0.98</td></tr>
+        <tr><td>context-aware 2-word chunks, no lookahead</td><td class="num">2.0</td><td class="num">28.1%</td><td class="num">+11.4 [+7.7, +15.3]</td><td class="num">1.11</td></tr>
+        <tr><td>context-aware 1-word chunks, lookahead 2</td><td class="num">3.0</td><td class="num"><strong>17.8%</strong></td><td class="num">+1.1 [−2.3, +4.1]</td><td class="num">0.96</td></tr>
+        <tr><td>context-aware 2-word chunks, lookahead 2</td><td class="num">3.9</td><td class="num"><strong>17.3%</strong></td><td class="num">+0.6 [−2.1, +3.3]</td><td class="num">0.96</td></tr>
+        <tr><td>context-aware 4-word chunks, lookahead 2</td><td class="num">5.7</td><td class="num">17.2%</td><td class="num">+0.5 [−2.1, +3.1]</td><td class="num">0.96</td></tr>
+        <tr><td>LJSpeech recordings</td><td class="num">–</td><td class="num">3.3%</td><td class="num">–</td><td class="num">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted"><em>Wait</em>: words that must arrive before the first audio (mean over the 100 sentences). <em>WER</em>: Whisper medium. <em>vs whole</em>: WER difference from the whole sentence in percentage points. <em>Duration</em>: length of the synthesized speech relative to the recording. All 17 conditions: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/records/chunk-study/R0_40k/analysis.json">records/chunk-study/R0_40k/analysis.json</a>.</p>
+  <figure class="task-figure" style="margin-bottom:18px">
+    <img src="assets/voice-agent-chunk-tradeoff.png" alt="Whisper WER against the number of words the TTS must wait for. Independent chunks fall from 56% at one word to 20% at about 7.5 words; context-aware chunks with lookahead 2 stay near 17–18% from three words on, close to the whole sentence at 16.7%; real recordings are at 3.3%." loading="lazy" decoding="async">
+    <figcaption>Whisper WER against the words the TTS must wait for before speaking; R0 at 40,000 steps, 100 held-out sentences. <a href="assets/voice-agent-chunk-tradeoff.png">Open the full-size figure</a>.</figcaption>
+  </figure>
+  <p>What the numbers show:</p>
+  <ol class="list">
+    <li><strong>Chunks synthesized on their own are much harder to understand.</strong> Two-word chunks raise the WER from 16.7% to 35.4% and stretch the speech to 1.13× the recording's duration.</li>
+    <li><strong>Two words of lookahead remove that cost within the precision of this test.</strong> Context-aware chunks of one or two words with lookahead 2 are not distinguishable from whole sentences (intervals include 0) while waiting for 3–4 words instead of 11.9.</li>
+    <li><strong>The lookahead matters more than the left context.</strong> Two-word chunks with all previous words but no lookahead still score 28.1%.</li>
+    <li><strong>At equal waiting, context helps.</strong> Context-aware 2-word chunks with lookahead 2 and independent 4-word chunks both wait for about 3.9 words: 17.3% against 25.6%, a difference of −8.2 points [−11.6, −5.0].</li>
+    <li><strong>Synthesis is not the bottleneck.</strong> One chunk takes about 11 ms on the RTX 4070 Ti SUPER and about 60 ms on 8 CPU threads; a whole sentence 24 ms and 239 ms.</li>
+  </ol>
+
+  <h3 id="voice-agent-finetune">Chunk-aware fine-tuning: local check</h3>
+  <p>Context-aware chunks need the next words and a modified inference path. The alternative studied next is to teach the model short pieces directly: fine-tune R0 on training clips cut at word boundaries. With probability 0.5 a training clip is cut to 1–8 whole words together with the matching audio, either a prefix of the sentence or a span starting at a random word; the cut points come from the R0 40k model's alignment. The new options (<code>--init-from</code>, <code>--chunk-prob</code> and others in <code>tools/train_tts010.py</code>) are off by default, and the off path is identical to the <code>tts-v0.10</code> release (39 tests).</p>
+  <p>Two local runs on the RTX 4070 Ti SUPER, both started from R0 at 40,000 steps with optimizer state carried, for 5,000 more steps with the same clips in the same order: <em>chunk</em> (chunk-aware training on) and <em>control</em> (off).</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Held-out, 100 sentences</th><th class="num">R0 40k</th><th class="num">control +5k</th><th class="num">chunk +5k</th></tr></thead>
+      <tbody>
+        <tr><td>Whisper WER, whole sentences</td><td class="num">16.9%</td><td class="num">17.2%</td><td class="num">17.4%</td></tr>
+        <tr><td>Duration ratio, whole sentences (1 = natural)</td><td class="num">0.957</td><td class="num">0.936</td><td class="num">0.916</td></tr>
+        <tr><td>Level ratio (1 = natural)</td><td class="num">0.898</td><td class="num">0.884</td><td class="num">0.844</td></tr>
+        <tr><td>Reconstruction log-mel L1</td><td class="num">0.533</td><td class="num">0.540</td><td class="num"><strong>0.518</strong></td></tr>
+        <tr><td>Duration, independent 1-word chunks</td><td class="num">1.31</td><td class="num">1.28</td><td class="num">0.81</td></tr>
+        <tr><td>Duration, independent 2-word chunks</td><td class="num">1.13</td><td class="num">1.11</td><td class="num">0.87</td></tr>
+        <tr><td>Duration, independent 4-word chunks</td><td class="num">1.02</td><td class="num">1.00</td><td class="num">0.89</td></tr>
+        <tr><td>Duration, context-aware 2-word chunks, lookahead 2</td><td class="num">0.96</td><td class="num">0.93</td><td class="num">0.92</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">The whole-sentence rows come from the held-out evaluation (<code>tools/eval_tts010.py</code>), where R0 scores 16.9%; the chunk study above, a separate synthesis, gives 16.7%. WER differences, points [95% CI]: control − R0 +0.3 [−3.1, +3.3]; chunk − R0 +0.5 [−3.3, +4.5]; chunk − control +0.3 [−2.9, +3.5]. Chunk durations are relative to the recording's length.</p>
+  <p>So far: chunk-aware training did not detectably change whole-sentence intelligibility. It removed the stretching of short independent chunks (2-word chunks 0.87× instead of 1.11×) but overshot: short chunks and whole sentences became shorter than the recordings. Its held-out reconstruction error was the lowest of the three.</p>
+  <p><strong>Not yet in the repository:</strong> the Whisper WER of chunked synthesis for the two fine-tunes, which was still being scored on 19/10. Limits of this check: one seed per run, 5,000 steps, one speaker, no listening test.</p>
+
+  <h3 id="voice-agent-limits">What this does not show</h3>
+  <ul class="list">
+    <li>No language model or speech recognizer is in the loop. “Words waited for” stands in for latency; no end-to-end delay has been measured.</li>
+    <li>Whisper WER measures intelligibility only, not naturalness. Audible joins between chunks and prosody across chunk boundaries have not been measured, and there has been no listening test.</li>
+    <li>One speaker (LJSpeech), one checkpoint (R0 at 40,000 steps), 100 sentences, one synthesis per sentence and condition.</li>
+    <li>Chunks are cut by word count, not at phrase boundaries.</li>
+  </ul>
+
+  <h3 id="voice-agent-decision">Team decisions</h3>
+  <div class="callout note">
+    <div class="callout-title">For the team</div>
+    <p>Whether the project adopts this framing, and which configuration an application would use, is for the team to decide.</p>
+  </div>
+  <p>Details, reproduction commands and records: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/VOICE_AGENT_TTS.md">VOICE_AGENT_TTS.md</a> (study), <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE.md">CHUNK_FINETUNE.md</a> (fine-tuning options and local check), <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE_RUNBOOK.md">CHUNK_FINETUNE_RUNBOOK.md</a> (run manual for full-size runs).</p>
+<footer class="site-foot">Sources: docs/VOICE_AGENT_TTS.md, docs/CHUNK_FINETUNE.md, docs/records/chunk-study/R0_40k/ and docs/records/chunk-finetune/ at commit 0b11e47.</footer>
 </section>
 
 </article>

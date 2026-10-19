@@ -32,7 +32,8 @@
         { href: "#version-speaker-conditioning", label: "Speaker-ID conditioning" }
       ]},
       { group: "12/10 · TTS_0.10", items: [
-        { href: "#version-tts010", label: "benlu's model, switchable components" }
+        { href: "#version-tts010", label: "benlu's model, switchable components" },
+        { href: "#voice-agent-tts", label: "TTS for voice agents: chunked synthesis" }
       ]}
     ]}
   ];
