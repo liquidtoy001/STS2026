@@ -77,11 +77,32 @@ What the numbers show:
 
 Context-aware chunks need the next words and a modified inference path. The alternative studied
 next is to teach the model short pieces directly: fine-tune R0 on training clips cut at word
-boundaries ([CHUNK_FINETUNE.md](CHUNK_FINETUNE.md)). In a local 5,000-step check against an
-identical control run without cutting, whole-sentence WER did not change detectably (17.4% vs
-17.2%), and independent 2-word chunks were no longer stretched (0.87× instead of 1.11×), but
-became shorter than the recordings. Its effect on the WER of chunked synthesis was still being
-measured on 2026-10-19.
+boundaries ([CHUNK_FINETUNE.md](CHUNK_FINETUNE.md)). A local check trained R0 5,000 more steps
+with this cutting and, as a control, 5,000 more steps without it, and ran the same chunk study
+on both:
+
+| Condition | Words waited for | R0 | control +5k | chunk-trained +5k | chunk − control [95% CI] |
+|---|---:|---:|---:|---:|---:|
+| whole sentence | 11.9 | 16.7% | 16.6% | 15.4% | −1.2 [−3.8, +1.4] |
+| independent 1-word chunks | 1.0 | 56.1% | 56.9% | 36.3% | −20.6 [−25.5, −15.7] |
+| independent 2-word chunks | 2.0 | 35.4% | 34.1% | 24.2% | −9.9 [−14.5, −5.2] |
+| independent 4-word chunks | 3.9 | 25.6% | 20.4% | 16.1% | −4.3 [−7.9, −0.9] |
+| context-aware 2-word chunks, no lookahead | 2.0 | 28.1% | 28.4% | 20.6% | −7.7 [−12.0, −4.3] |
+| context-aware 2-word chunks, lookahead 2 | 3.9 | 17.3% | 16.0% | 16.4% | +0.4 [−2.7, +3.5] |
+
+- Chunk-aware training helps exactly where the model lacks the rest of the sentence: chunks
+  without lookahead became much easier to understand, while the control (the same extra steps
+  without cutting) did not improve them.
+- With two words of lookahead the conditions were already close to whole sentences, and the
+  fine-tuning made no detectable difference there.
+- Whole-sentence intelligibility did not change detectably.
+- The chunk-trained model's independent 4-word chunks (16.1%) are as intelligible as R0's whole
+  sentences (16.7%), with no lookahead and the plain inference path.
+- Side effect: its speech is faster (short chunks 0.81–0.89× the recording's duration, whole
+  sentences 0.92×); not yet checked by listening.
+
+One seed per run and 5,000 steps; the full-size runs (20,000 steps, with checkpoints at 5k for
+replication) are described in [CHUNK_FINETUNE_RUNBOOK.md](CHUNK_FINETUNE_RUNBOOK.md).
 
 ## What this does not show
 
@@ -89,8 +110,8 @@ measured on 2026-10-19.
   latency; no end-to-end delay has been measured.
 - Whisper WER measures intelligibility only, not naturalness. Audible joins between chunks and
   prosody across chunk boundaries have not been measured, and there has been no listening test.
-- One speaker (LJSpeech), one checkpoint (R0 at 40,000 steps), 100 sentences, one synthesis per
-  sentence and condition.
+- One speaker (LJSpeech), one checkpoint family (R0 at 40,000 steps and two 5,000-step
+  fine-tunes of it), 100 sentences, one synthesis per sentence and condition.
 - Chunks are cut by word count, not at phrase boundaries.
 
 ## Reproduce

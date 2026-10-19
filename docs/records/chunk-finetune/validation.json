@@ -91,5 +91,14 @@
     "tools/chunk_study.py": "R0 40k, first 3 held-out sentences x 17 conditions: 51 of 51 WAVs bit-identical to the recorded R0 study",
     "tools/chunk_analysis.py analyze": "on the recorded R0 asr.json and timing.json: analysis.json identical to the recorded one"
   },
-  "asr_wer_fix": "the first chunk-study scoring of both fine-tunes stopped at 355/500 utterances: print() of a hypothesis with U+FFFD on a GBK console; tools/asr_wer.py now reconfigures stdout with errors=backslashreplace"
+  "asr_wer_fix": "the first chunk-study scoring of both fine-tunes stopped at 355/500 utterances: print() of a hypothesis with U+FFFD on a GBK console; tools/asr_wer.py now reconfigures stdout with errors=backslashreplace",
+  "chunk_study_of_the_fine_tunes": {
+    "synthesis": "tools/chunk_study.py logic (scratch copy with --model-only, identical synthesis), 100 held-out sentences x 17 conditions per checkpoint, 2026-10-19",
+    "asr": "tools/asr_wer.py, Whisper medium on CPU, in three parts per checkpoint, merged; 1,700 utterances each, 0 empty outputs; natural channel from the R0 study",
+    "interruptions": [
+      "first scoring stopped at 355/500 (GBK console print, fixed in tools/asr_wer.py)",
+      "second scoring killed when Claude Code exited (~17:35 local); rerun as a detached process 20:17-02:20 local"
+    ],
+    "comparison": "comparison_chunk_study.json (tools/chunk_analysis.py compare, R0 = the recorded R0 study)"
+  }
 }

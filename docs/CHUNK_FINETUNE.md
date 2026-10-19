@@ -96,31 +96,57 @@ the sentences). *Independent* chunks: every N-word chunk synthesized on its own 
 concatenated. *Context-aware* chunks: the text encoder sees all previous words, the chunk and K
 following words, and only the chunk's characters receive frames.
 
-Duration of the synthesized speech relative to the recording (1 = the recording's length; all
-17 conditions in the records):
+| Condition (chunks) | Words waited for | R0 40k | control +5k | chunk +5k | chunk − control [95% CI] | Duration R0 / control / chunk |
+|---|---:|---:|---:|---:|---:|---|
+| whole sentence | 11.9 | 16.7 | 16.6 | 15.4 | −1.2 [−3.8, +1.4] | 0.96 / 0.94 / 0.92 |
+| independent 1-word | 1.0 | 56.1 | 56.9 | 36.3 | **−20.6 [−25.5, −15.7]** | 1.31 / 1.28 / 0.81 |
+| independent 2-word | 2.0 | 35.4 | 34.1 | 24.2 | **−9.9 [−14.5, −5.2]** | 1.13 / 1.11 / 0.87 |
+| independent 4-word | 3.9 | 25.6 | 20.4 | 16.1 | **−4.3 [−7.9, −0.9]** | 1.02 / 1.00 / 0.89 |
+| independent 8-word | 7.5 | 20.5 | 16.4 | 15.9 | −0.5 [−3.8, +2.9] | 0.98 / 0.96 / 0.91 |
+| context-aware 1-word, lookahead 0 | 1.0 | 38.9 | 39.7 | 30.0 | **−9.8 [−14.9, −5.2]** | 1.28 / 1.25 / 0.82 |
+| context-aware 1-word, lookahead 2 | 3.0 | 17.8 | 17.4 | 17.3 | −0.1 [−2.4, +2.3] | 0.96 / 0.93 / 0.92 |
+| context-aware 1-word, lookahead 4 | 4.8 | 19.5 | 18.4 | 17.0 | −1.4 [−4.2, +1.3] | 0.96 / 0.94 / 0.92 |
+| context-aware 2-word, lookahead 0 | 2.0 | 28.1 | 28.4 | 20.6 | **−7.7 [−12.0, −4.3]** | 1.11 / 1.08 / 0.87 |
+| context-aware 2-word, lookahead 2 | 3.9 | 17.3 | 16.0 | 16.4 | +0.4 [−2.7, +3.5] | 0.96 / 0.93 / 0.92 |
+| context-aware 2-word, lookahead 4 | 5.7 | 18.4 | 16.0 | 15.9 | −0.1 [−3.1, +3.0] | 0.96 / 0.94 / 0.92 |
+| context-aware 4-word, lookahead 0 | 3.9 | 22.1 | 19.9 | 17.0 | −2.9 [−6.3, +0.4] | 1.02 / 0.99 / 0.90 |
+| context-aware 4-word, lookahead 2 | 5.7 | 17.2 | 16.7 | 13.0 | **−3.6 [−6.5, −0.8]** | 0.96 / 0.93 / 0.92 |
+| context-aware 4-word, lookahead 4 | 7.5 | 17.6 | 15.0 | 16.2 | +1.2 [−1.7, +4.0] | 0.96 / 0.94 / 0.92 |
+| context-aware 8-word, lookahead 0 | 7.5 | 20.0 | 18.1 | 16.5 | −1.6 [−5.1, +1.7] | 0.98 / 0.96 / 0.91 |
+| context-aware 8-word, lookahead 2 | 9.1 | 17.5 | 15.1 | 14.9 | −0.2 [−3.0, +2.4] | 0.96 / 0.93 / 0.92 |
+| context-aware 8-word, lookahead 4 | 10.3 | 17.2 | 13.7 | 15.6 | +1.9 [−0.9, +4.3] | 0.96 / 0.94 / 0.92 |
 
-| Condition | R0 40k | control +5k | chunk +5k |
-|---|---:|---:|---:|
-| whole sentence | 0.96 | 0.94 | 0.92 |
-| independent 1-word chunks | 1.31 | 1.28 | 0.81 |
-| independent 2-word chunks | 1.13 | 1.11 | 0.87 |
-| independent 4-word chunks | 1.02 | 1.00 | 0.89 |
-| independent 8-word chunks | 0.98 | 0.96 | 0.91 |
-| context-aware 2-word chunks, no lookahead | 1.11 | 1.08 | 0.87 |
-| context-aware 2-word chunks, lookahead 2 | 0.96 | 0.93 | 0.92 |
+Whisper WER in %; bold: the interval excludes 0. The LJSpeech recordings of the same sentences
+score 3.3%. Records: [`comparison_chunk_study.json`](records/chunk-finetune/comparison_chunk_study.json)
+(with chunk − R0 and control − R0), per-utterance counts in
+[`records/chunk-finetune/study/`](records/chunk-finetune/study/).
 
-The Whisper WER of these conditions for the two fine-tunes was still being scored on 2026-10-19
-(Whisper medium on the CPU, about 4 hours); R0's WER for every condition is in
-[VOICE_AGENT_TTS.md](VOICE_AGENT_TTS.md).
+What the local check shows:
 
-So far: chunk-aware training did not detectably change whole-sentence intelligibility (chunk −
-control +0.3 points, interval −2.9 to +3.5). It removed the stretching of short independent
-chunks (2-word chunks 0.87× instead of 1.11×) but overshot: short chunks and whole sentences
-became shorter than the recordings (whole sentences 0.92× against 0.94× for the control). Its
-held-out reconstruction error was the lowest of the three (0.518 against 0.540 and 0.533).
+1. **Without lookahead, chunk-aware training makes short pieces much easier to understand.**
+   Independent 1-, 2- and 4-word chunks: 36.3%, 24.2% and 16.1% against 56.9%, 34.1% and 20.4%
+   for the control; context-aware 1- and 2-word chunks without lookahead: 30.0% and 20.6%
+   against 39.7% and 28.4%. The control, which trained the same 5,000 extra steps on whole clips,
+   did not improve 1- or 2-word chunks over R0 (all intervals include 0), so these gains come from
+   the crops, not from the extra steps.
+2. **With two or more words of lookahead it made no detectable difference**, except for
+   context-aware 4-word chunks with lookahead 2 (13.0% against 16.7%). Those conditions were
+   already close to whole sentences for every checkpoint.
+3. **Whole sentences did not change detectably**: −1.2 points [−3.8, +1.4] in this study and
+   +0.3 [−2.9, +3.5] in the held-out evaluation above.
+4. **Independent 4-word chunks of the chunk model (16.1%, about 4 words waited for) are as
+   intelligible as R0's whole sentences (16.7%, about 12 words)**, with the plain inference path
+   and no lookahead.
+5. **The speech became faster.** Short pieces last 0.81–0.89× the recording (control 1.00–1.28×),
+   whole sentences 0.92× (control 0.94×). Whether this is audible or hurts naturalness has not
+   been checked.
+6. The extra steps alone also lowered some WERs (control − R0: independent 4- and 8-word chunks
+   −5.2 and −4.0 points), so differences from R0 overstate what chunk training does; chunk −
+   control is the comparison to use.
 
 Limits: one seed per run, 5,000 steps, one speaker, Whisper WER as the intelligibility measure
-(no listening test). Neither R0 nor the fine-tunes trained on the held-out sentences.
+(no listening test), 17 conditions compared without correction for multiple comparisons. Neither
+R0 nor the fine-tunes trained on the held-out sentences.
 
 ## Full-size runs
 
