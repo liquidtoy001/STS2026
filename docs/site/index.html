@@ -119,27 +119,28 @@ python webui/server.py</code></pre>
           <span id="task-tts"></span>
           <div class="task-card-head">
             <h3>12/10 · TTS_0.10 ablation training</h3>
-            <span class="chip acc">4 of 11 arms evaluated</span>
+            <span class="chip acc">10 of 11 arms evaluated</span>
           </div>
           <p>Eleven runs measure which of the eight TTS_0.10 changes matter. Each arm trains the complete TTS_0.10 for 40,000 steps with one change reverted to its TTS_0.02 form (leave-one-out). R0 and R0b differ only in the seed and give the noise floor; E0 reverts everything.</p>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Arm</th><th>What is reverted: TTS_0.10 → TTS_0.02</th><th>Status, 20/10</th></tr></thead>
+              <thead><tr><th>Arm</th><th>What is reverted: TTS_0.10 → TTS_0.02</th><th>Whisper WER (− R0, points), 21/10</th></tr></thead>
               <tbody>
-                <tr><td>R0</td><td>nothing: complete TTS_0.10, seed 2026; the reference for every arm</td><td>evaluated · RTX PRO 6000</td></tr>
-                <tr><td>R0b</td><td>nothing: complete TTS_0.10, seed 2027; noise floor</td><td>trained · L40S; upload incomplete</td></tr>
-                <tr><td>G1</td><td>text encoder: post-norm attention with kernel-3 convolutional feed-forward → <code>nn.TransformerEncoder</code> with a GELU linear feed-forward</td><td>not received</td></tr>
-                <tr><td>G2</td><td>posterior encoder: 8 gated WaveNet blocks with skip sum → 1×1 projection + 4 dilated convolutions</td><td>not received</td></tr>
-                <tr><td>G3</td><td>decoder: two residual blocks (kernels 3 and 7) per upsampling stage, HiFi-GAN MRF → one kernel-3 block per stage</td><td>not received</td></tr>
-                <tr><td>A1</td><td>discriminator: scale + period (2, 3, 5, 7, 11) discriminators, 46.7 M parameters → one 1-D convolution stack, 7.1 M</td><td>not received</td></tr>
-                <tr><td>A2</td><td>feature-matching loss, weight 2 → off</td><td>not received</td></tr>
-                <tr><td>L1</td><td>reconstruction loss: Slaney log-mel L1 × 45 → HTK log-mel 1 + multi-resolution STFT 0.5 + waveform L1 10</td><td>not received</td></tr>
-                <tr><td>O1</td><td>optimisation: batch 16, learning rate 2e-4, fp16, no clipping → batch 8, 1e-4, fp32, gradient clipping 1.0</td><td>evaluated · RTX PRO 6000</td></tr>
-                <tr><td>E0</td><td>all eight changes: TTS_0.02 throughout</td><td>evaluated · Turino, RTX 4070 Ti SUPER</td></tr>
-                <tr><td>D1</td><td>text-length filter: clips of 1–100 characters (6,208) → all 13,000 training clips, long ones included</td><td>evaluated · Turino, RTX 4070 Ti SUPER</td></tr>
+                <tr><td>R0</td><td>nothing: complete TTS_0.10, seed 2026; the reference for every arm</td><td>16.9% · reference · RTX PRO 6000</td></tr>
+                <tr><td>R0b</td><td>nothing: complete TTS_0.10, seed 2027; noise floor</td><td>trained · L40S; re-upload pending</td></tr>
+                <tr><td>G1</td><td>text encoder: post-norm attention with kernel-3 convolutional feed-forward → <code>nn.TransformerEncoder</code> with a GELU linear feed-forward</td><td>23.7% (+6.8) · RTX PRO 6000</td></tr>
+                <tr><td>G2</td><td>posterior encoder: 8 gated WaveNet blocks with skip sum → 1×1 projection + 4 dilated convolutions</td><td>24.7% (+7.8) · RTX PRO 6000</td></tr>
+                <tr><td>G3</td><td>decoder: two residual blocks (kernels 3 and 7) per upsampling stage, HiFi-GAN MRF → one kernel-3 block per stage</td><td>13.8% (−3.1) · RTX PRO 6000</td></tr>
+                <tr><td>A1</td><td>discriminator: scale + period (2, 3, 5, 7, 11) discriminators, 46.7 M parameters → one 1-D convolution stack, 7.1 M</td><td>19.2% (+2.3) · RTX PRO 6000</td></tr>
+                <tr><td>A2</td><td>feature-matching loss, weight 2 → off</td><td>15.7% (−1.2) · RTX PRO 6000</td></tr>
+                <tr><td>L1</td><td>reconstruction loss: Slaney log-mel L1 × 45 → HTK log-mel 1 + multi-resolution STFT 0.5 + waveform L1 10</td><td>186.9% (+169.9); 48 of 100 empty · RTX PRO 6000</td></tr>
+                <tr><td>O1</td><td>optimisation: batch 16, learning rate 2e-4, fp16, no clipping → batch 8, 1e-4, fp32, gradient clipping 1.0</td><td>28.5% (+11.6) · RTX PRO 6000</td></tr>
+                <tr><td>E0</td><td>all eight changes: TTS_0.02 throughout</td><td>100.2% (+83.2) · Turino, RTX 4070 Ti SUPER</td></tr>
+                <tr><td>D1</td><td>text-length filter: clips of 1–100 characters (6,208) → all 13,000 training clips, long ones included</td><td>11.6% (−5.3) · Turino, RTX 4070 Ti SUPER</td></tr>
               </tbody>
             </table>
           </div>
+          <p>Central evaluation, 21/10: 100 held-out sentences, Whisper medium; the recordings score 3.3%. Reverting the reconstruction loss (L1) is the only single change that breaks the model; reverting the optimisation, posterior encoder, text encoder or discriminator raises WER by 2–12 points; reverting the decoder, switching feature matching off and removing the length filter give lower WER than R0. R0b is not evaluated yet, so differences of a few points cannot be separated from seed variation. Full table: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md#results-2026-10-21">ABLATION_TTS_0.10.md</a>.</p>
           <p>Each run, from release <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10"><code>tts-v0.10</code></a>: <code>python tools/train_tts010.py --arm &lt;arm&gt; --data-dir &lt;LJSpeech-1.1&gt;</code>, 40,000 steps. Upload the run folder to the team Drive; evaluation is run centrally. Step-by-step instructions, the run card and the reading rules: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md">ABLATION_TTS_0.10.md</a>.</p>
         </article>
       </section>

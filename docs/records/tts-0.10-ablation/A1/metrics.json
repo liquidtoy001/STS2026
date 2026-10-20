@@ -1,0 +1,78 @@
+{
+  "label": "A1_40k",
+  "checkpoint": "E:\\Documents\\STS2026\\output\\tts010-turino\\incoming-2026-10-21\\tts010_A1_20261019T042602526769Z\\checkpoints\\vits_step_40000.pt",
+  "checkpoint_step": 40000,
+  "model_version": "TTS_0.10",
+  "switches": {
+    "text_encoder": "tts010",
+    "posterior_encoder": "tts010",
+    "decoder": "tts010",
+    "discriminator": "tts002",
+    "feature_matching": true,
+    "recon_loss": "tts010",
+    "optim": "tts010",
+    "max_text_chars": 100
+  },
+  "device": "cuda:0",
+  "torch": "2.7.1+cu118",
+  "noise_scale": 0.667,
+  "eval_seed": 1234,
+  "spectrogram": "sqrt(|X|^2 + 1e-6)",
+  "heldout_recordings_found": 100,
+  "heldout_ids_total": 100,
+  "scope": "LJSpeech single speaker; held-out = sts_eval/splits/ljspeech_heldout_100.txt",
+  "probe": [
+    {
+      "step": 40000,
+      "mode": "mean",
+      "count": 8,
+      "log_mel_l1": 0.5890141427516937,
+      "stft_spectral_convergence": 0.5513508208096027,
+      "stft_log_magnitude": 1.0105534791946411
+    },
+    {
+      "step": 40000,
+      "mode": "sample",
+      "count": 8,
+      "log_mel_l1": 0.5635043829679489,
+      "stft_spectral_convergence": 0.542179174721241,
+      "stft_log_magnitude": 0.9738695397973061
+    }
+  ],
+  "heldout_crops": [
+    {
+      "step": 40000,
+      "mode": "mean",
+      "count": 8,
+      "log_mel_l1": 0.5723869428038597,
+      "stft_spectral_convergence": 0.5819981880486012,
+      "stft_log_magnitude": 1.0171824917197227
+    },
+    {
+      "step": 40000,
+      "mode": "sample",
+      "count": 8,
+      "log_mel_l1": 0.5427447892725468,
+      "stft_spectral_convergence": 0.6137193404138088,
+      "stft_log_magnitude": 0.9428442567586899
+    }
+  ],
+  "heldout_full": {
+    "count": 100,
+    "log_mel_l1": 0.5578498297929764,
+    "stft_spectral_convergence": 0.5673719581961632,
+    "stft_log_magnitude": 0.9687472939491272
+  },
+  "heldout_tts": {
+    "count": 100,
+    "duration_ratio_mean": 0.960706184774791,
+    "rms_ratio_mean": 0.9196068215370178
+  },
+  "listening_sentences": [
+    "The quick brown fox jumps over the lazy dog.",
+    "Our team trained this speech model from scratch for a university course project.",
+    "Please call Stella and ask her to bring these things with her from the store.",
+    "How much wood would a woodchuck chuck if a woodchuck could chuck wood?"
+  ],
+  "completed_at_utc": "2026-10-20T16:38:45+00:00"
+}
