@@ -49,6 +49,8 @@ def main():
     parser.add_argument("--data-dir", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument("--phoneme-cache", default=str(ROOT / "sts_eval" / "phonemes" / "ljspeech_g2p_en.tsv"),
+                        help="used only for checkpoints with phoneme input (TTS_0.20 option)")
     args = parser.parse_args()
 
     ns = load_definitions()
@@ -60,6 +62,8 @@ def main():
     data_dir = Path(args.data_dir)
     metadata = data_dir / "metadata.csv"
     corpus, _ = ns["load_training_metadata"](metadata)
+    if model.input_switches.get("text_input", "chars") == "phonemes":
+        corpus = ns["apply_phoneme_cache"](corpus, args.phoneme_cache, metadata)
     heldout = set(ns["load_id_list"](ROOT / "sts_eval" / "splits" / "ljspeech_heldout_100.txt"))
     frame = corpus[~corpus["file_name"].isin(heldout)]
     missing = [name for name in frame["file_name"] if not (data_dir / "wavs" / f"{name}.wav").is_file()]
@@ -68,7 +72,7 @@ def main():
     # Similar lengths in one batch keep padding (and MAS time) small.
     frame = frame.assign(length=frame["normalized_transcription"].str.len()).sort_values(
         ["length", "file_name"]).reset_index(drop=True)
-    dataset = ns["LJSpeechDataset"](frame, data_dir / "wavs")
+    dataset = ns["LJSpeechDataset"](frame, data_dir / "wavs", table=model.input_table)
     names = frame["file_name"].tolist()
     durations, started = {}, time.perf_counter()
     for start in range(0, len(names), args.batch_size):

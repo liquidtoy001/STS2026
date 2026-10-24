@@ -18,6 +18,9 @@ never silently replaced.
 
 python tools/eval_tts010.py --checkpoint run/checkpoints/vits_step_40000.pt --label G1_40k \
     --data-dir /data/LJSpeech-1.1
+
+--split ljspeech_long_100.txt evaluates the long-sentence test set instead of the 100 held-out
+sentences (only for arms that never trained on it: every arm but D1 and E0).
 """
 
 import argparse
@@ -33,7 +36,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from sts_eval import EvaluationConfig, ReconstructionEvaluator  # noqa: E402
 from sts_eval.reconstruction import mel_transform, score_waveforms  # noqa: E402
-from tools.notebook_defs import literal_assignment, load_definitions  # noqa: E402
+from tools.notebook_defs import literal_assignment, load_definitions
+from tools.text_input import model_text, table_for  # noqa: E402
 
 NOISE_SCALE = 0.667
 EVAL_SEED = 1234
@@ -61,18 +65,25 @@ def load_model(ns, checkpoint_path, device):
     speaker = checkpoint.get("speaker_config", {"n_speakers": 0, "gin_channels": 0})
     if speaker["n_speakers"]:
         raise ValueError("This protocol evaluates single-speaker LJSpeech checkpoints.")
-    model = ns["VITSModel"](vocab_size=len(ns["symbol_to_id"]), spec_channels=513, padding_id=0,
+    table = table_for(ns, switches)
+    model = ns["VITSModel"](vocab_size=len(table), spec_channels=513, padding_id=0,
                             text_encoder=switches["text_encoder"], posterior_encoder=switches["posterior_encoder"],
-                            decoder=switches["decoder"])
+                            decoder=switches["decoder"],
+                            duration_predictor=switches.get("duration_predictor", "deterministic"),
+                            encoder_window=switches.get("encoder_window"), space_id=table[" "])
     model.load_state_dict(checkpoint["model"], strict=True)
+    model.input_switches, model.input_table = switches, table  # read by synthesize()
     return model.to(device).eval(), checkpoint, switches
 
 
-def synthesize(model, ns, text, seed, device):
-    tokens = ns["encode_text"](text)
+def synthesize(model, ns, text, seed, device, length_scale=1.0):
+    """Text-only synthesis; phoneme models get the text's phonemes (tools/text_input.py)."""
+    switches = getattr(model, "input_switches", None)
+    table = getattr(model, "input_table", None)
+    tokens = ns["encode_text"](model_text(text, switches), table)
     torch.manual_seed(seed)
     result = model.infer(tokens.unsqueeze(0).to(device), torch.tensor([tokens.numel()], device=device),
-                         noise_scale=NOISE_SCALE)
+                         noise_scale=NOISE_SCALE, length_scale=length_scale)
     return result["generated_audio"][0, 0, :int(result["audio_lengths"][0])].float().cpu()
 
 
@@ -87,6 +98,9 @@ def main():
     parser.add_argument("--label", required=True, help="e.g. R0_40k")
     parser.add_argument("--data-dir", required=True)
     parser.add_argument("--out", default=str(ROOT / "output" / "tts010-eval"))
+    parser.add_argument("--split", default="ljspeech_heldout_100.txt",
+                        help="test set in sts_eval/splits/; ljspeech_long_100.txt is valid only for arms that "
+                             "never trained on it (all but D1 and E0)")
     args = parser.parse_args()
 
     ns = load_definitions()
@@ -102,7 +116,8 @@ def main():
     data_dir = Path(args.data_dir)
     corpus, _ = ns["load_training_metadata"](data_dir / "metadata.csv")
     texts = dict(zip(corpus["file_name"], corpus["normalized_transcription"]))
-    heldout_ids = ns["load_id_list"](ROOT / "sts_eval" / "splits" / "ljspeech_heldout_100.txt")
+    split = ROOT / "sts_eval" / "splits" / args.split
+    heldout_ids = ns["load_id_list"](split)
     out = Path(args.out) / args.label
     out.mkdir(parents=True, exist_ok=False)
     (out / "audio" / "heldout_tts").mkdir(parents=True)
@@ -114,7 +129,8 @@ def main():
         "noise_scale": NOISE_SCALE, "eval_seed": EVAL_SEED,
         "spectrogram": "|X| (TTS_0.01/0.02 input)" if legacy else "sqrt(|X|^2 + 1e-6)",
         "heldout_recordings_found": len(available), "heldout_ids_total": len(heldout_ids),
-        "scope": "LJSpeech single speaker; held-out = sts_eval/splits/ljspeech_heldout_100.txt",
+        "split": args.split,
+        "scope": f"LJSpeech single speaker; held-out = sts_eval/splits/{args.split}",
     }
 
     def dataset(ids):

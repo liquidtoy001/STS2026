@@ -31,6 +31,7 @@ import torchaudio
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from tools.eval_tts010 import load_model  # noqa: E402
+from tools.text_input import model_words  # noqa: E402
 from tools.notebook_defs import literal_assignment, load_definitions  # noqa: E402
 
 NOISE_SCALE = 0.667
@@ -40,16 +41,23 @@ CONDITIONS = ([("full", None, False, 0)] + [(f"naive_{n}", n, False, 0) for n in
 
 
 @torch.inference_mode()
-def synth(ns, model, text, target_span, seed, device, noise=NOISE_SCALE):
-    """Synthesize only characters [start, end) of text, using the whole text as encoder context."""
-    table = ns["symbol_to_id"]
+def synth(ns, model, text, target_span, seed, device, noise=NOISE_SCALE, lookahead=None):
+    """Synthesize only characters [start, end) of text, using the whole text as encoder context.
+
+    text is in the model's input (phoneme strings for phoneme models, tools/text_input.py). A
+    windowed encoder (TTS_0.20 option) gets the chunk's lookahead as its own.
+    """
+    table = getattr(model, "input_table", None) or ns["symbol_to_id"]
+    encoder = model.text_encoder
+    if getattr(encoder, "window", None) is not None:
+        encoder.lookahead_words = encoder.window[1] if lookahead is None else lookahead
     keep = [(i, c) for i, c in enumerate(text) if c in table]
     tokens = torch.tensor([[table[c] for _, c in keep]], device=device)
     target = torch.tensor([[[1.0 if target_span[0] <= i < target_span[1] else 0.0 for i, _ in keep]]], device=device)
     lengths = torch.tensor([tokens.size(1)], device=device)
     torch.manual_seed(seed)
     x, m_p, logs_p, x_mask = model.text_encoder(tokens, lengths)
-    logw = model.duration_predictor(x, x_mask).clamp(min=-5.0, max=math.log(50))
+    logw = model.predict_log_duration(x, x_mask).clamp(min=-5.0, max=math.log(50))
     w = torch.ceil(torch.exp(logw)) * x_mask * target
     y_len = w.sum(dim=(1, 2)).long().clamp(min=1)
     y_mask = ns["create_sequence_mask"](y_len, int(y_len.max())).unsqueeze(1).to(x.dtype)
@@ -81,7 +89,7 @@ def run_condition(ns, model, words, n, left, look, seed, device):
     for a in range(0, len(words), n):
         text, span = spans(words, a, min(a + n, len(words)), left, look)
         started = time.perf_counter()
-        parts.append(synth(ns, model, text, span, seed + a, device))
+        parts.append(synth(ns, model, text, span, seed + a, device, lookahead=look))
         times.append(time.perf_counter() - started)
     return torch.cat(parts), times
 
@@ -118,7 +126,7 @@ def main():
     manifest, timing, durations = [], {}, {}
     synth(ns, model, " warm up sentence for the kernels.", (0, 10**6), 0, device)
     for idx, sid in enumerate(ids):
-        words = texts[sid].split()
+        words = model_words(texts[sid], getattr(model, "input_switches", None))
         recording = data / "wavs" / f"{sid}.wav"
         real = torchaudio.load(str(recording))[0]
         if not args.no_natural:
@@ -138,7 +146,8 @@ def main():
         torch.set_num_threads(8)
         for name, n, left, look in [c for c in CONDITIONS if c[0] in ("full", "naive_2", "ctx_2_k2")]:
             for sid in ids[:args.cpu_timing_sentences]:
-                _, times = run_condition(ns, cpu_model, texts[sid].split(), n, left, look, 1, torch.device("cpu"))
+                _, times = run_condition(ns, cpu_model, model_words(texts[sid], getattr(cpu_model, "input_switches", None)),
+                                         n, left, look, 1, torch.device("cpu"))
                 cpu.setdefault(name, []).extend(times)
     summary = {name: {"gpu_ms_per_call_mean": 1000 * sum(v) / len(v), "calls": len(v),
                       "duration_ratio_mean": sum(durations[name]) / len(durations[name])} for name, v in timing.items()}

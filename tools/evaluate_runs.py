@@ -6,7 +6,8 @@ not yet evaluated gets tools/eval_tts010.py and then tools/asr_wer.py (Whisper, 
 --asr-python). Finished work is skipped, so the command can simply be re-run after new runs
 arrive or after an interruption. Extra reference checkpoints can be added with --extra.
 
-The table (summary.md, summary.csv, summary.json in --eval-dir) lists every evaluated label, its
+The table (summary.md, summary.csv, summary.json in --eval-dir; summary_long.* for --split
+ljspeech_long_100.txt) lists every evaluated label of that test set, its
 difference from R0, and whether that difference exceeds the R0/R0b difference (the seed noise
 floor). One seed per arm: "beyond noise floor" is a screening flag, not a significance test.
 
@@ -26,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from tools.notebook_defs import literal_assignment  # noqa: E402
 
-ORDER = ["R0", "R0b", "G1", "G2", "G3", "A1", "A2", "L1", "O1", "D1", "E0"]
+ORDER = ["R0", "R0b", "G1", "G2", "G3", "A1", "A2", "L1", "O1", "D1", "E0", "T011"]
 # (key, header, lower is better)
 METRICS = [
     ("full_log_mel_l1", "Held-out reconstruction log-mel L1", True),
@@ -58,9 +59,19 @@ def find_runs(runs_dir, step):
     return runs
 
 
-def label_for(run, eval_dir, step):
-    """<arm>_<k>k, or with the run's time stamp when another run of that arm already took it."""
-    base = f"{run['arm']}_{step // 1000}k"
+DEFAULT_SPLIT = "ljspeech_heldout_100.txt"
+
+
+def split_suffix(split):
+    """'' for the default held-out split, else e.g. '_long' for ljspeech_long_100.txt."""
+    if split == DEFAULT_SPLIT:
+        return ""
+    return "_" + Path(split).stem.removeprefix("ljspeech_").removesuffix("_100")
+
+
+def label_for(run, eval_dir, step, split=DEFAULT_SPLIT):
+    """<arm>_<k>k[_<split>], or with the run's time stamp when another run of that arm already took it."""
+    base = f"{run['arm']}_{step // 1000}k{split_suffix(split)}"
     existing = eval_dir / base / "metrics.json"
     if existing.is_file():
         recorded = json.loads(existing.read_text(encoding="utf-8")).get("checkpoint")
@@ -76,7 +87,8 @@ def evaluate(label, checkpoint, args):
             raise SystemExit(f"{out} exists without metrics.json (interrupted?): remove it and re-run.")
         print(f"[eval] {label}", flush=True)
         subprocess.run([sys.executable, str(ROOT / "tools" / "eval_tts010.py"), "--checkpoint", str(checkpoint),
-                        "--label", label, "--data-dir", args.data_dir, "--out", args.eval_dir], check=True)
+                        "--label", label, "--data-dir", args.data_dir, "--out", args.eval_dir,
+                        "--split", args.split], check=True)
     if not args.skip_asr and not (out / "asr.json").is_file():
         print(f"[asr]  {label}", flush=True)
         subprocess.run([args.asr_python, str(ROOT / "tools" / "asr_wer.py"), str(out), "--model", args.asr_model],
@@ -90,7 +102,7 @@ def read_label(directory):
            "full_spectral_convergence": metrics["heldout_full"]["stft_spectral_convergence"],
            "duration_ratio": metrics["heldout_tts"]["duration_ratio_mean"],
            "rms_ratio": metrics["heldout_tts"]["rms_ratio_mean"],
-           "heldout_count": metrics["heldout_full"]["count"]}
+           "heldout_count": metrics["heldout_full"]["count"], "split": metrics.get("split", DEFAULT_SPLIT)}
     switches = metrics.get("switches") or {}
     arm_config = Path(metrics["checkpoint"]).parents[1] / "run_config.json"
     if arm_config.is_file():
@@ -109,9 +121,11 @@ def read_label(directory):
     return row
 
 
-def build_table(eval_dir):
+def build_table(eval_dir, split=DEFAULT_SPLIT):
+    """Rows of one test set only, so R0 and R0b are compared on the same sentences."""
     arms = literal_assignment("ARMS")
     rows = [read_label(d) for d in sorted(Path(eval_dir).iterdir()) if (d / "metrics.json").is_file()]
+    rows = [row for row in rows if row["split"] == split]
     rank = {arm: i for i, arm in enumerate(ORDER)}
     rows.sort(key=lambda r: (rank.get(r["arm"], len(ORDER)), r["label"]))
     by_arm = {r["arm"]: r for r in rows if r["arm"]}
@@ -142,11 +156,12 @@ def fmt(value, key):
     return f"{value:.3f}"
 
 
-def write_outputs(rows, has_r0, has_r0b, eval_dir):
+def write_outputs(rows, has_r0, has_r0b, eval_dir, split=DEFAULT_SPLIT):
     eval_dir = Path(eval_dir)
+    stem = "summary" + split_suffix(split)
     lines = ["# TTS_0.10 central evaluation", "",
              f"Generated {datetime.now(timezone.utc).isoformat(timespec='seconds')} from {eval_dir}. "
-             "Held-out set: sts_eval/splits/ljspeech_heldout_100.txt; reference checkpoints are not TTS_0.10 runs.", ""]
+             f"Held-out set: sts_eval/splits/{split}; reference checkpoints are not TTS_0.10 runs.", ""]
     header = ["Label", "Arm", "What it is"] + [h for _, h, _ in METRICS]
     lines += ["| " + " | ".join(header) + " |", "|" + "---|" * len(header)]
     for row in rows:
@@ -170,15 +185,15 @@ def write_outputs(rows, has_r0, has_r0b, eval_dir):
             lines.append("| " + " | ".join(cells) + " |")
     else:
         lines += ["", "R0 is not evaluated yet, so no differences are shown."]
-    (eval_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (eval_dir / f"{stem}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     keys = ["label", "arm", "description", "step", "heldout_count", "asr_model", "natural_wer"] + \
            [k for k, _, _ in METRICS] + [f"{k}_vs_R0" for k, _, _ in METRICS] + [f"{k}_beyond_noise" for k, _, _ in METRICS]
-    with open(eval_dir / "summary.csv", "w", newline="", encoding="utf-8") as handle:
+    with open(eval_dir / f"{stem}.csv", "w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=keys, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
-    (eval_dir / "summary.json").write_text(json.dumps(rows, indent=2, default=str) + "\n", encoding="utf-8")
-    return eval_dir / "summary.md"
+    (eval_dir / f"{stem}.json").write_text(json.dumps(rows, indent=2, default=str) + "\n", encoding="utf-8")
+    return eval_dir / f"{stem}.md"
 
 
 def main():
@@ -187,6 +202,8 @@ def main():
     parser.add_argument("--eval-dir", required=True)
     parser.add_argument("--data-dir", help="complete LJSpeech-1.1 (needed unless --table-only)")
     parser.add_argument("--step", type=int, default=40000)
+    parser.add_argument("--split", default=DEFAULT_SPLIT,
+                        help="test set in sts_eval/splits/; labels get a suffix, e.g. G1_40k_long")
     parser.add_argument("--extra", action="append", default=[], metavar="LABEL=CHECKPOINT",
                         help="reference checkpoint to evaluate as well (repeatable)")
     parser.add_argument("--asr-python", default=sys.executable, help="Python with openai-whisper installed")
@@ -203,7 +220,7 @@ def main():
             parser.error("--data-dir is required unless --table-only")
         jobs = []
         for run in find_runs(args.runs_dir, args.step) if args.runs_dir else []:
-            jobs.append((label_for(run, eval_dir, args.step), run["checkpoint"]))
+            jobs.append((label_for(run, eval_dir, args.step, args.split), run["checkpoint"]))
         for item in args.extra:
             label, _, checkpoint = item.partition("=")
             jobs.append((label, Path(checkpoint)))
@@ -215,8 +232,8 @@ def main():
                 evaluate(label, checkpoint, args)
         if args.dry_run:
             return
-    rows, has_r0, has_r0b = build_table(eval_dir)
-    print(write_outputs(rows, has_r0, has_r0b, eval_dir))
+    rows, has_r0, has_r0b = build_table(eval_dir, args.split)
+    print(write_outputs(rows, has_r0, has_r0b, eval_dir, args.split))
 
 
 if __name__ == "__main__":

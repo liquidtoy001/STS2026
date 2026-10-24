@@ -232,14 +232,16 @@ class TTS010Tests(unittest.TestCase):
 
     def test_every_arm_trains(self):
         arms = literal_assignment("ARMS")
-        self.assertEqual(set(arms), {"R0", "R0b", "E0", "G1", "G2", "G3", "A1", "A2", "L1", "O1", "D1"})
-        self.assertEqual(sorted(len(spec["revert"]) for name, spec in arms.items() if name not in ("R0", "R0b", "E0")),
-                         [1] * 8)
+        self.assertEqual(set(arms), {"R0", "R0b", "E0", "G1", "G2", "G3", "A1", "A2", "L1", "O1", "D1", "T011",
+                                     "V1", "V2", "V3", "V4"})
+        ablation = {name: spec for name, spec in arms.items()
+                    if name not in ("R0", "R0b", "E0") and "heldout_extra" not in spec}
+        self.assertEqual(sorted(len(spec["revert"]) for spec in ablation.values()), [1] * 8)
         self.assertEqual({name for spec in arms.values() for name in spec["revert"]},
                          set(literal_assignment("TTS010_SWITCHES")))
         for arm in arms:
-            if arm == "R0b":
-                continue  # same switches as R0
+            if arm == "R0b" or "heldout_extra" in arms[arm]:
+                continue  # same switches as R0; T011 and the TTS_0.20 arms are tested below
             with self.subTest(arm=arm), tempfile.TemporaryDirectory() as root:
                 switches = self.arm_switches(arm)
                 torch.manual_seed(1)
@@ -261,6 +263,110 @@ class TTS010Tests(unittest.TestCase):
                     self.assertEqual(losses["stft"].item(), 0.0)
                 else:
                     self.assertGreater(losses["stft"].item(), 0.0)
+
+    def test_tts020_arms_train(self):
+        arms, defaults = literal_assignment("ARMS"), literal_assignment("TTS020_OPTIONS")
+        for arm in ("V1", "V2", "V3", "V4"):
+            with self.subTest(arm=arm), tempfile.TemporaryDirectory() as root:
+                options = {**defaults, **arms[arm]["options"]}
+                self.assertEqual(set(options), set(defaults))
+                self.assertEqual(arms[arm]["revert"], arms["T011"]["revert"])
+                switches = {**self.arm_switches(arm), **arms[arm]["options"]}
+                table = self.ns["token_table"](options["text_input"])
+                torch.manual_seed(1)
+                model = self.ns["VITSModel"](
+                    vocab_size=len(table), spec_channels=513, latent_channels=8, hidden_channels=8,
+                    feedforward_channels=16, duration_predictor=options["duration_predictor"],
+                    encoder_window=options["encoder_window"], space_id=table[" "])
+                trainer = self.make_trainer(switches, root, model=model)
+                for _ in range(2):
+                    _, _, losses = trainer._training_step(self.batch)
+                    self.assertTrue(all(torch.isfinite(v) for k, v in losses.items() if k != "amp_scale"), losses)
+                self.assertEqual(trainer.optimizer_update_stats["updates"], 2)
+                model.eval()
+                tokens = self.batch[0][:1, :int(self.batch[1][0])]
+                audio = model.infer(tokens, self.batch[1][:1], noise_scale=0.667)["generated_audio"]
+                self.assertTrue(torch.isfinite(audio).all())
+
+    def test_tts010_arms_keep_their_switches(self):
+        arms = literal_assignment("ARMS")
+        for arm, spec in arms.items():
+            if "options" not in spec:
+                self.assertNotIn("options", spec)
+        # Default model construction is unchanged: same parameter names and shapes as before the options.
+        torch.manual_seed(0)
+        default = self.ns["VITSModel"](vocab_size=76, spec_channels=513)
+        explicit = self.ns["VITSModel"](vocab_size=76, spec_channels=513, duration_predictor="deterministic",
+                                        encoder_window=None, space_id=None)
+        self.assertEqual({k: v.shape for k, v in default.state_dict().items()},
+                         {k: v.shape for k, v in explicit.state_dict().items()})
+        self.assertEqual(self.ns["token_table"]("chars"), self.ns["symbol_to_id"])
+
+    def test_windowed_encoder_is_exact_for_streaming(self):
+        table = self.ns["token_table"]("chars")
+        torch.manual_seed(0)
+        encoder = self.ns["TextEncoder"](vocab_size=len(table), window=(12, 2), space_id=table[" "]).eval()
+        words = "the quick brown fox jumps over the lazy dog again and again".split()
+
+        def prior(count, lookahead):
+            encoder.lookahead_words = lookahead
+            tokens = self.ns["encode_text"](" ".join(words[:count]), table).unsqueeze(0)
+            return encoder(tokens, torch.tensor([tokens.size(1)]))[1]
+
+        full = prior(len(words), 2)
+        for count in (1, 3, 6):
+            keep = len(" ".join(words[:count]))
+            torch.testing.assert_close(prior(count + 2, 2)[..., :keep], full[..., :keep], atol=1e-5, rtol=0)
+            self.assertGreater((prior(count + 1, 2)[..., :keep] - full[..., :keep]).abs().max().item(), 1e-3)
+
+    def test_stochastic_duration_spline_is_invertible(self):
+        torch.manual_seed(0)
+        x = torch.randn(3, 1, 9) * 3
+        widths, heights, slopes = torch.randn(3, 1, 9, 10), torch.randn(3, 1, 9, 10), torch.randn(3, 1, 9, 9)
+        transform = self.ns["piecewise_rational_quadratic_transform"]
+        y, forward_logdet = transform(x, widths, heights, slopes)
+        x_back, inverse_logdet = transform(y, widths, heights, slopes, inverse=True)
+        torch.testing.assert_close(x_back, x, atol=1e-4, rtol=0)
+        torch.testing.assert_close(forward_logdet + inverse_logdet, torch.zeros_like(x), atol=1e-4, rtol=0)
+
+    def test_punctuation_crops_end_at_punctuation(self):
+        table = self.ns["token_table"]("chars")
+        tokens = self.ns["encode_text"]("one two, three four five. six seven eight nine ten", table)
+        boundary_ids = {table[c] for c in ",.?!;:"}
+        rng = random.Random(3)
+        for _ in range(50):
+            start, end, frame_start, frame_end = self.ns["word_crop_bounds"](
+                tokens, [2] * tokens.numel(), table[" "], rng, 1, 8, 0.5, 4, boundary_ids)
+            self.assertTrue(int(tokens[end - 1]) in boundary_ids or end == tokens.numel(), (start, end))
+            self.assertEqual((frame_start, frame_end), (2 * start, 2 * end))
+
+    def test_phoneme_cache_matches_the_corpus_words(self):
+        sys.path.insert(0, str(ROOT))
+        from tools.phonemize import ARPABET, PHONEME_CHAR, read_cache
+        phonemes, header = read_cache(ROOT / "sts_eval" / "phonemes" / "ljspeech_g2p_en.tsv")
+        self.assertEqual(header["metadata_sha256"], "852bce5c79e5184ba5bf2ea98aad4bcf49a5d787def5fd1f04fa2ab8aa6dc535")
+        self.assertEqual(len(phonemes), 13100)
+        table = self.ns["token_table"]("phonemes")
+        self.assertEqual([table[PHONEME_CHAR[p]] for p in ARPABET], list(range(8, 8 + len(ARPABET))))
+        used = set("".join(phonemes.values()))
+        self.assertLessEqual(used, set(table))
+
+    def test_t011_holds_out_the_long_sentences(self):
+        arms = literal_assignment("ARMS")
+        self.assertEqual(arms["T011"]["revert"], arms["D1"]["revert"])
+        self.assertEqual(arms["T011"]["seed"], arms["D1"]["seed"])
+        splits = ROOT / "sts_eval" / "splits"
+        base, long = splits / "ljspeech_heldout_100.txt", splits / arms["T011"]["heldout_extra"][0]
+        ns = self.ns
+        short_ids, long_ids = ns["load_id_list"](base), ns["load_id_list"](long)
+        self.assertEqual((len(short_ids), len(long_ids)), (100, 100))
+        self.assertFalse(set(short_ids) & set(long_ids))
+        combined = ns["heldout_ids"](base, [long])
+        self.assertEqual(combined, short_ids + long_ids)  # base first: the held-out probe stays the same
+        self.assertEqual(ns["heldout_ids"](base), short_ids)
+        for arm, spec in arms.items():
+            if arm != "T011" and "options" not in spec:  # TTS_0.10 arms keep the 100-sentence hold-out
+                self.assertNotIn("heldout_extra", spec)
 
     def test_checkpoint_round_trip_and_switch_mismatch(self):
         with tempfile.TemporaryDirectory() as root:

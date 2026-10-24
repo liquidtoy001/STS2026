@@ -59,6 +59,11 @@ def main():
     parser.add_argument("--chunk-words", default="1-8", help="words per crop, MIN-MAX (default 1-8)")
     parser.add_argument("--chunk-prefix-share", type=float, default=0.5,
                         help="share of crops that start at the first word (default 0.5)")
+    parser.add_argument("--chunk-boundaries", choices=("words", "punctuation"), default="words",
+                        help="TTS_0.20 option: end crops after any word (default) or at punctuation")
+    parser.add_argument("--phoneme-cache", default=None,
+                        help="phoneme cache of tools/phonemize.py for arms with phoneme input "
+                             "(default sts_eval/phonemes/ljspeech_g2p_en.tsv)")
     args = parser.parse_args()
     if args.resume and args.init_from:
         parser.error("--resume continues a run with its own initialisation; do not combine it with --init-from")
@@ -68,6 +73,8 @@ def main():
         parser.error("--smoke-steps sets its own step and checkpoint counts; do not add --steps or --keep-every")
     if args.chunk_prob > 0 and not args.chunk_durations:
         parser.error("--chunk-prob needs --chunk-durations")
+    if args.chunk_boundaries != "words" and args.chunk_prob <= 0:
+        parser.error("--chunk-boundaries needs --chunk-prob")
 
     for key in [key for key in os.environ if key.startswith("STS_")]:
         del os.environ[key]  # never inherit a stale arm, resume path or smoke-test setting
@@ -90,7 +97,10 @@ def main():
     if args.chunk_prob > 0:
         os.environ.update(STS_CHUNK_PROB=str(args.chunk_prob), STS_CHUNK_WORDS=args.chunk_words,
                           STS_CHUNK_DURATIONS=str(Path(args.chunk_durations).resolve()),
-                          STS_CHUNK_PREFIX_SHARE=str(args.chunk_prefix_share))
+                          STS_CHUNK_PREFIX_SHARE=str(args.chunk_prefix_share),
+                          STS_CHUNK_BOUNDARIES=args.chunk_boundaries)
+    if args.phoneme_cache:
+        os.environ["STS_PHONEME_CACHE"] = str(Path(args.phoneme_cache).resolve())
     if args.smoke_steps:
         every = str(max(1, args.smoke_steps // 2))
         os.environ.update(STS_ALLOW_SUBSET="1", STS_TOTAL_STEPS=str(args.smoke_steps), STS_EVAL_EVERY=every,
