@@ -1,5 +1,9 @@
 # TTS_0.02 — Speaker-ID conditioning
 
+> **TTS_0.20 (2026-10-25):** a manifest can now have a test set (`STS_SPEAKER_HELDOUT`), and a
+> conditioned checkpoint can start a single-speaker run with one speaker vector folded in
+> (`STS_INIT_FOLD_SPEAKER`); used for LibriTTS-R pretraining, see [TTS_0.20](TTS_0.20.md#phase-2-libritts-r-pretraining-then-ljspeech-fine-tuning).
+>
 > **TTS_0.10 (2026-10-12):** speaker conditioning is kept. With the TTS_0.10 posterior encoder the
 > speaker vector is added inside every gated residual block instead of once at the input; with
 > `posterior_encoder = tts002` the behaviour below is unchanged. See [TTS_0.10](TTS_0.10.md).

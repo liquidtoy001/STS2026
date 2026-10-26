@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>STS2026 TTS Visualiser</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <h1>STS2026 TTS Visualiser</h1>
+      <p class="sub">Live text-to-speech with the team's VITS checkpoints.</p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Mode">
+      <button type="button" role="tab" id="tab-btn-agent" aria-controls="tab-agent" aria-selected="true">Agent mode</button>
+      <button type="button" role="tab" id="tab-btn-reader" aria-controls="tab-reader" aria-selected="false"
+        tabindex="-1">Reader</button>
+    </nav>
+    <div class="chip" id="device" title="Inference device">connecting…</div>
+  </header>
+
+  <div class="banner" id="error" role="alert" hidden></div>
+
+  <div id="tab-agent" role="tabpanel" aria-labelledby="tab-btn-agent">
+  <main class="layout agent">
+    <section class="panel a-reply" aria-labelledby="h-reply">
+      <div class="panel-head">
+        <h2 id="h-reply">Agent reply <span class="muted">(simulated LLM stream)</span></h2>
+        <div class="tools">
+          <label class="sr-only" for="a-preset">Preset reply</label>
+          <select id="a-preset"></select>
+        </div>
+      </div>
+      <label class="sr-only" for="a-text">Reply text</label>
+      <textarea id="a-text" rows="3" spellcheck="true" placeholder="Type the reply the agent should speak."></textarea>
+      <div class="sliders">
+        <div class="field">
+          <label for="a-ttft">Time to first token <output id="a-ttft-out">300 ms</output></label>
+          <input id="a-ttft" type="range" min="0" max="2000" step="50" value="300">
+        </div>
+        <div class="field">
+          <label for="a-rate">LLM speed <output id="a-rate-out">10 words/s</output></label>
+          <input id="a-rate" type="range" min="0" max="1000" step="1" value="500">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="a-run" class="primary" type="button">Send</button>
+        <button id="a-stop" type="button">Stop</button>
+        <div class="listen" id="a-listen" role="radiogroup" aria-label="Strategy to listen to during the run"></div>
+        <span class="progress" id="a-progress" aria-live="polite"></span>
+      </div>
+      <div class="bubble" id="a-bubble"><span class="muted">The reply appears here word by word.</span></div>
+      <p class="hint">No language model runs: the reply is normalised and split into sentences first (as if the
+        LLM wrote spoken-form text), then its words arrive one by one after the first-token delay at the set speed.
+        Each strategy speaks it with real TTS calls as soon as it has the words it needs.</p>
+    </section>
+
+    <section class="panel a-strategies" aria-labelledby="h-strategies">
+      <h2 id="h-strategies">TTS strategies</h2>
+      <div class="field">
+        <label for="a-model">Model</label>
+        <select id="a-model"></select>
+      </div>
+      <div id="a-lanes"></div>
+      <div class="field row">
+        <label class="check"><input id="a-fixed-seed" type="checkbox" checked> Fixed seed</label>
+        <label class="sr-only" for="a-seed">Seed</label>
+        <input id="a-seed" type="number" min="0" max="2147000000" step="1" value="1234">
+      </div>
+      <p class="hint">As in the chunk study, a chunk starting at word <i>i</i> of a sentence uses seed + <i>i</i>;
+        the three strategies share one GPU, so their calls queue behind each other.</p>
+    </section>
+
+    <section class="panel a-timeline" aria-labelledby="h-timeline">
+      <div class="panel-head">
+        <h2 id="h-timeline">Timeline</h2>
+        <span class="muted" id="a-timeline-caption"></span>
+      </div>
+      <canvas id="a-canvas" role="img" aria-label="Timeline of text arrival, TTS calls and playback"></canvas>
+      <div class="key">
+        <span><i class="k word"></i>word arrives</span>
+        <span><i class="k call"></i>TTS call (request to audio)</span>
+        <span><i class="k play"></i>audio playing</span>
+        <span><i class="k wait"></i>silence before the first audio</span>
+        <span><i class="k stall"></i>stall: audio ran out</span>
+      </div>
+    </section>
+
+    <section class="panel a-results" aria-labelledby="h-results">
+      <div class="panel-head">
+        <h2 id="h-results">Results of this run</h2>
+        <div class="tools ab">
+          <label for="a-ab-a">A/B</label>
+          <select id="a-ab-a" aria-label="First strategy"></select>
+          <span class="muted">then</span>
+          <select id="a-ab-b" aria-label="Second strategy"></select>
+          <button id="a-ab-play" type="button" disabled>Play both</button>
+        </div>
+      </div>
+      <div class="cards" id="a-cards"></div>
+      <p class="hint" id="a-study-note"></p>
+    </section>
+
+    <div class="a-charts">
+    <section class="panel a-tradeoff" aria-labelledby="h-tradeoff">
+      <h2 id="h-tradeoff">Intelligibility against waiting</h2>
+      <div id="a-tradeoff" class="chart"></div>
+      <p class="hint" id="a-tradeoff-note"></p>
+    </section>
+
+    <section class="panel a-speed" aria-labelledby="h-speed">
+      <h2 id="h-speed">Where the saving matters</h2>
+      <div class="field row">
+        <label for="a-length">Sentence length</label>
+        <input id="a-length" type="number" min="1" max="60" step="1" value="12">
+        <span class="muted">words</span>
+      </div>
+      <div id="a-speed-chart" class="chart"></div>
+      <p id="a-speed-text" class="speed-text"></p>
+      <p class="hint">Time the TTS waits for the LLM's text before it can speak the first words of a sentence:
+        the words a strategy needs divided by the LLM speed. Time to first token and synthesis (about 10 ms per
+        call on the study's GPU) come on top for every strategy.</p>
+    </section>
+    </div>
+  </main>
+  </div>
+
+  <div id="tab-reader" role="tabpanel" aria-labelledby="tab-btn-reader" hidden>
+  <main class="layout">
+    <section class="panel input" aria-labelledby="h-text">
+      <div class="panel-head">
+        <h2 id="h-text">Text</h2>
+        <div class="tools">
+          <label class="sr-only" for="examples">Insert an example</label>
+          <select id="examples"><option value="">Examples…</option></select>
+          <label class="btn">Open .txt<input id="file" type="file" accept=".txt,text/plain" hidden></label>
+        </div>
+      </div>
+      <label class="sr-only" for="text">Text to read aloud</label>
+      <textarea id="text" rows="8" spellcheck="true"
+        placeholder="Type or paste English text, or open a .txt file. Ctrl+Enter reads it aloud."></textarea>
+      <div class="actions">
+        <button id="speak" class="primary" type="button">Read aloud</button>
+        <button id="stop" type="button">Stop</button>
+        <span class="progress" id="progress" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <section class="panel controls" aria-labelledby="h-controls">
+      <h2 id="h-controls">Model and voice</h2>
+      <div class="field">
+        <label for="model-a"><span class="swatch a"></span>Model A</label>
+        <select id="model-a"></select>
+      </div>
+      <div class="field">
+        <label for="model-b"><span class="swatch b"></span>Compare with (B)</label>
+        <select id="model-b"><option value="">None</option></select>
+      </div>
+      <div class="field" id="speaker-field" hidden>
+        <label for="speaker">Speaker</label>
+        <select id="speaker"></select>
+      </div>
+      <div class="field">
+        <label for="length-scale">Duration scale <output id="length-out">1.00</output></label>
+        <input id="length-scale" type="range" min="0.5" max="2" step="0.05" value="1">
+        <p class="hint">length_scale: above 1 speaks slower, below 1 faster.</p>
+      </div>
+      <div class="field">
+        <label for="noise-scale">Noise scale <output id="noise-out">0.667</output></label>
+        <input id="noise-scale" type="range" min="0" max="1.2" step="0.001" value="0.667">
+        <p class="hint">Sampling noise in the prior; 0.667 is the evaluation setting.</p>
+      </div>
+      <div class="field row">
+        <label class="check"><input id="fixed-seed" type="checkbox" checked> Fixed seed</label>
+        <label class="sr-only" for="seed">Seed</label>
+        <input id="seed" type="number" min="0" max="2147483647" step="1" value="1234">
+      </div>
+      <div class="field row">
+        <label class="check"><input id="show-norm" type="checkbox" checked> Show the text the model reads</label>
+      </div>
+      <p class="hint">Changes apply the next time you press Read aloud.</p>
+    </section>
+
+    <section class="panel reader" aria-labelledby="h-reader">
+      <div class="panel-head">
+        <h2 id="h-reader">Reader</h2>
+        <div class="tools">
+          <button id="download-a" type="button" disabled>Download A</button>
+          <button id="download-b" type="button" disabled hidden>Download B</button>
+        </div>
+      </div>
+      <div class="player" role="group" aria-label="Playback">
+        <button id="prev" type="button" aria-label="Previous sentence" title="Previous sentence (←)">&#9664;&#9664;</button>
+        <button id="play" type="button" class="primary" aria-label="Play" title="Play / pause (Space)">Play</button>
+        <button id="next" type="button" aria-label="Next sentence" title="Next sentence (→)">&#9654;&#9654;</button>
+        <div class="track-toggle" id="track-toggle" role="radiogroup" aria-label="Which model to hear" hidden>
+          <label><input type="radio" name="track" value="0" aria-label="Hear model A" checked><span class="swatch a"></span>A</label>
+          <label><input type="radio" name="track" value="1" aria-label="Hear model B"><span class="swatch b"></span>B</label>
+        </div>
+        <span class="clock" id="clock"></span>
+      </div>
+      <ol class="segments" id="segments" aria-live="off">
+        <li class="empty">Sentences appear here. Click one to play it.</li>
+      </ol>
+    </section>
+
+    <section class="panel visuals" aria-labelledby="h-visuals">
+      <div class="panel-head">
+        <h2 id="h-visuals">What the model produced</h2>
+        <span class="muted" id="visual-caption"></span>
+      </div>
+      <div id="figures">
+        <p class="muted empty">The mel spectrogram and the text-to-frame alignment of the current sentence appear here.</p>
+      </div>
+      <p class="hint">
+        Mel spectrogram: 80 mel bands of the generated waveform, natural-log magnitude on a fixed scale shared
+        by every model. Alignment: the hard monotonic path returned by <code>model.infer(...)["attention"]</code>;
+        each character occupies the frames the duration predictor gave it. A and B share one time axis.
+      </p>
+    </section>
+
+    <section class="panel about" aria-labelledby="h-about">
+      <h2 id="h-about">About these models</h2>
+      <p class="muted" id="eval-note"></p>
+      <div class="cards" id="cards"></div>
+      <h3>Limitations</h3>
+      <ul id="limitations"></ul>
+    </section>
+  </main>
+  </div>
+
+  <div class="tooltip" id="tooltip" hidden></div>
+  <audio id="audio" preload="auto"></audio>
+  <script src="/static/app.js"></script>
+  <script src="/static/agent.js"></script>
+</body>
+</html>

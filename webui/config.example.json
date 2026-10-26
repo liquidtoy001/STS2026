@@ -1,0 +1,105 @@
+{
+  "checkpoint_root": "..",
+  "default_model": "d1",
+  "evaluation": {
+    "metric": "Whisper WER",
+    "note": "Word error rate of Whisper medium transcribing each model's whole-sentence synthesis of the 100 held-out LJSpeech sentences (sts_eval/splits/ljspeech_heldout_100.txt; tools/eval_tts010.py and tools/asr_wer.py). Lower is better.",
+    "reference": {"label": "Real LJSpeech recordings", "wer": 3.3}
+  },
+  "models": [
+    {
+      "id": "d1",
+      "label": "TTS_0.10, run D1 (40k steps)",
+      "checkpoint": "output/**/tts010_D1_*/checkpoints/vits_step_40000.pt",
+      "description": "TTS_0.10 trained without the 100-character text filter. Lowest measured WER so far.",
+      "wer": 11.6
+    },
+    {
+      "id": "r0",
+      "label": "TTS_0.10, run R0 (40k steps)",
+      "checkpoint": "output/**/tts010_R0_2*/checkpoints/vits_step_40000.pt",
+      "description": "Complete TTS_0.10 (ablation reference arm). The checkpoint of the voice-agent chunk study.",
+      "wer": 16.9
+    },
+    {
+      "id": "r0_ftchunk5k",
+      "label": "R0 + 5k chunk-aware fine-tune (local check)",
+      "checkpoint": "output/**/tts010_R0_ftchunk5k_*/checkpoints/vits_step_5000.pt",
+      "description": "R0 fine-tuned for 5,000 more steps on training clips cut at word boundaries (docs/CHUNK_FINETUNE.md).",
+      "wer": 17.4
+    },
+    {
+      "id": "r0_ftctrl5k",
+      "label": "R0 + 5k control fine-tune (local check)",
+      "checkpoint": "output/**/tts010_R0_ftctrl5k_*/checkpoints/vits_step_5000.pt",
+      "description": "The same 5,000 extra steps without cutting: the control for the chunk-aware fine-tune.",
+      "wer": 17.2
+    },
+    {
+      "id": "benlu",
+      "label": "TTS_0.10, benlu original (40k steps)",
+      "checkpoint": "checkpoints/benlu/tts010_benlu_step40000.pt",
+      "description": "benlu's final-vits checkpoint converted to the project harness (tools/convert_benlu_checkpoint.py).",
+      "wer": 15.7
+    },
+    {
+      "id": "e0",
+      "label": "TTS_0.02 components, run E0 (40k steps)",
+      "checkpoint": "output/**/tts010_E0_*/checkpoints/vits_step_40000.pt",
+      "description": "Ablation arm E0: every TTS_0.10 switch reverted to its TTS_0.02 implementation.",
+      "wer": 100.2
+    },
+    {
+      "id": "tts001",
+      "label": "TTS_0.01, full training gan0 (50k steps)",
+      "checkpoint": "checkpoints/full-train/full_gan0_*/vits_step_50000.pt",
+      "description": "The earlier TTS_0.01 full-training run (all components tts002).",
+      "wer": 99.7
+    }
+  ],
+  "chunk_studies": [
+    {
+      "model": "r0",
+      "label": "R0 40k chunk study: 100 held-out sentences, Whisper medium",
+      "analysis": "docs/records/chunk-study/R0_40k/analysis.json",
+      "timing": "docs/records/chunk-study/R0_40k/timing.json",
+      "source": "docs/VOICE_AGENT_TTS.md"
+    },
+    {
+      "model": "r0_ftchunk5k",
+      "label": "Chunk-aware 5k fine-tune: chunk study, 100 held-out sentences, Whisper medium",
+      "analysis": "output/**/study_ftchunk5k/analysis.json",
+      "timing": "output/**/study_ftchunk5k/timing.json",
+      "source": "docs/CHUNK_FINETUNE.md"
+    },
+    {
+      "model": "r0_ftctrl5k",
+      "label": "Control 5k fine-tune: chunk study, 100 held-out sentences, Whisper medium",
+      "analysis": "output/**/study_ftctrl5k/analysis.json",
+      "timing": "output/**/study_ftctrl5k/timing.json",
+      "source": "docs/CHUNK_FINETUNE.md"
+    }
+  ],
+  "agent": {
+    "default_model": "r0",
+    "ttft_ms": 300,
+    "words_per_second": 10,
+    "lanes": ["full", "naive_2", "ctx_1_k2"],
+    "replies": [
+      {"label": "Train times", "text": "Sure, I can help with that. The next train to the city leaves from platform four at twenty past nine, and it should arrive a little after ten. Would you like me to set a reminder?"},
+      {"label": "Study helper", "text": "Gradient descent moves the weights a small step in the direction that lowers the loss. The learning rate decides how big each step is, so if the loss starts to jump around, try a smaller value."},
+      {"label": "Weather", "text": "Tomorrow will be mostly sunny with a top of twenty six degrees. There is a small chance of a storm late in the afternoon, so it may be worth taking an umbrella."},
+      {"label": "Order status", "text": "Thanks for waiting. Your order was shipped this morning and should arrive on Thursday. I have sent the tracking link to your email address."}
+    ]
+  },
+  "limitations": [
+    "One English female voice (LJSpeech). The speaker-ID conditioning in the code is not trained in these checkpoints.",
+    "English only. Numbers, money, times, percentages and common abbreviations are written out; acronyms, roman numerals, units, dates with slashes and URLs are not.",
+    "Whisper still mis-transcribes about 12% of words (WER 11.6%) for the best checkpoint, so the output is not a reliable pronunciation reference."
+  ],
+  "examples": [
+    {"label": "Short test", "text": "The quick brown fox jumps over the lazy dog."},
+    {"label": "Numbers and abbreviations", "text": "Dr. Smith arrived at 3:30 on May 21st, 2026. The ticket cost $12.50, about 15% more than last year."},
+    {"label": "Paragraph", "text": "Our team trained this speech model from scratch for a university course project. It reads English text aloud, one sentence at a time.\n\nPlease call Stella and ask her to bring these things with her from the store. How much wood would a woodchuck chuck if a woodchuck could chuck wood?"}
+  ]
+}

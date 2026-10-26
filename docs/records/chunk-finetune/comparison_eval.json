@@ -1,0 +1,83 @@
+{
+ "reference": "R0",
+ "eval_tts010": {
+  "sentences": 100,
+  "natural_wer": 0.03282828282828283,
+  "synthesized": {
+   "R0": {
+    "wer": 0.1691919191919192
+   },
+   "chunk": {
+    "wer": 0.17424242424242425,
+    "vs_R0": {
+     "diff": 0.005050505050505055,
+     "ci95": [
+      -0.032894736842105254,
+      0.04452054794520549
+     ]
+    },
+    "vs_control": {
+     "diff": 0.0025252525252525415,
+     "ci95": [
+      -0.02899751449875726,
+      0.03489361702127661
+     ]
+    }
+   },
+   "control": {
+    "wer": 0.1717171717171717,
+    "vs_R0": {
+     "diff": 0.0025252525252525138,
+     "ci95": [
+      -0.030621172353455794,
+      0.03327922077922077
+     ]
+    }
+   }
+  },
+  "metrics": {
+   "R0": {
+    "checkpoint": "E:\\Documents\\STS2026\\output\\tts010-turino\\incoming-2026-10-15\\tts010_R0_20261014T070647303632Z\\checkpoints\\vits_step_40000.pt",
+    "heldout_full": {
+     "count": 100,
+     "log_mel_l1": 0.532831643819809,
+     "stft_spectral_convergence": 0.5418405160307884,
+     "stft_log_magnitude": 0.9486937630176544
+    },
+    "heldout_tts": {
+     "count": 100,
+     "duration_ratio_mean": 0.9574492100051276,
+     "rms_ratio_mean": 0.89844063103199
+    }
+   },
+   "chunk": {
+    "checkpoint": "E:\\Documents\\STS2026\\output\\tts010-turino\\chunk-finetune\\runs\\tts010_R0_ftchunk5k_20261019T034438400533Z\\checkpoints\\vits_step_5000.pt",
+    "heldout_full": {
+     "count": 100,
+     "log_mel_l1": 0.5175312745571137,
+     "stft_spectral_convergence": 0.5248738473653793,
+     "stft_log_magnitude": 0.9311729645729065
+    },
+    "heldout_tts": {
+     "count": 100,
+     "duration_ratio_mean": 0.915856603001597,
+     "rms_ratio_mean": 0.8443605744838715
+    }
+   },
+   "control": {
+    "checkpoint": "E:\\Documents\\STS2026\\output\\tts010-turino\\chunk-finetune\\runs\\tts010_R0_ftctrl5k_20261019T040523871800Z\\checkpoints\\vits_step_5000.pt",
+    "heldout_full": {
+     "count": 100,
+     "log_mel_l1": 0.5404631006717682,
+     "stft_spectral_convergence": 0.5873185256123543,
+     "stft_log_magnitude": 0.9426771771907806
+    },
+    "heldout_tts": {
+     "count": 100,
+     "duration_ratio_mean": 0.9364256719183564,
+     "rms_ratio_mean": 0.8836256474256515
+    }
+   }
+  }
+ }
+}

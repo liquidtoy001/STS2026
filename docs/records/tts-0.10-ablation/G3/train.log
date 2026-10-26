@@ -1,0 +1,132 @@
+TTS_0.10 arm G3 (TTS_0.02 decoder), seed 2026
+Switches: {'text_encoder': 'tts010', 'posterior_encoder': 'tts010', 'decoder': 'tts002', 'discriminator': 'tts010', 'feature_matching': True, 'recon_loss': 'tts010', 'optim': 'tts010', 'max_text_chars': 100}
+Optimisation: {'batch_size': 16, 'learning_rate': 0.0002, 'amp': True, 'max_grad_norm': None} | autocast: True
+Dataset: /content/LJSpeech-1.1
+PyTorch 2.11.0+cu130; device cuda:0 (NVIDIA RTX PRO 6000 Blackwell Server Edition)
+Corpus clips: 13100; held out: 100 (100 recordings found); training clips: 6208; max_text_chars: 100; speakers: {}
+6208 training clips, batch size 16, 388 batches per pass over the data
+Probe membership: {'LJ001-0001': 'not_trained', 'LJ001-0002': 'trained', 'LJ001-0003': 'not_trained', 'LJ001-0004': 'trained', 'LJ001-0005': 'not_trained', 'LJ001-0006': 'trained', 'LJ001-0007': 'not_trained', 'LJ001-0008': 'trained'}
+Run artifacts: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z
+/usr/local/lib/python3.13/dist-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+Training on one device: cuda; fp16 autocast: True
+{'generator': 17488066, 'discriminator': 46747132} {'mel_weight': 45.0, 'stft_weight': 0.0, 'wave_weight': 0.0, 'duration_weight': 1.0, 'kl_weight': 1.0, 'gan_weight': 1.0, 'feature_matching_weight': 2.0}
+/usr/local/lib/python3.13/dist-packages/torchaudio/__init__.py:178: UserWarning: The 'encoding' parameter is not fully supported by TorchCodec AudioEncoder.
+  return save_with_torchcodec(
+/usr/local/lib/python3.13/dist-packages/torchaudio/__init__.py:178: UserWarning: The 'bits_per_sample' parameter is not directly supported by TorchCodec AudioEncoder.
+  return save_with_torchcodec(
+probe evaluation at 0: {'mean': 3.5576, 'sample': 2.0252}
+heldout evaluation at 0: {'mean': 3.3927, 'sample': 2.106}
+step 1000/40000  total 42.192  mel 0.752  kl 1.578  duration 1.057  gan 2.372  feature_matching 1.671  gan_discriminator 2.581  0.093 s/it  ETA 1.01 h
+step 2000/40000  total 44.213  mel 0.757  kl 1.469  duration 0.965  gan 2.899  feature_matching 2.411  gan_discriminator 1.976  0.095 s/it  ETA 1.00 h
+probe evaluation at 2000: {'mean': 0.8565, 'sample': 0.7914}
+heldout evaluation at 2000: {'mean': 0.7987, 'sample': 0.7503}
+step 3000/40000  total 38.694  mel 0.684  kl 1.628  duration 0.817  gan 2.172  feature_matching 1.640  gan_discriminator 2.623  0.094 s/it  ETA 0.96 h
+step 4000/40000  total 36.354  mel 0.628  kl 1.828  duration 0.685  gan 2.069  feature_matching 1.756  gan_discriminator 2.546  0.094 s/it  ETA 0.94 h
+probe evaluation at 4000: {'mean': 0.7279, 'sample': 0.7058}
+heldout evaluation at 4000: {'mean': 0.6871, 'sample': 0.6768}
+step 5000/40000  total 37.473  mel 0.651  kl 1.449  duration 0.680  gan 2.403  feature_matching 1.820  gan_discriminator 2.450  0.095 s/it  ETA 0.92 h
+Saved checkpoint: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z/checkpoints/vits_step_5000.pt
+step 6000/40000  total 36.046  mel 0.620  kl 1.909  duration 0.581  gan 1.956  feature_matching 1.855  gan_discriminator 2.413  0.094 s/it  ETA 0.89 h
+probe evaluation at 6000: {'mean': 0.6935, 'sample': 0.6688}
+heldout evaluation at 6000: {'mean': 0.6571, 'sample': 0.6404}
+step 7000/40000  total 35.739  mel 0.597  kl 1.748  duration 0.533  gan 2.385  feature_matching 2.107  gan_discriminator 2.385  0.095 s/it  ETA 0.87 h
+step 8000/40000  total 37.050  mel 0.605  kl 2.005  duration 0.551  gan 2.568  feature_matching 2.350  gan_discriminator 2.254  0.096 s/it  ETA 0.85 h
+probe evaluation at 8000: {'mean': 0.6476, 'sample': 0.6449}
+heldout evaluation at 8000: {'mean': 0.6196, 'sample': 0.6331}
+step 9000/40000  total 34.394  mel 0.578  kl 1.891  duration 0.522  gan 2.182  feature_matching 1.891  gan_discriminator 2.409  0.096 s/it  ETA 0.83 h
+step 10000/40000  total 34.864  mel 0.587  kl 1.881  duration 0.482  gan 2.240  feature_matching 1.924  gan_discriminator 2.538  0.094 s/it  ETA 0.79 h
+probe evaluation at 10000: {'mean': 0.6268, 'sample': 0.6259}
+heldout evaluation at 10000: {'mean': 0.6175, 'sample': 0.6048}
+Saved checkpoint: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z/checkpoints/vits_step_10000.pt
+step 11000/40000  total 34.514  mel 0.571  kl 1.973  duration 0.527  gan 2.462  feature_matching 1.938  gan_discriminator 2.576  0.095 s/it  ETA 0.76 h
+step 12000/40000  total 35.918  mel 0.580  kl 1.945  duration 0.429  gan 2.713  feature_matching 2.363  gan_discriminator 2.263  0.095 s/it  ETA 0.74 h
+probe evaluation at 12000: {'mean': 0.604, 'sample': 0.6174}
+heldout evaluation at 12000: {'mean': 0.5815, 'sample': 0.5912}
+step 13000/40000  total 36.110  mel 0.585  kl 1.884  duration 0.510  gan 2.538  feature_matching 2.433  gan_discriminator 2.499  0.094 s/it  ETA 0.71 h
+step 14000/40000  total 35.853  mel 0.579  kl 1.836  duration 0.481  gan 2.650  feature_matching 2.408  gan_discriminator 2.207  0.095 s/it  ETA 0.69 h
+probe evaluation at 14000: {'mean': 0.6077, 'sample': 0.6083}
+heldout evaluation at 14000: {'mean': 0.5808, 'sample': 0.5691}
+step 15000/40000  total 36.629  mel 0.604  kl 1.826  duration 0.482  gan 2.428  feature_matching 2.360  gan_discriminator 2.381  0.094 s/it  ETA 0.65 h
+Saved checkpoint: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z/checkpoints/vits_step_15000.pt
+step 16000/40000  total 31.989  mel 0.517  kl 1.880  duration 0.394  gan 2.418  feature_matching 2.025  gan_discriminator 2.377  0.095 s/it  ETA 0.63 h
+probe evaluation at 16000: {'mean': 0.5936, 'sample': 0.6012}
+heldout evaluation at 16000: {'mean': 0.5592, 'sample': 0.5607}
+step 17000/40000  total 34.413  mel 0.551  kl 2.056  duration 0.452  gan 2.224  feature_matching 2.444  gan_discriminator 2.380  0.094 s/it  ETA 0.60 h
+step 18000/40000  total 33.568  mel 0.556  kl 1.804  duration 0.474  gan 2.109  feature_matching 2.086  gan_discriminator 2.496  0.095 s/it  ETA 0.58 h
+probe evaluation at 18000: {'mean': 0.58, 'sample': 0.5915}
+heldout evaluation at 18000: {'mean': 0.546, 'sample': 0.5519}
+step 19000/40000  total 35.143  mel 0.560  kl 2.035  duration 0.430  gan 2.261  feature_matching 2.614  gan_discriminator 2.311  0.094 s/it  ETA 0.55 h
+step 20000/40000  total 33.739  mel 0.533  kl 2.086  duration 0.410  gan 2.475  feature_matching 2.389  gan_discriminator 2.309  0.095 s/it  ETA 0.53 h
+probe evaluation at 20000: {'mean': 0.5804, 'sample': 0.5899}
+heldout evaluation at 20000: {'mean': 0.5396, 'sample': 0.5506}
+Saved checkpoint: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z/checkpoints/vits_step_20000.pt
+step 21000/40000  total 31.637  mel 0.496  kl 2.073  duration 0.446  gan 2.555  feature_matching 2.111  gan_discriminator 2.539  0.096 s/it  ETA 0.50 h
+step 22000/40000  total 33.485  mel 0.530  kl 2.059  duration 0.413  gan 2.362  feature_matching 2.408  gan_discriminator 2.248  0.094 s/it  ETA 0.47 h
+probe evaluation at 22000: {'mean': 0.5766, 'sample': 0.591}
+heldout evaluation at 22000: {'mean': 0.5434, 'sample': 0.5449}
+step 23000/40000  total 32.800  mel 0.524  kl 1.877  duration 0.366  gan 2.326  feature_matching 2.334  gan_discriminator 2.323  0.095 s/it  ETA 0.45 h
+step 24000/40000  total 34.357  mel 0.542  kl 2.164  duration 0.393  gan 2.356  feature_matching 2.516  gan_discriminator 2.320  0.093 s/it  ETA 0.41 h
+probe evaluation at 24000: {'mean': 0.578, 'sample': 0.5964}
+heldout evaluation at 24000: {'mean': 0.54, 'sample': 0.5468}
+step 25000/40000  total 33.769  mel 0.532  kl 1.716  duration 0.393  gan 2.474  feature_matching 2.626  gan_discriminator 2.308  0.093 s/it  ETA 0.39 h
+Saved checkpoint: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z/checkpoints/vits_step_25000.pt
+step 26000/40000  total 34.291  mel 0.531  kl 2.057  duration 0.388  gan 2.536  feature_matching 2.708  gan_discriminator 2.382  0.096 s/it  ETA 0.37 h
+probe evaluation at 26000: {'mean': 0.5487, 'sample': 0.5652}
+heldout evaluation at 26000: {'mean': 0.532, 'sample': 0.5413}
+step 27000/40000  total 34.841  mel 0.540  kl 2.156  duration 0.380  gan 2.650  feature_matching 2.675  gan_discriminator 2.385  0.096 s/it  ETA 0.34 h
+step 28000/40000  total 33.525  mel 0.535  kl 1.824  duration 0.373  gan 2.302  feature_matching 2.480  gan_discriminator 2.348  0.095 s/it  ETA 0.32 h
+probe evaluation at 28000: {'mean': 0.5618, 'sample': 0.581}
+heldout evaluation at 28000: {'mean': 0.5295, 'sample': 0.5365}
+step 29000/40000  total 35.679  mel 0.542  kl 2.087  duration 0.425  gan 2.433  feature_matching 3.181  gan_discriminator 2.177  0.094 s/it  ETA 0.29 h
+step 30000/40000  total 35.327  mel 0.541  kl 2.013  duration 0.384  gan 2.634  feature_matching 2.967  gan_discriminator 2.273  0.094 s/it  ETA 0.26 h
+probe evaluation at 30000: {'mean': 0.5683, 'sample': 0.5848}
+heldout evaluation at 30000: {'mean': 0.5355, 'sample': 0.545}
+Saved checkpoint: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z/checkpoints/vits_step_30000.pt
+step 31000/40000  total 36.189  mel 0.557  kl 2.158  duration 0.373  gan 2.589  feature_matching 3.010  gan_discriminator 2.351  0.095 s/it  ETA 0.24 h
+step 32000/40000  total 34.066  mel 0.521  kl 2.078  duration 0.372  gan 2.701  feature_matching 2.738  gan_discriminator 2.584  0.093 s/it  ETA 0.21 h
+probe evaluation at 32000: {'mean': 0.5671, 'sample': 0.578}
+heldout evaluation at 32000: {'mean': 0.5348, 'sample': 0.5439}
+step 33000/40000  total 33.195  mel 0.517  kl 2.158  duration 0.370  gan 2.297  feature_matching 2.560  gan_discriminator 2.485  0.096 s/it  ETA 0.19 h
+step 34000/40000  total 33.540  mel 0.527  kl 2.045  duration 0.381  gan 2.273  feature_matching 2.562  gan_discriminator 2.354  0.095 s/it  ETA 0.16 h
+probe evaluation at 34000: {'mean': 0.5652, 'sample': 0.575}
+heldout evaluation at 34000: {'mean': 0.5337, 'sample': 0.5404}
+step 35000/40000  total 35.467  mel 0.540  kl 2.315  duration 0.342  gan 2.666  feature_matching 2.923  gan_discriminator 2.357  0.095 s/it  ETA 0.13 h
+Saved checkpoint: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z/checkpoints/vits_step_35000.pt
+step 36000/40000  total 34.325  mel 0.528  kl 1.985  duration 0.372  gan 2.734  feature_matching 2.736  gan_discriminator 2.258  0.093 s/it  ETA 0.10 h
+probe evaluation at 36000: {'mean': 0.5501, 'sample': 0.557}
+heldout evaluation at 36000: {'mean': 0.5049, 'sample': 0.5171}
+step 37000/40000  total 33.427  mel 0.517  kl 2.238  duration 0.376  gan 2.418  feature_matching 2.575  gan_discriminator 2.314  0.095 s/it  ETA 0.08 h
+step 38000/40000  total 33.584  mel 0.518  kl 2.303  duration 0.379  gan 2.612  feature_matching 2.496  gan_discriminator 2.421  0.094 s/it  ETA 0.05 h
+probe evaluation at 38000: {'mean': 0.5488, 'sample': 0.567}
+heldout evaluation at 38000: {'mean': 0.5158, 'sample': 0.5279}
+step 39000/40000  total 33.560  mel 0.511  kl 2.266  duration 0.376  gan 2.550  feature_matching 2.683  gan_discriminator 2.506  0.093 s/it  ETA 0.03 h
+step 40000/40000  total 34.289  mel 0.530  kl 2.001  duration 0.337  gan 2.696  feature_matching 2.702  gan_discriminator 2.487  0.095 s/it  ETA 0.00 h
+probe evaluation at 40000: {'mean': 0.5382, 'sample': 0.5606}
+heldout evaluation at 40000: {'mean': 0.5161, 'sample': 0.5229}
+Saved checkpoint: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z/checkpoints/vits_step_40000.pt
+Experiment record: {
+  "status": "completed",
+  "arm": "G3",
+  "step": 40000,
+  "total_steps": 40000,
+  "actual_optimizer_updates": 39971,
+  "nonfinite_skips": 0,
+  "amp_backoffs": 29,
+  "session_wall_seconds": 3805.2,
+  "resumed": false,
+  "completion_time_source": "runtime_clock",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "peak_allocated_GiB": 3.115,
+  "completed_at_utc": "2026-10-20T08:46:31+00:00"
+}
+Figure(1500x400)
+probe
+ step   mode  count  log_mel_l1  stft_spectral_convergence  stft_log_magnitude
+40000   mean      8    0.538167                   0.473365            0.994901
+40000 sample      8    0.560599                   0.484444            0.985820
+heldout
+ step   mode  count  log_mel_l1  stft_spectral_convergence  stft_log_magnitude
+40000   mean      8    0.516105                   0.528891            0.998808
+40000 sample      8    0.522856                   0.547052            0.939237
+Upload this folder to the team Google Drive: /content/drive/MyDrive/stat3007/tts010-ablation/runs/tts010_G3_20261020T074305914788Z

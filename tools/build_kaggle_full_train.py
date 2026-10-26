@@ -1,7 +1,7 @@
 """Export notebooks/vits-full-train.ipynb as one uploadable Kaggle notebook per TTS_0.10 arm.
 
 Each export differs only in the default STS_ARM (R0, R0b, E0, G1-G3, A1, A2, L1, O1, D1;
-see docs/ABLATION_TTS_0.10.md). The shared evaluator and the held-out split are bundled,
+see docs/ABLATION_TTS_0.10.md; T011, docs/TTS_0.11.md). The shared evaluator and the held-out splits are bundled,
 so no extra Kaggle dataset is needed besides LJSpeech.
 Run from any directory: python tools/build_kaggle_full_train.py
 """
@@ -16,7 +16,7 @@ from tools.notebook_defs import literal_assignment  # noqa: E402
 
 ARM_LINE = 'ARM = os.environ.get("STS_ARM", "R0")'
 SOURCES = ("notebooks/vits-full-train.ipynb", "sts_eval/__init__.py", "sts_eval/reconstruction.py",
-           "sts_eval/splits/ljspeech_heldout_100.txt")
+           "sts_eval/splits/ljspeech_heldout_100.txt", "sts_eval/splits/ljspeech_long_100.txt")
 
 
 def build():

@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "arm": "E0",
+  "step": 40000,
+  "total_steps": 40000,
+  "actual_optimizer_updates": 40000,
+  "nonfinite_skips": 0,
+  "amp_backoffs": 0,
+  "session_wall_seconds": 3446.7,
+  "resumed": false,
+  "completion_time_source": "runtime_clock",
+  "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "peak_allocated_GiB": 1.323,
+  "completed_at_utc": "2026-10-12T02:57:03+00:00"
+}

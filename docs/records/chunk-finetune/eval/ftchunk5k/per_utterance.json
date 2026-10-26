@@ -1,0 +1,1206 @@
+{
+  "heldout_full": [
+    {
+      "sample_id": "LJ001-0056",
+      "log_mel_l1": 0.5501373410224915,
+      "stft_spectral_convergence": 0.5266221165657043,
+      "stft_log_magnitude": 0.9746665954589844
+    },
+    {
+      "sample_id": "LJ001-0156",
+      "log_mel_l1": 0.5341087579727173,
+      "stft_spectral_convergence": 0.5294609069824219,
+      "stft_log_magnitude": 0.9386867880821228
+    },
+    {
+      "sample_id": "LJ002-0128",
+      "log_mel_l1": 0.5301988124847412,
+      "stft_spectral_convergence": 0.5021804571151733,
+      "stft_log_magnitude": 0.9249311685562134
+    },
+    {
+      "sample_id": "LJ004-0125",
+      "log_mel_l1": 0.5375189781188965,
+      "stft_spectral_convergence": 0.517188549041748,
+      "stft_log_magnitude": 0.9292348623275757
+    },
+    {
+      "sample_id": "LJ004-0129",
+      "log_mel_l1": 0.5186419486999512,
+      "stft_spectral_convergence": 0.4427662789821625,
+      "stft_log_magnitude": 0.9181098937988281
+    },
+    {
+      "sample_id": "LJ005-0053",
+      "log_mel_l1": 0.5597965717315674,
+      "stft_spectral_convergence": 0.5173660516738892,
+      "stft_log_magnitude": 0.9746978282928467
+    },
+    {
+      "sample_id": "LJ005-0142",
+      "log_mel_l1": 0.5445050597190857,
+      "stft_spectral_convergence": 0.5536567568778992,
+      "stft_log_magnitude": 0.9521412253379822
+    },
+    {
+      "sample_id": "LJ005-0252",
+      "log_mel_l1": 0.49586260318756104,
+      "stft_spectral_convergence": 0.4065169095993042,
+      "stft_log_magnitude": 0.9114432334899902
+    },
+    {
+      "sample_id": "LJ006-0141",
+      "log_mel_l1": 0.4878762364387512,
+      "stft_spectral_convergence": 0.49663299322128296,
+      "stft_log_magnitude": 0.9070892333984375
+    },
+    {
+      "sample_id": "LJ008-0038",
+      "log_mel_l1": 0.5587300062179565,
+      "stft_spectral_convergence": 0.4923285245895386,
+      "stft_log_magnitude": 0.9856521487236023
+    },
+    {
+      "sample_id": "LJ008-0175",
+      "log_mel_l1": 0.5401773452758789,
+      "stft_spectral_convergence": 0.5716041922569275,
+      "stft_log_magnitude": 0.9765260219573975
+    },
+    {
+      "sample_id": "LJ008-0190",
+      "log_mel_l1": 0.5553889274597168,
+      "stft_spectral_convergence": 0.5579328536987305,
+      "stft_log_magnitude": 0.9467889070510864
+    },
+    {
+      "sample_id": "LJ008-0281",
+      "log_mel_l1": 0.5189449191093445,
+      "stft_spectral_convergence": 0.4903261363506317,
+      "stft_log_magnitude": 0.9283180236816406
+    },
+    {
+      "sample_id": "LJ008-0285",
+      "log_mel_l1": 0.4966578483581543,
+      "stft_spectral_convergence": 0.5122127532958984,
+      "stft_log_magnitude": 0.9418469667434692
+    },
+    {
+      "sample_id": "LJ009-0100",
+      "log_mel_l1": 0.5531449317932129,
+      "stft_spectral_convergence": 0.6314319372177124,
+      "stft_log_magnitude": 0.9854824542999268
+    },
+    {
+      "sample_id": "LJ009-0109",
+      "log_mel_l1": 0.5323625802993774,
+      "stft_spectral_convergence": 0.5785540342330933,
+      "stft_log_magnitude": 0.9522415995597839
+    },
+    {
+      "sample_id": "LJ009-0281",
+      "log_mel_l1": 0.5397659540176392,
+      "stft_spectral_convergence": 0.5827056169509888,
+      "stft_log_magnitude": 0.9574210047721863
+    },
+    {
+      "sample_id": "LJ010-0039",
+      "log_mel_l1": 0.5320032238960266,
+      "stft_spectral_convergence": 0.5799152851104736,
+      "stft_log_magnitude": 0.9691266417503357
+    },
+    {
+      "sample_id": "LJ010-0192",
+      "log_mel_l1": 0.5025434494018555,
+      "stft_spectral_convergence": 0.5356805324554443,
+      "stft_log_magnitude": 0.908811092376709
+    },
+    {
+      "sample_id": "LJ010-0219",
+      "log_mel_l1": 0.5250513553619385,
+      "stft_spectral_convergence": 0.5331537127494812,
+      "stft_log_magnitude": 0.9483429193496704
+    },
+    {
+      "sample_id": "LJ011-0123",
+      "log_mel_l1": 0.5122144818305969,
+      "stft_spectral_convergence": 0.5659055113792419,
+      "stft_log_magnitude": 0.9239274859428406
+    },
+    {
+      "sample_id": "LJ011-0171",
+      "log_mel_l1": 0.4855450391769409,
+      "stft_spectral_convergence": 0.602092444896698,
+      "stft_log_magnitude": 0.8784856796264648
+    },
+    {
+      "sample_id": "LJ013-0032",
+      "log_mel_l1": 0.4932993948459625,
+      "stft_spectral_convergence": 0.48667818307876587,
+      "stft_log_magnitude": 0.9188938140869141
+    },
+    {
+      "sample_id": "LJ013-0130",
+      "log_mel_l1": 0.5362629890441895,
+      "stft_spectral_convergence": 0.5563313364982605,
+      "stft_log_magnitude": 0.9305787086486816
+    },
+    {
+      "sample_id": "LJ013-0201",
+      "log_mel_l1": 0.5215855240821838,
+      "stft_spectral_convergence": 0.5164905786514282,
+      "stft_log_magnitude": 0.9254013299942017
+    },
+    {
+      "sample_id": "LJ013-0243",
+      "log_mel_l1": 0.5367796421051025,
+      "stft_spectral_convergence": 0.6025592088699341,
+      "stft_log_magnitude": 0.9137260317802429
+    },
+    {
+      "sample_id": "LJ014-0183",
+      "log_mel_l1": 0.5163130760192871,
+      "stft_spectral_convergence": 0.501667320728302,
+      "stft_log_magnitude": 0.9115278720855713
+    },
+    {
+      "sample_id": "LJ014-0231",
+      "log_mel_l1": 0.5340054631233215,
+      "stft_spectral_convergence": 0.44646725058555603,
+      "stft_log_magnitude": 0.9491218328475952
+    },
+    {
+      "sample_id": "LJ015-0079",
+      "log_mel_l1": 0.49169209599494934,
+      "stft_spectral_convergence": 0.4852728843688965,
+      "stft_log_magnitude": 0.9250043630599976
+    },
+    {
+      "sample_id": "LJ015-0142",
+      "log_mel_l1": 0.5044525265693665,
+      "stft_spectral_convergence": 0.5631086826324463,
+      "stft_log_magnitude": 0.9428874850273132
+    },
+    {
+      "sample_id": "LJ015-0202",
+      "log_mel_l1": 0.5083770155906677,
+      "stft_spectral_convergence": 0.5061670541763306,
+      "stft_log_magnitude": 0.9114564657211304
+    },
+    {
+      "sample_id": "LJ016-0027",
+      "log_mel_l1": 0.5326160192489624,
+      "stft_spectral_convergence": 0.624010443687439,
+      "stft_log_magnitude": 0.9327025413513184
+    },
+    {
+      "sample_id": "LJ016-0140",
+      "log_mel_l1": 0.51450115442276,
+      "stft_spectral_convergence": 0.5164030194282532,
+      "stft_log_magnitude": 0.9409186244010925
+    },
+    {
+      "sample_id": "LJ016-0209",
+      "log_mel_l1": 0.4979967176914215,
+      "stft_spectral_convergence": 0.5942469239234924,
+      "stft_log_magnitude": 0.8958740234375
+    },
+    {
+      "sample_id": "LJ016-0355",
+      "log_mel_l1": 0.4670591354370117,
+      "stft_spectral_convergence": 0.4711929261684418,
+      "stft_log_magnitude": 0.8811050653457642
+    },
+    {
+      "sample_id": "LJ016-0389",
+      "log_mel_l1": 0.5137909650802612,
+      "stft_spectral_convergence": 0.4629393517971039,
+      "stft_log_magnitude": 0.9330606460571289
+    },
+    {
+      "sample_id": "LJ016-0431",
+      "log_mel_l1": 0.5059860348701477,
+      "stft_spectral_convergence": 0.47026950120925903,
+      "stft_log_magnitude": 0.9071294665336609
+    },
+    {
+      "sample_id": "LJ018-0218",
+      "log_mel_l1": 0.5181801319122314,
+      "stft_spectral_convergence": 0.49877381324768066,
+      "stft_log_magnitude": 0.9098202586174011
+    },
+    {
+      "sample_id": "LJ018-0258",
+      "log_mel_l1": 0.5410072207450867,
+      "stft_spectral_convergence": 0.5123382806777954,
+      "stft_log_magnitude": 0.962133526802063
+    },
+    {
+      "sample_id": "LJ018-0353",
+      "log_mel_l1": 0.5062301754951477,
+      "stft_spectral_convergence": 0.512222170829773,
+      "stft_log_magnitude": 0.9124647974967957
+    },
+    {
+      "sample_id": "LJ019-0071",
+      "log_mel_l1": 0.5057278871536255,
+      "stft_spectral_convergence": 0.46116918325424194,
+      "stft_log_magnitude": 0.9248875379562378
+    },
+    {
+      "sample_id": "LJ019-0130",
+      "log_mel_l1": 0.5004268288612366,
+      "stft_spectral_convergence": 0.5523936748504639,
+      "stft_log_magnitude": 0.8966622352600098
+    },
+    {
+      "sample_id": "LJ019-0148",
+      "log_mel_l1": 0.5314306020736694,
+      "stft_spectral_convergence": 0.5835017561912537,
+      "stft_log_magnitude": 0.9191626310348511
+    },
+    {
+      "sample_id": "LJ019-0312",
+      "log_mel_l1": 0.5035394430160522,
+      "stft_spectral_convergence": 0.5148584246635437,
+      "stft_log_magnitude": 0.9133431911468506
+    },
+    {
+      "sample_id": "LJ019-0316",
+      "log_mel_l1": 0.5102446675300598,
+      "stft_spectral_convergence": 0.5664421916007996,
+      "stft_log_magnitude": 0.9207043647766113
+    },
+    {
+      "sample_id": "LJ020-0067",
+      "log_mel_l1": 0.5154670476913452,
+      "stft_spectral_convergence": 0.540662407875061,
+      "stft_log_magnitude": 0.9217972755432129
+    },
+    {
+      "sample_id": "LJ021-0011",
+      "log_mel_l1": 0.5140039920806885,
+      "stft_spectral_convergence": 0.4588041305541992,
+      "stft_log_magnitude": 0.9184920787811279
+    },
+    {
+      "sample_id": "LJ021-0023",
+      "log_mel_l1": 0.5578034520149231,
+      "stft_spectral_convergence": 0.5193352699279785,
+      "stft_log_magnitude": 0.9611799716949463
+    },
+    {
+      "sample_id": "LJ021-0032",
+      "log_mel_l1": 0.5459871292114258,
+      "stft_spectral_convergence": 0.5946955680847168,
+      "stft_log_magnitude": 0.9282538294792175
+    },
+    {
+      "sample_id": "LJ021-0139",
+      "log_mel_l1": 0.539828360080719,
+      "stft_spectral_convergence": 0.5401122570037842,
+      "stft_log_magnitude": 0.9535154700279236
+    },
+    {
+      "sample_id": "LJ021-0162",
+      "log_mel_l1": 0.5600172281265259,
+      "stft_spectral_convergence": 0.5580954551696777,
+      "stft_log_magnitude": 0.9733762741088867
+    },
+    {
+      "sample_id": "LJ022-0144",
+      "log_mel_l1": 0.5538620352745056,
+      "stft_spectral_convergence": 0.5919283032417297,
+      "stft_log_magnitude": 0.9507390260696411
+    },
+    {
+      "sample_id": "LJ023-0116",
+      "log_mel_l1": 0.5437880158424377,
+      "stft_spectral_convergence": 0.5424184203147888,
+      "stft_log_magnitude": 0.9888029098510742
+    },
+    {
+      "sample_id": "LJ024-0085",
+      "log_mel_l1": 0.5657989978790283,
+      "stft_spectral_convergence": 0.5160652995109558,
+      "stft_log_magnitude": 0.9787096381187439
+    },
+    {
+      "sample_id": "LJ024-0133",
+      "log_mel_l1": 0.5768411159515381,
+      "stft_spectral_convergence": 0.5773347020149231,
+      "stft_log_magnitude": 1.0188734531402588
+    },
+    {
+      "sample_id": "LJ025-0145",
+      "log_mel_l1": 0.5279510021209717,
+      "stft_spectral_convergence": 0.5521248579025269,
+      "stft_log_magnitude": 0.9342228770256042
+    },
+    {
+      "sample_id": "LJ026-0111",
+      "log_mel_l1": 0.5286229848861694,
+      "stft_spectral_convergence": 0.5973837971687317,
+      "stft_log_magnitude": 0.9371188879013062
+    },
+    {
+      "sample_id": "LJ027-0085",
+      "log_mel_l1": 0.5257381200790405,
+      "stft_spectral_convergence": 0.5170698165893555,
+      "stft_log_magnitude": 0.9319383502006531
+    },
+    {
+      "sample_id": "LJ028-0119",
+      "log_mel_l1": 0.5408165454864502,
+      "stft_spectral_convergence": 0.5018060207366943,
+      "stft_log_magnitude": 0.9779399633407593
+    },
+    {
+      "sample_id": "LJ028-0241",
+      "log_mel_l1": 0.537259578704834,
+      "stft_spectral_convergence": 0.5517343878746033,
+      "stft_log_magnitude": 0.9500393271446228
+    },
+    {
+      "sample_id": "LJ028-0263",
+      "log_mel_l1": 0.5165441036224365,
+      "stft_spectral_convergence": 0.5450387597084045,
+      "stft_log_magnitude": 0.9339228868484497
+    },
+    {
+      "sample_id": "LJ028-0325",
+      "log_mel_l1": 0.5209125876426697,
+      "stft_spectral_convergence": 0.4681445360183716,
+      "stft_log_magnitude": 0.9207013845443726
+    },
+    {
+      "sample_id": "LJ028-0407",
+      "log_mel_l1": 0.5409231781959534,
+      "stft_spectral_convergence": 0.4982398450374603,
+      "stft_log_magnitude": 0.9624473452568054
+    },
+    {
+      "sample_id": "LJ029-0201",
+      "log_mel_l1": 0.4975118935108185,
+      "stft_spectral_convergence": 0.4407689571380615,
+      "stft_log_magnitude": 0.9141330718994141
+    },
+    {
+      "sample_id": "LJ030-0025",
+      "log_mel_l1": 0.4950908124446869,
+      "stft_spectral_convergence": 0.5053824186325073,
+      "stft_log_magnitude": 0.9238872528076172
+    },
+    {
+      "sample_id": "LJ030-0050",
+      "log_mel_l1": 0.49803557991981506,
+      "stft_spectral_convergence": 0.45366978645324707,
+      "stft_log_magnitude": 0.920151948928833
+    },
+    {
+      "sample_id": "LJ030-0097",
+      "log_mel_l1": 0.5052038431167603,
+      "stft_spectral_convergence": 0.5057875514030457,
+      "stft_log_magnitude": 0.9254295825958252
+    },
+    {
+      "sample_id": "LJ030-0141",
+      "log_mel_l1": 0.4759392738342285,
+      "stft_spectral_convergence": 0.6022037863731384,
+      "stft_log_magnitude": 0.918321967124939
+    },
+    {
+      "sample_id": "LJ030-0212",
+      "log_mel_l1": 0.4775654673576355,
+      "stft_spectral_convergence": 0.490754097700119,
+      "stft_log_magnitude": 0.887321949005127
+    },
+    {
+      "sample_id": "LJ031-0012",
+      "log_mel_l1": 0.48431727290153503,
+      "stft_spectral_convergence": 0.4596746861934662,
+      "stft_log_magnitude": 0.9135577082633972
+    },
+    {
+      "sample_id": "LJ031-0124",
+      "log_mel_l1": 0.5095097422599792,
+      "stft_spectral_convergence": 0.6130555868148804,
+      "stft_log_magnitude": 0.9231021404266357
+    },
+    {
+      "sample_id": "LJ031-0146",
+      "log_mel_l1": 0.4586833119392395,
+      "stft_spectral_convergence": 0.4855942130088806,
+      "stft_log_magnitude": 0.8732306957244873
+    },
+    {
+      "sample_id": "LJ033-0124",
+      "log_mel_l1": 0.48175686597824097,
+      "stft_spectral_convergence": 0.5655601024627686,
+      "stft_log_magnitude": 0.9030203223228455
+    },
+    {
+      "sample_id": "LJ033-0135",
+      "log_mel_l1": 0.5007259249687195,
+      "stft_spectral_convergence": 0.518423318862915,
+      "stft_log_magnitude": 0.9145400524139404
+    },
+    {
+      "sample_id": "LJ033-0192",
+      "log_mel_l1": 0.5286557674407959,
+      "stft_spectral_convergence": 0.5599517822265625,
+      "stft_log_magnitude": 0.9378589987754822
+    },
+    {
+      "sample_id": "LJ034-0131",
+      "log_mel_l1": 0.5142521262168884,
+      "stft_spectral_convergence": 0.48031386733055115,
+      "stft_log_magnitude": 0.9325426816940308
+    },
+    {
+      "sample_id": "LJ035-0018",
+      "log_mel_l1": 0.5652973055839539,
+      "stft_spectral_convergence": 0.5123671889305115,
+      "stft_log_magnitude": 0.9927265048027039
+    },
+    {
+      "sample_id": "LJ035-0166",
+      "log_mel_l1": 0.5600581169128418,
+      "stft_spectral_convergence": 0.5594285726547241,
+      "stft_log_magnitude": 0.9507449865341187
+    },
+    {
+      "sample_id": "LJ036-0115",
+      "log_mel_l1": 0.4947250187397003,
+      "stft_spectral_convergence": 0.47871363162994385,
+      "stft_log_magnitude": 0.9664052724838257
+    },
+    {
+      "sample_id": "LJ038-0084",
+      "log_mel_l1": 0.49574410915374756,
+      "stft_spectral_convergence": 0.517370343208313,
+      "stft_log_magnitude": 0.9048594236373901
+    },
+    {
+      "sample_id": "LJ038-0252",
+      "log_mel_l1": 0.5062108039855957,
+      "stft_spectral_convergence": 0.5003781914710999,
+      "stft_log_magnitude": 0.9271053671836853
+    },
+    {
+      "sample_id": "LJ038-0279",
+      "log_mel_l1": 0.5159130096435547,
+      "stft_spectral_convergence": 0.43696436285972595,
+      "stft_log_magnitude": 0.9157718420028687
+    },
+    {
+      "sample_id": "LJ040-0013",
+      "log_mel_l1": 0.5415089726448059,
+      "stft_spectral_convergence": 0.568004846572876,
+      "stft_log_magnitude": 0.9527018070220947
+    },
+    {
+      "sample_id": "LJ040-0045",
+      "log_mel_l1": 0.5338586568832397,
+      "stft_spectral_convergence": 0.5290178060531616,
+      "stft_log_magnitude": 0.954961895942688
+    },
+    {
+      "sample_id": "LJ040-0096",
+      "log_mel_l1": 0.5297232270240784,
+      "stft_spectral_convergence": 0.5177654027938843,
+      "stft_log_magnitude": 0.9299005270004272
+    },
+    {
+      "sample_id": "LJ041-0085",
+      "log_mel_l1": 0.5152460336685181,
+      "stft_spectral_convergence": 0.5340511202812195,
+      "stft_log_magnitude": 0.9251564741134644
+    },
+    {
+      "sample_id": "LJ042-0010",
+      "log_mel_l1": 0.5370951294898987,
+      "stft_spectral_convergence": 0.47751879692077637,
+      "stft_log_magnitude": 0.9552888870239258
+    },
+    {
+      "sample_id": "LJ042-0032",
+      "log_mel_l1": 0.509232759475708,
+      "stft_spectral_convergence": 0.5204974412918091,
+      "stft_log_magnitude": 0.906030535697937
+    },
+    {
+      "sample_id": "LJ043-0110",
+      "log_mel_l1": 0.49152451753616333,
+      "stft_spectral_convergence": 0.5226439237594604,
+      "stft_log_magnitude": 0.9098536372184753
+    },
+    {
+      "sample_id": "LJ045-0010",
+      "log_mel_l1": 0.5124911069869995,
+      "stft_spectral_convergence": 0.5086367130279541,
+      "stft_log_magnitude": 0.9265209436416626
+    },
+    {
+      "sample_id": "LJ045-0092",
+      "log_mel_l1": 0.47901201248168945,
+      "stft_spectral_convergence": 0.4876287579536438,
+      "stft_log_magnitude": 0.9002783298492432
+    },
+    {
+      "sample_id": "LJ046-0007",
+      "log_mel_l1": 0.4981979429721832,
+      "stft_spectral_convergence": 0.4857258200645447,
+      "stft_log_magnitude": 0.9466763734817505
+    },
+    {
+      "sample_id": "LJ047-0038",
+      "log_mel_l1": 0.49053776264190674,
+      "stft_spectral_convergence": 0.5355390906333923,
+      "stft_log_magnitude": 0.9063544273376465
+    },
+    {
+      "sample_id": "LJ047-0203",
+      "log_mel_l1": 0.46698370575904846,
+      "stft_spectral_convergence": 0.5363714694976807,
+      "stft_log_magnitude": 0.8764852285385132
+    },
+    {
+      "sample_id": "LJ048-0075",
+      "log_mel_l1": 0.5155801773071289,
+      "stft_spectral_convergence": 0.60955411195755,
+      "stft_log_magnitude": 0.9174384474754333
+    },
+    {
+      "sample_id": "LJ048-0128",
+      "log_mel_l1": 0.49189236760139465,
+      "stft_spectral_convergence": 0.4740368723869324,
+      "stft_log_magnitude": 0.8907637000083923
+    },
+    {
+      "sample_id": "LJ048-0200",
+      "log_mel_l1": 0.5003793239593506,
+      "stft_spectral_convergence": 0.46905261278152466,
+      "stft_log_magnitude": 0.933994472026825
+    },
+    {
+      "sample_id": "LJ049-0112",
+      "log_mel_l1": 0.5101281404495239,
+      "stft_spectral_convergence": 0.5666216611862183,
+      "stft_log_magnitude": 0.9254941940307617
+    },
+    {
+      "sample_id": "LJ050-0046",
+      "log_mel_l1": 0.47518110275268555,
+      "stft_spectral_convergence": 0.535359263420105,
+      "stft_log_magnitude": 0.8745603561401367
+    },
+    {
+      "sample_id": "LJ050-0248",
+      "log_mel_l1": 0.4745117127895355,
+      "stft_spectral_convergence": 0.5202640295028687,
+      "stft_log_magnitude": 0.8855149149894714
+    }
+  ],
+  "heldout_tts": [
+    {
+      "sample_id": "LJ001-0056",
+      "seconds": 4.9806802721088435,
+      "duration_ratio": 0.9058023011258196,
+      "rms_ratio": 0.7917304039001465
+    },
+    {
+      "sample_id": "LJ001-0156",
+      "seconds": 4.435011337868481,
+      "duration_ratio": 0.8611103773169551,
+      "rms_ratio": 0.8283722400665283
+    },
+    {
+      "sample_id": "LJ002-0128",
+      "seconds": 5.143219954648526,
+      "duration_ratio": 0.8444315381121511,
+      "rms_ratio": 0.9636285305023193
+    },
+    {
+      "sample_id": "LJ004-0125",
+      "seconds": 4.272471655328798,
+      "duration_ratio": 0.971968016507609,
+      "rms_ratio": 0.7530622482299805
+    },
+    {
+      "sample_id": "LJ004-0129",
+      "seconds": 3.0998639455782313,
+      "duration_ratio": 1.0324295748055283,
+      "rms_ratio": 0.9438226819038391
+    },
+    {
+      "sample_id": "LJ005-0053",
+      "seconds": 3.250793650793651,
+      "duration_ratio": 0.8788083123888923,
+      "rms_ratio": 0.8937423825263977
+    },
+    {
+      "sample_id": "LJ005-0142",
+      "seconds": 3.01859410430839,
+      "duration_ratio": 0.8795274654122124,
+      "rms_ratio": 0.8267579078674316
+    },
+    {
+      "sample_id": "LJ005-0252",
+      "seconds": 3.889342403628118,
+      "duration_ratio": 1.0925815040831666,
+      "rms_ratio": 0.8421914577484131
+    },
+    {
+      "sample_id": "LJ006-0141",
+      "seconds": 3.4829931972789114,
+      "duration_ratio": 0.9185174554196118,
+      "rms_ratio": 0.8242379426956177
+    },
+    {
+      "sample_id": "LJ008-0038",
+      "seconds": 5.607619047619048,
+      "duration_ratio": 0.8884992634642331,
+      "rms_ratio": 0.7092762589454651
+    },
+    {
+      "sample_id": "LJ008-0175",
+      "seconds": 5.688888888888889,
+      "duration_ratio": 0.908057709152243,
+      "rms_ratio": 0.8795217275619507
+    },
+    {
+      "sample_id": "LJ008-0190",
+      "seconds": 4.307301587301588,
+      "duration_ratio": 0.9354200112278767,
+      "rms_ratio": 0.9548064470291138
+    },
+    {
+      "sample_id": "LJ008-0281",
+      "seconds": 4.690430839002268,
+      "duration_ratio": 0.9720574828237638,
+      "rms_ratio": 0.816041886806488
+    },
+    {
+      "sample_id": "LJ008-0285",
+      "seconds": 3.4017233560090703,
+      "duration_ratio": 0.7779863711325237,
+      "rms_ratio": 0.8734620213508606
+    },
+    {
+      "sample_id": "LJ009-0100",
+      "seconds": 5.479909297052155,
+      "duration_ratio": 0.8449494772910038,
+      "rms_ratio": 0.7914748191833496
+    },
+    {
+      "sample_id": "LJ009-0109",
+      "seconds": 4.934240362811791,
+      "duration_ratio": 0.8439014931161528,
+      "rms_ratio": 0.9719483256340027
+    },
+    {
+      "sample_id": "LJ009-0281",
+      "seconds": 4.562721088435374,
+      "duration_ratio": 0.9105373191061877,
+      "rms_ratio": 0.7970362901687622
+    },
+    {
+      "sample_id": "LJ010-0039",
+      "seconds": 5.445079365079365,
+      "duration_ratio": 0.8580106193678403,
+      "rms_ratio": 1.0032953023910522
+    },
+    {
+      "sample_id": "LJ010-0192",
+      "seconds": 3.2043537414965986,
+      "duration_ratio": 0.9150790669964902,
+      "rms_ratio": 0.73375004529953
+    },
+    {
+      "sample_id": "LJ010-0219",
+      "seconds": 5.77015873015873,
+      "duration_ratio": 0.8166105067231475,
+      "rms_ratio": 0.9199549555778503
+    },
+    {
+      "sample_id": "LJ011-0123",
+      "seconds": 5.5147392290249435,
+      "duration_ratio": 0.9141413761736868,
+      "rms_ratio": 0.9699658751487732
+    },
+    {
+      "sample_id": "LJ011-0171",
+      "seconds": 2.159455782312925,
+      "duration_ratio": 0.9180049740692899,
+      "rms_ratio": 0.8953922390937805
+    },
+    {
+      "sample_id": "LJ013-0032",
+      "seconds": 6.048798185941043,
+      "duration_ratio": 0.9019875700789212,
+      "rms_ratio": 0.8715975284576416
+    },
+    {
+      "sample_id": "LJ013-0130",
+      "seconds": 5.863038548752835,
+      "duration_ratio": 0.9393369130052532,
+      "rms_ratio": 1.0088732242584229
+    },
+    {
+      "sample_id": "LJ013-0201",
+      "seconds": 3.4249433106575964,
+      "duration_ratio": 0.9780736404491471,
+      "rms_ratio": 1.0457289218902588
+    },
+    {
+      "sample_id": "LJ013-0243",
+      "seconds": 4.156371882086168,
+      "duration_ratio": 0.9505772043189197,
+      "rms_ratio": 0.8863394856452942
+    },
+    {
+      "sample_id": "LJ014-0183",
+      "seconds": 2.2523356009070294,
+      "duration_ratio": 0.8914897054335924,
+      "rms_ratio": 0.7522842288017273
+    },
+    {
+      "sample_id": "LJ014-0231",
+      "seconds": 1.509297052154195,
+      "duration_ratio": 0.740262917899326,
+      "rms_ratio": 0.7223358750343323
+    },
+    {
+      "sample_id": "LJ015-0079",
+      "seconds": 5.38702947845805,
+      "duration_ratio": 0.8777683354886384,
+      "rms_ratio": 0.8052383065223694
+    },
+    {
+      "sample_id": "LJ015-0142",
+      "seconds": 5.491519274376417,
+      "duration_ratio": 0.7901595484355117,
+      "rms_ratio": 0.8915749788284302
+    },
+    {
+      "sample_id": "LJ015-0202",
+      "seconds": 5.5495691609977325,
+      "duration_ratio": 0.9491409734341671,
+      "rms_ratio": 0.7308515906333923
+    },
+    {
+      "sample_id": "LJ016-0027",
+      "seconds": 1.9736961451247166,
+      "duration_ratio": 0.7671020393774346,
+      "rms_ratio": 0.9502806067466736
+    },
+    {
+      "sample_id": "LJ016-0140",
+      "seconds": 4.911020408163266,
+      "duration_ratio": 0.9045936395759717,
+      "rms_ratio": 1.069007158279419
+    },
+    {
+      "sample_id": "LJ016-0209",
+      "seconds": 5.735328798185941,
+      "duration_ratio": 0.8764875073638978,
+      "rms_ratio": 0.9309148192405701
+    },
+    {
+      "sample_id": "LJ016-0355",
+      "seconds": 2.449705215419501,
+      "duration_ratio": 0.9564247392743949,
+      "rms_ratio": 0.9843748807907104
+    },
+    {
+      "sample_id": "LJ016-0389",
+      "seconds": 4.713650793650793,
+      "duration_ratio": 0.9561641567234892,
+      "rms_ratio": 0.9299251437187195
+    },
+    {
+      "sample_id": "LJ016-0431",
+      "seconds": 4.284081632653061,
+      "duration_ratio": 0.9350927034972927,
+      "rms_ratio": 0.7395431399345398
+    },
+    {
+      "sample_id": "LJ018-0218",
+      "seconds": 1.3815873015873017,
+      "duration_ratio": 0.7797486498246692,
+      "rms_ratio": 0.9149764180183411
+    },
+    {
+      "sample_id": "LJ018-0258",
+      "seconds": 5.921088435374149,
+      "duration_ratio": 0.9721446601291129,
+      "rms_ratio": 0.7420681715011597
+    },
+    {
+      "sample_id": "LJ018-0353",
+      "seconds": 4.4117913832199545,
+      "duration_ratio": 0.9854432367272101,
+      "rms_ratio": 0.6849440336227417
+    },
+    {
+      "sample_id": "LJ019-0071",
+      "seconds": 5.479909297052155,
+      "duration_ratio": 0.9118776837799697,
+      "rms_ratio": 0.8753030300140381
+    },
+    {
+      "sample_id": "LJ019-0130",
+      "seconds": 3.7384126984126986,
+      "duration_ratio": 0.9889031515049725,
+      "rms_ratio": 0.7869846820831299
+    },
+    {
+      "sample_id": "LJ019-0148",
+      "seconds": 4.191201814058957,
+      "duration_ratio": 1.0415065420982048,
+      "rms_ratio": 0.8222652673721313
+    },
+    {
+      "sample_id": "LJ019-0312",
+      "seconds": 4.144761904761904,
+      "duration_ratio": 0.9818123220712253,
+      "rms_ratio": 0.8406378030776978
+    },
+    {
+      "sample_id": "LJ019-0316",
+      "seconds": 4.121541950113379,
+      "duration_ratio": 1.0483936090442407,
+      "rms_ratio": 0.7769785523414612
+    },
+    {
+      "sample_id": "LJ020-0067",
+      "seconds": 2.136235827664399,
+      "duration_ratio": 1.035958565176274,
+      "rms_ratio": 0.8026382327079773
+    },
+    {
+      "sample_id": "LJ021-0011",
+      "seconds": 3.7035827664399092,
+      "duration_ratio": 0.8251139199579683,
+      "rms_ratio": 0.9258196949958801
+    },
+    {
+      "sample_id": "LJ021-0023",
+      "seconds": 4.527891156462585,
+      "duration_ratio": 0.9933438796525684,
+      "rms_ratio": 0.906924307346344
+    },
+    {
+      "sample_id": "LJ021-0032",
+      "seconds": 2.8792743764172335,
+      "duration_ratio": 0.962683285569152,
+      "rms_ratio": 0.8828136324882507
+    },
+    {
+      "sample_id": "LJ021-0139",
+      "seconds": 5.3986394557823125,
+      "duration_ratio": 0.8324184469074508,
+      "rms_ratio": 0.8804332613945007
+    },
+    {
+      "sample_id": "LJ021-0162",
+      "seconds": 4.992290249433107,
+      "duration_ratio": 0.890982525151964,
+      "rms_ratio": 0.7945008277893066
+    },
+    {
+      "sample_id": "LJ022-0144",
+      "seconds": 3.274013605442177,
+      "duration_ratio": 0.9167354506088966,
+      "rms_ratio": 0.8735855221748352
+    },
+    {
+      "sample_id": "LJ023-0116",
+      "seconds": 4.005442176870749,
+      "duration_ratio": 0.7075278981646893,
+      "rms_ratio": 0.7306089401245117
+    },
+    {
+      "sample_id": "LJ024-0085",
+      "seconds": 5.793378684807256,
+      "duration_ratio": 0.6943929551816922,
+      "rms_ratio": 0.8025792837142944
+    },
+    {
+      "sample_id": "LJ024-0133",
+      "seconds": 4.6788208616780045,
+      "duration_ratio": 0.8711379814065812,
+      "rms_ratio": 0.8884490132331848
+    },
+    {
+      "sample_id": "LJ025-0145",
+      "seconds": 4.934240362811791,
+      "duration_ratio": 0.7890633498930268,
+      "rms_ratio": 0.9999188780784607
+    },
+    {
+      "sample_id": "LJ026-0111",
+      "seconds": 3.5294331065759637,
+      "duration_ratio": 0.939392842054439,
+      "rms_ratio": 0.6921097636222839
+    },
+    {
+      "sample_id": "LJ027-0085",
+      "seconds": 5.596009070294785,
+      "duration_ratio": 0.9205266887985378,
+      "rms_ratio": 0.7658801674842834
+    },
+    {
+      "sample_id": "LJ028-0119",
+      "seconds": 2.9257142857142857,
+      "duration_ratio": 0.8355069742141867,
+      "rms_ratio": 0.5865814685821533
+    },
+    {
+      "sample_id": "LJ028-0241",
+      "seconds": 4.516281179138322,
+      "duration_ratio": 0.9292586198852237,
+      "rms_ratio": 0.6779601573944092
+    },
+    {
+      "sample_id": "LJ028-0263",
+      "seconds": 5.38702947845805,
+      "duration_ratio": 0.915885976883872,
+      "rms_ratio": 0.8209406137466431
+    },
+    {
+      "sample_id": "LJ028-0325",
+      "seconds": 3.320453514739229,
+      "duration_ratio": 1.1058983460463712,
+      "rms_ratio": 0.717979371547699
+    },
+    {
+      "sample_id": "LJ028-0407",
+      "seconds": 4.017052154195011,
+      "duration_ratio": 1.0218146161388937,
+      "rms_ratio": 0.6971844434738159
+    },
+    {
+      "sample_id": "LJ029-0201",
+      "seconds": 2.10140589569161,
+      "duration_ratio": 1.002141142375154,
+      "rms_ratio": 0.7475793361663818
+    },
+    {
+      "sample_id": "LJ030-0025",
+      "seconds": 5.839818594104308,
+      "duration_ratio": 0.9252901232350088,
+      "rms_ratio": 0.9148804545402527
+    },
+    {
+      "sample_id": "LJ030-0050",
+      "seconds": 1.5441269841269842,
+      "duration_ratio": 1.0341078208048595,
+      "rms_ratio": 0.7848775386810303
+    },
+    {
+      "sample_id": "LJ030-0097",
+      "seconds": 1.3815873015873017,
+      "duration_ratio": 0.8973460190285428,
+      "rms_ratio": 0.7200852632522583
+    },
+    {
+      "sample_id": "LJ030-0141",
+      "seconds": 4.713650793650793,
+      "duration_ratio": 0.9815932379468291,
+      "rms_ratio": 0.9282364845275879
+    },
+    {
+      "sample_id": "LJ030-0212",
+      "seconds": 3.0882539682539685,
+      "duration_ratio": 1.0128962203810856,
+      "rms_ratio": 0.9288233518600464
+    },
+    {
+      "sample_id": "LJ031-0012",
+      "seconds": 4.435011337868481,
+      "duration_ratio": 1.1554284769072627,
+      "rms_ratio": 0.8118017911911011
+    },
+    {
+      "sample_id": "LJ031-0124",
+      "seconds": 5.955918367346939,
+      "duration_ratio": 0.9134399365666711,
+      "rms_ratio": 1.0419971942901611
+    },
+    {
+      "sample_id": "LJ031-0146",
+      "seconds": 2.681904761904762,
+      "duration_ratio": 0.9405028865881006,
+      "rms_ratio": 1.1907916069030762
+    },
+    {
+      "sample_id": "LJ033-0124",
+      "seconds": 4.365351473922902,
+      "duration_ratio": 1.0754740170500887,
+      "rms_ratio": 1.0434703826904297
+    },
+    {
+      "sample_id": "LJ033-0135",
+      "seconds": 0.9984580498866213,
+      "duration_ratio": 0.8220753519286061,
+      "rms_ratio": 1.1097725629806519
+    },
+    {
+      "sample_id": "LJ033-0192",
+      "seconds": 4.272471655328798,
+      "duration_ratio": 0.837099368230245,
+      "rms_ratio": 0.8728377819061279
+    },
+    {
+      "sample_id": "LJ034-0131",
+      "seconds": 5.259319727891157,
+      "duration_ratio": 0.9464843909406243,
+      "rms_ratio": 0.8194631934165955
+    },
+    {
+      "sample_id": "LJ035-0018",
+      "seconds": 4.9458503401360545,
+      "duration_ratio": 0.7750904400110873,
+      "rms_ratio": 0.6472957730293274
+    },
+    {
+      "sample_id": "LJ035-0166",
+      "seconds": 4.458231292517007,
+      "duration_ratio": 0.9906781283697306,
+      "rms_ratio": 0.7192898988723755
+    },
+    {
+      "sample_id": "LJ036-0115",
+      "seconds": 2.8792743764172335,
+      "duration_ratio": 0.7134364921507153,
+      "rms_ratio": 1.2536077499389648
+    },
+    {
+      "sample_id": "LJ038-0084",
+      "seconds": 5.445079365079365,
+      "duration_ratio": 1.0072736729951257,
+      "rms_ratio": 0.9938029646873474
+    },
+    {
+      "sample_id": "LJ038-0252",
+      "seconds": 5.038730158730159,
+      "duration_ratio": 0.8864138629817857,
+      "rms_ratio": 0.7199258208274841
+    },
+    {
+      "sample_id": "LJ038-0279",
+      "seconds": 2.8444444444444446,
+      "duration_ratio": 0.9293917166777802,
+      "rms_ratio": 0.912175714969635
+    },
+    {
+      "sample_id": "LJ040-0013",
+      "seconds": 5.897868480725624,
+      "duration_ratio": 0.9259710206842536,
+      "rms_ratio": 0.6575742363929749
+    },
+    {
+      "sample_id": "LJ040-0045",
+      "seconds": 5.735328798185941,
+      "duration_ratio": 0.9470617749919495,
+      "rms_ratio": 0.731503963470459
+    },
+    {
+      "sample_id": "LJ040-0096",
+      "seconds": 0.9984580498866213,
+      "duration_ratio": 0.7845764584298492,
+      "rms_ratio": 0.6711056232452393
+    },
+    {
+      "sample_id": "LJ041-0085",
+      "seconds": 5.863038548752835,
+      "duration_ratio": 0.9987870547061505,
+      "rms_ratio": 0.7221198678016663
+    },
+    {
+      "sample_id": "LJ042-0010",
+      "seconds": 4.249251700680272,
+      "duration_ratio": 0.8050798669885978,
+      "rms_ratio": 0.6396392583847046
+    },
+    {
+      "sample_id": "LJ042-0032",
+      "seconds": 5.282539682539682,
+      "duration_ratio": 0.8640116309258009,
+      "rms_ratio": 0.7871221303939819
+    },
+    {
+      "sample_id": "LJ043-0110",
+      "seconds": 2.5774149659863945,
+      "duration_ratio": 0.8651150046428082,
+      "rms_ratio": 1.0612801313400269
+    },
+    {
+      "sample_id": "LJ045-0010",
+      "seconds": 5.0967800453514736,
+      "duration_ratio": 0.9172332177106713,
+      "rms_ratio": 0.6973472833633423
+    },
+    {
+      "sample_id": "LJ045-0092",
+      "seconds": 3.4946031746031747,
+      "duration_ratio": 1.0216783124063589,
+      "rms_ratio": 0.7209181189537048
+    },
+    {
+      "sample_id": "LJ046-0007",
+      "seconds": 4.771700680272109,
+      "duration_ratio": 0.926482631092326,
+      "rms_ratio": 0.9501471519470215
+    },
+    {
+      "sample_id": "LJ047-0038",
+      "seconds": 5.61922902494331,
+      "duration_ratio": 0.9478797708025735,
+      "rms_ratio": 0.79423987865448
+    },
+    {
+      "sample_id": "LJ047-0203",
+      "seconds": 3.5874829931972787,
+      "duration_ratio": 0.966793366006282,
+      "rms_ratio": 0.7437353134155273
+    },
+    {
+      "sample_id": "LJ048-0075",
+      "seconds": 5.874648526077097,
+      "duration_ratio": 0.8852138615349922,
+      "rms_ratio": 0.6914910674095154
+    },
+    {
+      "sample_id": "LJ048-0128",
+      "seconds": 4.6439909297052155,
+      "duration_ratio": 0.9267555410750002,
+      "rms_ratio": 0.8007276058197021
+    },
+    {
+      "sample_id": "LJ048-0200",
+      "seconds": 4.063492063492063,
+      "duration_ratio": 0.9219909241518404,
+      "rms_ratio": 0.8539626598358154
+    },
+    {
+      "sample_id": "LJ049-0112",
+      "seconds": 4.9806802721088435,
+      "duration_ratio": 0.9436591883554876,
+      "rms_ratio": 0.8198502063751221
+    },
+    {
+      "sample_id": "LJ050-0046",
+      "seconds": 5.23609977324263,
+      "duration_ratio": 0.9482493819657186,
+      "rms_ratio": 0.880102276802063
+    },
+    {
+      "sample_id": "LJ050-0248",
+      "seconds": 4.864580498866213,
+      "duration_ratio": 0.9423920014760018,
+      "rms_ratio": 0.8590683937072754
+    }
+  ]
+}

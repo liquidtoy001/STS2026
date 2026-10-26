@@ -1,0 +1,29 @@
+{
+  "format": "sts2026-chunk-durations-v1",
+  "alignment": "MAS on the posterior mean (no sampling), eval mode, fp32",
+  "hop_length": 256,
+  "source_checkpoint": "E:\\Documents\\STS2026\\output\\tts010-turino\\incoming-2026-10-15\\tts010_R0_20261014T070647303632Z\\checkpoints\\vits_step_40000.pt",
+  "source_checkpoint_sha256": "975cff7157966f9379b9f7ed63964a9c78c71054c281c210748467f17b54f81e",
+  "source_step": 40000,
+  "switches": {
+    "text_encoder": "tts010",
+    "posterior_encoder": "tts010",
+    "decoder": "tts010",
+    "discriminator": "tts010",
+    "feature_matching": true,
+    "recon_loss": "tts010",
+    "optim": "tts010",
+    "max_text_chars": 100
+  },
+  "metadata_sha256": "852bce5c79e5184ba5bf2ea98aad4bcf49a5d787def5fd1f04fa2ab8aa6dc535",
+  "heldout_skipped": 100,
+  "device": "cuda:0",
+  "torch": "2.7.1+cu118",
+  "created_at_utc": "2026-10-19T03:10:45+00:00",
+  "file": "chunk_durations_R0_40k.json (not committed: 3.0 MB; regenerate with tools/chunk_alignments.py)",
+  "file_sha256": "cec409275b4d589e7b9fef3ce743ffcf310f6be14798fc94826f55f617fc30ba",
+  "file_bytes": 2992034,
+  "clips": 13000,
+  "tokens": 1301625,
+  "frames": 7369351
+}

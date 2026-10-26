@@ -1,6 +1,7 @@
 # TTS_0.10 ablation: which changes made the difference
 
-Status: training not started. Plan agreed by the team on 2026-10-12 (Australia/Brisbane).
+Status 2026-10-22: all eleven arms trained and evaluated centrally
+([results](#results-2026-10-21)). Plan agreed by the team on 2026-10-12 (Australia/Brisbane).
 Model: [TTS_0.10](TTS_0.10.md), pre-release [`tts-v0.10`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10). Source: `notebooks/vits-full-train.ipynb`.
 
 ## Question
@@ -134,6 +135,16 @@ python tools/eval_tts010.py --checkpoint <run>/checkpoints/vits_step_40000.pt \
 python tools/asr_wer.py output/tts010-eval/G1_40k --model medium
 ```
 
+To evaluate every finished run in a folder (any depth, e.g. a Drive download) and rebuild the
+comparison table in one command, re-runnable as runs arrive:
+
+```sh
+python tools/evaluate_runs.py --runs-dir <runs> --eval-dir output/tts010-eval \n    --data-dir /path/LJSpeech-1.1 --asr-python <python with openai-whisper>
+```
+
+It writes `summary.md`/`.csv`/`.json`: each arm's difference from R0, flagged when it exceeds the
+R0/R0b difference.
+
 `asr_wer.py` follows the team's ASR back-transcription protocol: a locked Whisper model
 (`transcribe`, `language=en`, `temperature=0`, beam 5, no prompt), one shared text normalisation,
 corpus WER/CER with substitution/deletion/insertion rates, and the LJSpeech recording of every
@@ -152,6 +163,51 @@ It needs only `openai-whisper`, NumPy and SciPy, so it can run in a separate Pyt
 Records go to `docs/records/tts-0.10-ablation/<arm>/`
 (`run_config.json`, `status.json`, evaluation histories, log, metrics) and the report to the
 documentation site.
+
+## Results (2026-10-21, R0b added 2026-10-22)
+<a id="results-2026-10-21"></a>
+
+Central evaluation with `tools/evaluate_runs.py` on one machine (RTX 4070 Ti SUPER, Whisper
+medium on CPU), 100 held-out sentences. The LJSpeech recordings of those sentences score 3.3%
+WER. Every run: 40,000 steps, status `completed`, no non-finite steps, the same switches, data
+split and evaluation code; seed 2026 except R0b (2027). Records:
+[`docs/records/tts-0.10-ablation/`](records/tts-0.10-ablation/) (`summary.md`,
+`wer_bootstrap_vs_R0.json` and one folder per arm with `run_config.json`, `status.json`,
+`metrics.json`, `asr.json`).
+
+Two checks decide whether an arm differs from R0. **Seed noise floor**: R0b, which differs from
+R0 only in the seed, scores 3.3 points lower, so a smaller difference cannot be told from seed
+variation. **Sentence interval**: 95% interval of the WER difference from 2,000 paired bootstrap
+resamples of the 100 sentences (`wer_bootstrap_vs_R0.json`); it covers sentence sampling only,
+not seed variation. Both checks give the same verdict for every arm.
+
+| Arm | Reverted to TTS_0.02 | Whisper WER | WER − R0 [95% interval] | Beyond seed floor | CER | Held-out log-mel L1 | Duration ratio | Empty ASR outputs | GPU |
+|---|---|---:|---:|---|---:|---:|---:|---:|---|
+| R0 | nothing (seed 2026) | 16.9% | – | – | 8.2% | 0.533 | 0.957 | 0 | RTX PRO 6000 |
+| R0b | nothing (seed 2027) | 13.6% | −3.3 [−6.9, +0.1] | floor | 7.2% | 0.533 | 0.986 | 0 | L40S |
+| G1 | text encoder | 23.7% | +6.8 [+2.7, +10.9] | yes, worse | 12.6% | 0.517 | 0.912 | 0 | RTX PRO 6000 |
+| G2 | posterior encoder | 24.7% | +7.8 [+3.9, +11.9] | yes, worse | 14.8% | 0.572 | 0.965 | 0 | RTX PRO 6000 |
+| G3 | decoder | 13.8% | −3.1 [−6.4, +0.1] | no | 7.6% | 0.511 | 0.977 | 0 | RTX PRO 6000 |
+| A1 | discriminator | 19.2% | +2.3 [−1.7, +6.1] | no | 9.9% | 0.558 | 0.961 | 0 | RTX PRO 6000 |
+| A2 | feature matching (off) | 15.7% | −1.2 [−4.7, +2.2] | no | 8.2% | 0.509 | 0.978 | 0 | RTX PRO 6000 |
+| L1 | reconstruction loss | 186.9% | +169.9 [+119.1, +233.1] | yes, worse | 130.5% | 1.147 | 0.775 | 48 | RTX PRO 6000 |
+| O1 | optimisation | 28.5% | +11.6 [+7.5, +15.9] | yes, worse | 16.0% | 0.540 | 0.933 | 0 | RTX PRO 6000 |
+| D1 | length filter (off) | 11.6% | −5.3 [−8.9, −2.0] | yes, better | 5.8% | 0.519 | 1.002 | 0 | RTX 4070 Ti SUPER |
+| E0 | all eight | 100.2% | +83.2 [+79.5, +86.8] | yes, worse | 87.3% | 1.518 | 0.725 | 17 | RTX 4070 Ti SUPER |
+
+- Four of the eight changes have a detectable effect on WER. Reverting the reconstruction loss
+  (L1) breaks the model: WER above 100% (more inserted words than reference words), 48 of 100
+  sentences with no ASR output, held-out log-mel L1 1.147, closer to E0 (1.518) than to R0
+  (0.533). Reverting the optimisation (O1), the posterior encoder (G2) or the text encoder (G1)
+  raises WER by 7–12 points.
+- Reverting the discriminator (A1), switching feature matching off (A2) and reverting the decoder
+  (G3) give differences within the seed noise floor: no detectable effect on WER.
+- Removing the length filter (D1) lowers WER by 5.3 points, beyond the floor. D1 ran on a different
+  GPU from R0.
+- One R0/R0b pair is a rough estimate of seed variation, and each other arm has one seed.
+- R0b's run notebook differs from the repository and release notebooks (sha256 `278378f5…`; no
+  git commit recorded; time budget 3 h, data path `/home/...`). Its switches, model, data split,
+  training clips and evaluation code match R0.
 
 ## Reading the results
 

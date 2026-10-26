@@ -1,7 +1,13 @@
 """Whisper word/character error rates for an evaluation folder written by tools/eval_tts010.py.
 
-Locked protocol: openai-whisper, task=transcribe, language=en, temperature=0, beam size 5, no prompt,
-no conditioning on previous text, mono 16 kHz input (scipy polyphase resampling). Reference and
+Locked protocol v1 (asr.json): openai-whisper, task=transcribe, language=en, temperature=0, beam size 5,
+no prompt, no conditioning on previous text, mono 16 kHz input (scipy polyphase resampling).
+
+Protocol v2 (--protocol v2, asr_v2.json): v1, plus whisper's standard temperature fallback for
+repetition loops only: when a decode's compression ratio exceeds 2.4, decode again at temperature
+0.2, 0.4, ... 1.0 (best of 5, seeded per utterance); the log-probability and no-speech fallbacks
+stay off. A clip whose v1 hypothesis is not a loop gets exactly its v1 decode, so with an asr.json
+of the same model present only the looping clips are decoded again (--no-reuse decodes all). Reference and
 hypothesis share one normalisation: Unicode NFKC, then whisper's EnglishTextNormalizer. WER and CER
 are corpus rates, sum(S + D + I) / sum(N), not means of sentence rates.
 
@@ -14,12 +20,15 @@ delta_wer = WER(synthesized) - WER(natural) over the paired held-out sentences.
 Runs in any Python with openai-whisper, numpy and scipy (no torchaudio needed):
 
 python tools/asr_wer.py output/tts010-eval/R0_40k --model medium
+python tools/asr_wer.py output/tts010-eval/R0_40k --model medium --protocol v2
 """
 
 import argparse
 import hashlib
 import json
+import sys
 import unicodedata
+import zlib
 from datetime import datetime, timezone
 from math import gcd
 from pathlib import Path
@@ -28,6 +37,20 @@ import numpy as np
 
 DECODE = {"task": "transcribe", "language": "en", "temperature": 0.0, "beam_size": 5,
           "condition_on_previous_text": False, "initial_prompt": None}
+LOOP_COMPRESSION_RATIO = 2.4
+DECODE_V2 = {**DECODE, "temperature": (0.0, 0.2, 0.4, 0.6, 0.8, 1.0), "best_of": 5,
+             "compression_ratio_threshold": LOOP_COMPRESSION_RATIO, "logprob_threshold": None,
+             "no_speech_threshold": None}
+SEED_V2 = 1234
+# protocol -> (record name, decode options, output file)
+PROTOCOLS = {"v1": ("asr_back_transcription_v1", DECODE, "asr.json"),
+             "v2": ("asr_back_transcription_v2", DECODE_V2, "asr_v2.json")}
+
+
+def compression_ratio(text):
+    """whisper's repetition measure: UTF-8 bytes over zlib-compressed bytes."""
+    data = text.encode("utf-8")
+    return len(data) / len(zlib.compress(data)) if data else 0.0
 
 
 def align_counts(reference, hypothesis):
@@ -87,10 +110,15 @@ def score(reference, hypothesis, normalizer):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("eval_dir", help="a folder written by tools/eval_tts010.py")
+    parser.add_argument("eval_dir", help="a folder written by tools/eval_tts010.py or tools/chunk_study.py")
     parser.add_argument("--model", default="medium", help="openai-whisper model name")
     parser.add_argument("--device", default=None)
+    parser.add_argument("--protocol", choices=sorted(PROTOCOLS), default="v1")
+    parser.add_argument("--no-reuse", action="store_true", help="v2: decode every clip, ignoring asr.json")
     args = parser.parse_args()
+    protocol_name, decode, out_name = PROTOCOLS[args.protocol]
+    # A console code page that cannot encode a hypothesis (e.g. GBK and U+FFFD) must not stop a long run.
+    sys.stdout.reconfigure(errors="backslashreplace")
     import whisper
     from whisper.normalizers import EnglishTextNormalizer
 
@@ -100,14 +128,34 @@ def main():
     model_file = Path(whisper._MODELS[args.model]).name if hasattr(whisper, "_MODELS") else None
     cache = Path.home() / ".cache" / "whisper" / (model_file or "")
     normalizer = EnglishTextNormalizer()
+    reuse = {}
+    v1_path = eval_dir / PROTOCOLS["v1"][2]
+    if args.protocol == "v2" and not args.no_reuse and v1_path.is_file():
+        v1 = json.loads(v1_path.read_text(encoding="utf-8"))
+        if v1.get("protocol") == PROTOCOLS["v1"][0] and v1["asr"]["model"] == args.model:
+            reuse = {(r["id"], r["channel"], r["wav"]): r for r in v1["utterances"]
+                     if r["status"] == "ok" and compression_ratio(r["hypothesis"]) <= LOOP_COMPRESSION_RATIO}
     rows = []
-    for item in manifest:
+    for index, item in enumerate(manifest):
         row = {"id": item["id"], "channel": item["channel"], "wav": item["wav"], "reference": item["reference"]}
+        previous = reuse.get((item["id"], item["channel"], item["wav"]))
+        if previous is not None:
+            row["hypothesis"], row["status"], row["source"] = previous["hypothesis"], previous["status"], "v1_decode"
+            row.update(score(row["reference"], row["hypothesis"], normalizer))
+            rows.append(row)
+            continue
         try:
             audio = read_audio_16k(item["wav"])
-            result = model.transcribe(audio, fp16=False, **DECODE)
+            if args.protocol == "v2":
+                import torch
+                torch.manual_seed(SEED_V2 + index)
+            result = model.transcribe(audio, fp16=False, **decode)
             row["hypothesis"] = result["text"].strip()
             row["status"] = "ok" if row["hypothesis"] else "empty_output"
+            if args.protocol == "v2":
+                row["source"] = "decoded"
+                row["max_temperature"] = max((s.get("temperature", 0.0) for s in result.get("segments", [])),
+                                             default=0.0)
         except (OSError, ValueError) as error:
             row["hypothesis"], row["status"] = "", f"failed: {type(error).__name__}: {error}"
         row.update(score(row["reference"], row["hypothesis"], normalizer))
@@ -125,7 +173,7 @@ def main():
         summary["delta_wer"] = summary["synthesized"]["wer"]["rate"] - summary["natural"]["wer"]["rate"]
         summary["delta_cer"] = summary["synthesized"]["cer"]["rate"] - summary["natural"]["cer"]["rate"]
     record = {
-        "protocol": "asr_back_transcription_v1", "decode": DECODE,
+        "protocol": protocol_name, "decode": decode,
         "asr": {"package": "openai-whisper", "version": getattr(whisper, "__version__", None), "model": args.model,
                 "model_sha256": hashlib.sha256(cache.read_bytes()).hexdigest() if cache.is_file() else None,
                 "device": str(next(model.parameters()).device)},
@@ -133,7 +181,10 @@ def main():
         "summary": summary, "utterances": rows,
         "completed_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
-    (eval_dir / "asr.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    if args.protocol == "v2":
+        record["reused_v1_decodes"] = sum(r.get("source") == "v1_decode" for r in rows)
+        record["fallback_decodes"] = sum(r.get("max_temperature", 0.0) > 0 for r in rows)
+    (eval_dir / out_name).write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=1))
 
 

@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "arm": "G1",
+  "step": 40000,
+  "total_steps": 40000,
+  "actual_optimizer_updates": 39975,
+  "nonfinite_skips": 0,
+  "amp_backoffs": 25,
+  "session_wall_seconds": 3995.6,
+  "resumed": false,
+  "completion_time_source": "runtime_clock",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "peak_allocated_GiB": 3.39,
+  "completed_at_utc": "2026-10-20T06:36:06+00:00"
+}
