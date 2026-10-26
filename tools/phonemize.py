@@ -12,6 +12,8 @@ then CMUdict, then its neural model for out-of-vocabulary words.
 
   python tools/phonemize.py --metadata data/LJSpeech-1.1/metadata.csv \
       --out data/LJSpeech-1.1/phonemes_g2p_en.tsv
+  python tools/phonemize.py --metadata corpus/speakers_train-clean-100.csv --manifest \
+      --out corpus/phonemes_train-clean-100_g2p_en.tsv
 
 needs g2p_en and its NLTK data (averaged_perceptron_tagger_eng, cmudict) under $NLTK_DATA.
 """
@@ -106,6 +108,8 @@ def read_cache(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--metadata", required=True, help="LJSpeech-style metadata.csv (id|text|normalized text)")
+    parser.add_argument("--manifest", action="store_true",
+                        help="--metadata is a speaker manifest (header file_name|normalized_transcription|speaker_name)")
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     import g2p_en
@@ -113,6 +117,10 @@ def main():
     phonemizer = Phonemizer()
     with open(args.metadata, encoding="utf-8", newline="") as handle:
         rows = list(csv.reader(handle, delimiter="|", quoting=csv.QUOTE_NONE))
+    if args.manifest:
+        header, rows = rows[0], rows[1:]
+        name_column, text_column = header.index("file_name"), header.index("normalized_transcription")
+        rows = [(row[name_column], None, row[text_column]) for row in rows]
     lines = [f"# format: {FORMAT}",
              f"# metadata_sha256: {hashlib.sha256(Path(args.metadata).read_bytes()).hexdigest()}",
              f"# g2p_en: {getattr(g2p_en, '__version__', 'unknown')}; nltk: {nltk.__version__}",

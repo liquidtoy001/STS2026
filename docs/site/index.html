@@ -28,7 +28,7 @@
       <h1 id="overview">STS2026: a compact VITS-style speech model, built from scratch</h1>
       <div class="callout note">
         <div class="callout-title">Model naming</div>
-        <p><code>TTS_&lt;version&gt;</code> identifies revisions used to train and improve the TTS model. The integrated starting version is <code>TTS_0.01</code>. <a href="#version-speaker-conditioning">TTS_0.02</a> added speaker-ID conditioning; multi-speaker weights have not been trained. The latest pre-release, <a href="#version-tts010">TTS_0.10</a>, is benlu's model with switchable components. Earlier notebooks retain their descriptive historical names.</p>
+        <p><code>TTS_&lt;version&gt;</code> identifies revisions used to train and improve the TTS model. The integrated starting version is <code>TTS_0.01</code>. <a href="#version-speaker-conditioning">TTS_0.02</a> added speaker-ID conditioning; multi-speaker weights have not been trained. The latest pre-release, <a href="#version-tts010">TTS_0.10</a>, is benlu's model with switchable components. The current model, <a href="#version-tts011">TTS_0.11</a> (25/10), is TTS_0.10 without the text-length filter, trained for 100,000 steps; the <a href="#version-tts020">TTS_0.20 candidate options</a> were screened on 25/10 and none was adopted. Earlier notebooks retain their descriptive historical names.</p>
         <p>The <code>d/m</code> prefix records a revision date or a task's setup date; it is separate from the model version number. RVC and other future models will use their own naming rules, to be defined when that work begins.</p>
       </div>
       <p class="lede">
@@ -62,18 +62,24 @@
           <a class="card" href="#versions">
             <span class="chip" style="align-self:flex-start">Part 1</span>
             <h3>Making the TTS intelligible</h3>
-            <p>TTS_0.01 → TTS_0.10 and the leave-one-out ablation of TTS_0.10's eight changes. Whisper medium WER on the 100 held-out sentences: R0 16.9%, the recordings 3.3%; TTS_0.01 scored 98–100% on four new sentences.</p>
-            <span class="card-foot">Versions · TTS_0.10 ablation in To-do</span>
+            <p>TTS_0.01 → TTS_0.10, the leave-one-out ablation of TTS_0.10's eight changes, and TTS_0.11. Whisper medium WER on the 100 held-out sentences: TTS_0.11 11.2%, TTS_0.10 R0 16.9%, the recordings 3.3%; TTS_0.01 scored 98–100% on four new sentences.</p>
+            <span class="card-foot">Versions · Ablation · TTS_0.11</span>
           </a>
           <a class="card" href="#voice-agent-tts">
             <span class="chip acc" style="align-self:flex-start">Part 2</span>
             <h3>Speaking before the sentence is finished</h3>
-            <p>Chunked synthesis of the held-out sentences: context-aware chunks with two words of lookahead wait for 3 words and are not distinguishable from whole sentences (17.8% against 16.7%); independent 2-word chunks score 35.4%.</p>
-            <span class="card-foot">Chunk study · WebUI Agent mode</span>
+            <p>Chunked synthesis of the held-out sentences: context-aware chunks with two words of lookahead wait for 3 words and are not distinguishable from whole sentences (TTS_0.11: 12.5% against 10.9%). Chunk-aware fine-tuning halves the errors of 1- and 2-word chunks without context, in two seeds.</p>
+            <span class="card-foot">Chunk study · Fine-tuning · WebUI Agent mode</span>
           </a>
         </div>
-        <p><strong>Known gap: sentence length.</strong> The arms trained with the length filter, R0 among them, see only clips of at most 100 characters, and the 100 held-out sentences come from the same range (at most 20 words). LJSpeech clips have a median of 102 characters (17 words) and reach 187 characters (39 words). Chunked synthesis of longer sentences is being measured.</p>
-        <p><strong>Next, as announced on 20/10:</strong> train a model adapted to long sentences on a new long-sentence dataset, together with further model improvements and a new evaluation framework.</p>
+        <p><strong>Sentence length.</strong> The arms trained with the length filter, R0 among them, see only clips of at most 100 characters, and the 100 held-out sentences come from the same range. Since 24/10 a second test set of 100 long sentences (more than 100 characters) is held out as well; TTS_0.11 scores 8.4% on it against 2.4% for the recordings.</p>
+        <p><strong>Done since 20/10:</strong></p>
+        <ul class="list">
+          <li><a href="#version-tts011">TTS_0.11</a>: no length filter, 100,000 steps; chunked synthesis and chunk-aware fine-tuning at full size, with a second seed; synthesis times.</li>
+          <li><a href="#evaluation">Evaluation framework</a>: the long-sentence test set and ASR protocol v2.</li>
+          <li><a href="#version-tts020">TTS_0.20 candidates</a>: four options aimed at streaming and pretraining on the new dataset LibriTTS-R; none beat TTS_0.11.</li>
+          <li><a href="#task-seminar">Seminar on 30/10</a>: deck and script.</li>
+        </ul>
       </section>
 
       <section class="doc-section" id="webui">
@@ -105,15 +111,45 @@ python webui/server.py</code></pre>
         <h3 id="webui-limits">Read with care</h3>
         <ul class="list">
           <li>The WER on the result cards is taken from the chunk study (<code>docs/records/chunk-study/R0_40k/analysis.json</code>); it is never computed live.</li>
+          <li>The committed model list contains TTS_0.10 runs. A TTS_0.11 checkpoint can be added in a local <code>webui/config.json</code> (<a href="#tts011-latency">screenshot</a>).</li>
           <li>The strategies share one GPU, so their calls queue behind each other. Live times also rise when the computer is busy, for example with a Whisper job.</li>
           <li>Text preparation writes out numbers, money, times, percentages and common abbreviations in the LJSpeech style; it does not handle acronyms, roman numerals, units, dates with slashes or URLs.</li>
         </ul>
       </section>
 
+
+      <section class="doc-section" id="evaluation">
+        <span class="eyebrow">26/10 · Turino · Method</span>
+        <h2>Evaluation framework</h2>
+        <p>Every TTS_0.10, TTS_0.11 and TTS_0.20 checkpoint is scored the same way (<code>tools/evaluate_runs.py</code>, <code>tools/eval_tts010.py</code>, <code>tools/asr_wer.py</code>, <code>tools/chunk_study.py</code>):</p>
+        <ol class="list">
+          <li><strong>Intelligibility:</strong> the TTS synthesizes test sentences from text alone; Whisper medium transcribes them; the word error rate (WER) against the text is a corpus rate over the sentences. The LJSpeech recordings of the same sentences are scored the same way: 3.3% on the test sentences, the floor set by Whisper itself.</li>
+          <li><strong>Two test sets, never trained on:</strong> the 100 held-out sentences (<code>ljspeech_heldout_100.txt</code>, at most 100 characters) and, since 24/10, 100 long sentences of more than 100 characters (<code>ljspeech_long_100.txt</code>; recordings 2.4%). Arms trained without the length filter before 24/10 (D1, E0) saw the long sentences, so the long set is valid only for arms that held it out.</li>
+          <li><strong>Noise floor:</strong> R0 and R0b differ only in the seed and score 3.3 points apart; smaller differences between single runs are not treated as findings.</li>
+          <li><strong>Paired intervals:</strong> differences come with 95% intervals from 2,000 paired bootstrap resamples of the sentences.</li>
+          <li><strong>Chunked synthesis:</strong> the chunk study scores 17 conditions per checkpoint (<a href="#voice-agent-method">how it is measured</a>).</li>
+        </ol>
+        <h3 id="evaluation-asr-v2">ASR protocol v2 (26/10)</h3>
+        <p>Protocol v1 decodes at temperature 0 with no fallback, so when Whisper falls into a repetition loop (one sentence transcribed as the same phrase repeated dozens of times) it stays there. One long test sentence looped for TTS_0.11 at 40k, 60k and 100k steps and added 120–145 inserted words each time. Protocol v2 adds Whisper's own fallback for loops only: when a transcription's compression ratio exceeds 2.4, it is decoded again at a higher temperature, with a fixed seed. Every other transcription is exactly the v1 one.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Score</th><th class="num">v1</th><th class="num">v2</th></tr></thead>
+            <tbody>
+              <tr><td>TTS_0.11 100k, long sentences</td><td class="num">21.7%</td><td class="num">8.4%</td></tr>
+              <tr><td>TTS_0.11 60k, long sentences</td><td class="num">15.8%</td><td class="num">9.9%</td></tr>
+              <tr><td>V2 (phoneme input), test sentences</td><td class="num">29.1%</td><td class="num">19.9%</td></tr>
+              <tr><td>TTS_0.10 L1, test sentences</td><td class="num">186.9%</td><td class="num">98.7%</td></tr>
+              <tr><td>every other TTS_0.10 arm and the R0 chunk study</td><td class="num" colspan="2">unchanged (R0 1-word chunks 56.1% → 55.7%)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small muted">22 of 33,696 transcriptions on the GPU Lab exceeded the threshold; the highest ratio of the others was 1.93. v1 results stay in <code>asr.json</code>, v2 in <code>asr_v2.json</code>. The raw evaluation files of the GPU Lab runs were on its temporary disk and were lost when the instance was released on 26/10; the numbers on this site were recorded before. The v2 code is in the working tree and not yet on GitHub.</p>
+      </section>
+
       <section class="doc-section task-board" id="tasks">
         <span class="eyebrow">Team backlog</span>
         <h2>To-do</h2>
-        <p class="lede">Team task: the TTS_0.10 ablation. All eleven arms are trained and evaluated.</p>
+        <p class="lede">The TTS_0.10 ablation is complete: all eleven arms are trained and evaluated. Next: the seminar on 30/10.</p>
 
         <article class="task-card" id="task-tts010-ablation">
           <span id="task-tts"></span>
@@ -133,15 +169,23 @@ python webui/server.py</code></pre>
                 <tr><td>G3</td><td>decoder: two residual blocks (kernels 3 and 7) per upsampling stage, HiFi-GAN MRF → one kernel-3 block per stage</td><td>13.8% (−3.1 [−6.4, +0.1]) · within noise · RTX PRO 6000</td></tr>
                 <tr><td>A1</td><td>discriminator: scale + period (2, 3, 5, 7, 11) discriminators, 46.7 M parameters → one 1-D convolution stack, 7.1 M</td><td>19.2% (+2.3 [−1.7, +6.1]) · within noise · RTX PRO 6000</td></tr>
                 <tr><td>A2</td><td>feature-matching loss, weight 2 → off</td><td>15.7% (−1.2 [−4.7, +2.2]) · within noise · RTX PRO 6000</td></tr>
-                <tr><td>L1</td><td>reconstruction loss: Slaney log-mel L1 × 45 → HTK log-mel 1 + multi-resolution STFT 0.5 + waveform L1 10</td><td>186.9% (+169.9); 48 of 100 empty · worse · RTX PRO 6000</td></tr>
+                <tr><td>L1</td><td>reconstruction loss: Slaney log-mel L1 × 45 → HTK log-mel 1 + multi-resolution STFT 0.5 + waveform L1 10</td><td>98.7% (+81.8); 48 of 100 empty (186.9% under ASR protocol v1) · worse · RTX PRO 6000</td></tr>
                 <tr><td>O1</td><td>optimisation: batch 16, learning rate 2e-4, fp16, no clipping → batch 8, 1e-4, fp32, gradient clipping 1.0</td><td>28.5% (+11.6 [+7.5, +15.9]) · worse · RTX PRO 6000</td></tr>
                 <tr><td>E0</td><td>all eight changes: TTS_0.02 throughout</td><td>100.2% (+83.2) · worse · Turino, RTX 4070 Ti SUPER</td></tr>
                 <tr><td>D1</td><td>text-length filter: clips of 1–100 characters (6,208) → all 13,000 training clips, long ones included</td><td>11.6% (−5.3 [−8.9, −2.0]) · better · Turino, RTX 4070 Ti SUPER</td></tr>
               </tbody>
             </table>
           </div>
-          <p>Central evaluation, 21–22/10: 100 held-out sentences, Whisper medium; the recordings score 3.3%. R0b, which differs from R0 only in the seed, scores 3.3 points lower: the seed noise floor. Intervals: 2,000 paired bootstrap resamples of the sentences; both checks agree for every arm. Four changes have a detectable effect: reverting the reconstruction loss (L1) breaks the model, and reverting the optimisation, posterior encoder or text encoder raises WER by 7–12 points. The discriminator, feature matching and decoder show no detectable effect. Removing the length filter (D1) lowers WER by 5.3 points; D1 ran on a different GPU. One seed per arm. Full table: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md#results-2026-10-21">ABLATION_TTS_0.10.md</a>.</p>          <p>Each run, from release <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10"><code>tts-v0.10</code></a>: <code>python tools/train_tts010.py --arm &lt;arm&gt; --data-dir &lt;LJSpeech-1.1&gt;</code>, 40,000 steps. Upload the run folder to the team Drive; evaluation is run centrally. Step-by-step instructions, the run card and the reading rules: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md">ABLATION_TTS_0.10.md</a>.</p>
+          <p>Central evaluation, 21–22/10: 100 held-out sentences, Whisper medium; the recordings score 3.3%. R0b, which differs from R0 only in the seed, scores 3.3 points lower: the seed noise floor. Intervals: 2,000 paired bootstrap resamples of the sentences; both checks agree for every arm. Four changes have a detectable effect: reverting the reconstruction loss (L1) breaks the model, and reverting the optimisation, posterior encoder or text encoder raises WER by 7–12 points. The discriminator, feature matching and decoder show no detectable effect. Removing the length filter (D1) lowers WER by 5.3 points; D1 ran on a different GPU. One seed per arm. Full table: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md#results-2026-10-21">ABLATION_TTS_0.10.md</a>. Re-scored with <a href="#evaluation-asr-v2">ASR protocol v2</a> on 26/10: only L1 changed. The one helpful change, removing the length filter, became <a href="#version-tts011">TTS_0.11</a>.</p><p>Each run, from release <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10"><code>tts-v0.10</code></a>: <code>python tools/train_tts010.py --arm &lt;arm&gt; --data-dir &lt;LJSpeech-1.1&gt;</code>, 40,000 steps. Upload the run folder to the team Drive; evaluation is run centrally. Step-by-step instructions, the run card and the reading rules: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md">ABLATION_TTS_0.10.md</a>.</p>
         </article>
+        <article class="task-card" id="task-seminar">
+          <div class="task-card-head">
+            <h3>30/10 · Seminar</h3>
+            <span class="chip acc">Deck v4 and script ready</span>
+          </div>
+          <p>Every member presents (the professor's announcement on 26/10). Deck <code>seminar-ppt.v4</code>: 13 slides, about 8–9 minutes. The story: where the TTS sits in a voice agent and what waiting costs; our solution (context-aware chunks and chunk-aware fine-tuning); building the TTS (TTS_0.01 → TTS_0.10) and its ablation; the <a href="#evaluation">evaluation framework</a>; <a href="#version-tts011">TTS_0.11</a> and the new dataset LibriTTS-R; chunked-synthesis results; the WebUI with recordings; limitations, conclusion and future work. Three- and five-speaker versions of the deck and an English speaker script with talking points are shared with the team directly.</p>
+        </article>
+
       </section>
 
       <h2 id="versions">Versions</h2>
@@ -164,7 +208,9 @@ python webui/server.py</code></pre>
       <p><a href="#version-original-eval-gan">24/9 · Original_eval_gan</a> — GAN-enabled notebook revision.<br>
       <a href="#version-full-training">30/9 · TTS_0.01</a> — full-corpus training notebook.<br>
       <a href="#version-speaker-conditioning">7/10 · TTS_0.02</a> — optional speaker-ID conditioning; training not started.<br>
-      <a href="#version-tts010">12/10 · TTS_0.10</a> — benlu's model in the project harness, with switchable components.</p>
+      <a href="#version-tts010">12/10 · TTS_0.10</a> — benlu's model in the project harness, with switchable components.<br>
+      <a href="#version-tts011">25/10 · TTS_0.11</a> — no length filter, 100,000 steps; chunk-aware fine-tuning at full size.<br>
+      <a href="#version-tts020">25/10 · TTS_0.20 candidates</a> — streaming options and LibriTTS-R pretraining; none adopted.</p>
 
       <h2 id="architecture">Architecture</h2>
       <p>
@@ -328,6 +374,8 @@ python webui/server.py</code></pre>
         <li class="done"><span class="when">2026-10-20 · Turino · 9107730, cb12459</span><div class="what">WebUI with Agent mode</div><p>Live TTS with A/B comparison, and a simulated language model streaming a reply into up to three chunking strategies, with time to first audio and stalls. See <a href="#webui">WebUI</a>.</p></li>
         <li class="done"><span class="when">2026-10-20 · Turino</span><div class="what">Project direction: a VITS TTS for voice agents</div><p>How few words can the TTS wait for and stay as intelligible as with the whole sentence? See <a href="#direction">Project direction</a>.</p></li>
         <li class="done"><span class="when">2026-10-22 · all members · Turino evaluation</span><div class="what">TTS_0.10 ablation: all eleven arms evaluated</div><p>Seed noise floor 3.3 WER points (R0 against R0b). Reverting the reconstruction loss, optimisation, posterior encoder or text encoder makes the model worse; removing the length filter makes it better. See <a href="#task-tts010-ablation">the ablation</a>.</p></li>
+        <li class="done"><span class="when">2026-10-25 · Turino · e78b52d · UQ GPU Lab L40S</span><div class="what">TTS_0.11 and the TTS_0.20 candidates</div><p>TTS_0.11 (no length filter, 100,000 steps) reaches 11.2% WER; a 100-sentence long test set is held out. Four options aimed at streaming and LibriTTS-R pretraining did not beat it. See <a href="#version-tts011">TTS_0.11</a> and <a href="#version-tts020">TTS_0.20 candidates</a>.</p></li>
+        <li class="done"><span class="when">2026-10-26 · Turino</span><div class="what">Chunk-aware fine-tuning confirmed with a second seed; ASR protocol v2</div><p>Without context, 1- and 2-word chunks become about twice as intelligible in both seeds; whole sentences do not change. Whisper's repetition fallback corrects looping transcriptions. See <a href="#tts011-finetune">the fine-tuning results</a> and <a href="#evaluation-asr-v2">ASR protocol v2</a>.</p></li>
       </ul>
 
 <footer class="site-foot">STS2026 team coursework, 2026. Figures on this site come from committed records and the local baseline run; nothing is estimated.</footer>
@@ -736,10 +784,167 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
   <h3 id="voice-agent-decision">Team decisions</h3>
   <div class="callout note">
     <div class="callout-title">Decided and open</div>
-    <p>On 20/10 the project moved to this direction (<a href="#direction">Project direction</a>). Which configuration an application would use is still for the team to decide.</p>
+    <p>On 20/10 the project moved to this direction (<a href="#direction">Project direction</a>). The full-size results on TTS_0.11 are in <a href="#tts011-chunk">Chunked synthesis with TTS_0.11</a> and <a href="#tts011-finetune">Chunk-aware fine-tuning, two seeds</a>. The seminar deck (30/10) presents TTS_0.11 with chunk-aware fine-tuning and 1-word chunks with two words of lookahead as its recommended setup.</p>
   </div>
   <p>Details, reproduction commands and records: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/VOICE_AGENT_TTS.md">VOICE_AGENT_TTS.md</a> (study), <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE.md">CHUNK_FINETUNE.md</a> (fine-tuning options and local check), <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE_RUNBOOK.md">CHUNK_FINETUNE_RUNBOOK.md</a> (run manual for full-size runs).</p>
 <footer class="site-foot">Sources: docs/VOICE_AGENT_TTS.md, docs/CHUNK_FINETUNE.md, docs/records/chunk-study/R0_40k/ and docs/records/chunk-finetune/ at commit 2ddbf65.</footer>
+</section>
+
+<section class="doc-section" id="version-tts011">
+  <span class="eyebrow">25/10 · Turino · Model revision</span>
+  <h2>25/10 · TTS_0.11 — no length filter, 100,000 steps</h2>
+  <div class="exp-head">
+    <span class="chip">Author: Turino</span>
+    <span class="chip">Trained: 25/10 · UQ GPU Lab, NVIDIA L40S</span>
+    <span class="chip">Evaluated: 25–26/10 · ASR protocol v2</span>
+  </div>
+  <p class="small muted">Source: arm <code>T011</code> in <code>notebooks/vits-full-train.ipynb</code>, commit <a href="https://github.com/liquidtoy001/STS2026/commit/e78b52d"><code>e78b52d</code></a> on <code>Turino</code>; not merged or released. The <code>--seed</code> option used for the second fine-tune seed and ASR protocol v2 are in the working tree and not yet on GitHub. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.11.md">TTS_0.11.md</a>.</p>
+  <p>TTS_0.11 keeps the TTS_0.10 model and recipe and applies the one change the ablation found helpful: the 100-character text filter is removed (arm D1), so the model trains on 12,900 clips instead of 6,208. It trains for 100,000 steps instead of 40,000. The 100 long test sentences (<a href="#evaluation">Evaluation framework</a>) are held out as well, so long sentences are evaluated on text the model has never seen.</p>
+
+  <h3 id="tts011-results">Results</h3>
+  <div class="stat-row">
+    <div class="stat"><div class="k">TTS_0.10 R0</div><div class="v">16.9%</div><div class="s">40,000 steps, with the filter</div></div>
+    <div class="stat"><div class="k">TTS_0.11, 100,000 steps</div><div class="v">11.2%</div><div class="s">8.4% on long sentences</div></div>
+    <div class="stat"><div class="k">+ chunk-aware fine-tune</div><div class="v">9.9–10.5%</div><div class="s">5.1–6.9% on long sentences</div></div>
+    <div class="stat"><div class="k">LJSpeech recordings</div><div class="v">3.3%</div><div class="s">2.4% on long sentences</div></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Checkpoint</th><th class="num">100 test sentences</th><th class="num">100 long sentences</th></tr></thead>
+      <tbody>
+        <tr><td>TTS_0.10 R0, 40,000 steps (reference)</td><td class="num">16.9%</td><td class="num">–</td></tr>
+        <tr><td>TTS_0.11, 40,000 steps</td><td class="num">12.6%</td><td class="num">10.3%</td></tr>
+        <tr><td>TTS_0.11, 60,000 steps</td><td class="num">12.8%</td><td class="num">9.9%</td></tr>
+        <tr><td>TTS_0.11, 100,000 steps</td><td class="num"><strong>11.2%</strong></td><td class="num"><strong>8.4%</strong></td></tr>
+        <tr><td>+ 20,000 steps chunk-aware fine-tune, seed 2026 / 2027</td><td class="num">10.5% / 9.9%</td><td class="num">6.9% / 5.1%</td></tr>
+        <tr><td>+ 20,000 steps control fine-tune, seed 2026 / 2027</td><td class="num">9.8% / 9.4%</td><td class="num">6.3% / 7.3%</td></tr>
+        <tr><td>LJSpeech recordings</td><td class="num">3.3%</td><td class="num">2.4%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Whisper medium WER, ASR protocol v2. R0 was not evaluated on the long set. One seed for the base model; the seed noise floor of TTS_0.10 is 3.3 points.</p>
+
+  <h3 id="tts011-chunk">Chunked synthesis with TTS_0.11</h3>
+  <p>The chunk study of the <a href="#voice-agent-tts">voice-agent section</a>, repeated on TTS_0.11 at 100,000 steps: same 100 sentences, 17 conditions and seeds.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Condition</th><th class="num">Wait</th><th class="num">WER</th><th class="num">vs whole [95% CI]</th><th class="num">Duration</th></tr></thead>
+      <tbody>
+        <tr><td>whole sentence</td><td class="num">11.9</td><td class="num"><strong>10.9%</strong></td><td class="num">–</td><td class="num">0.99</td></tr>
+        <tr><td>independent 1-word chunks</td><td class="num">1.0</td><td class="num">52.7%</td><td class="num">–</td><td class="num">–</td></tr>
+        <tr><td>independent 2-word chunks</td><td class="num">2.0</td><td class="num">25.8%</td><td class="num">+14.9 [+11.5, +18.4]</td><td class="num">1.18</td></tr>
+        <tr><td>independent 4-word chunks</td><td class="num">3.9</td><td class="num">17.8%</td><td class="num">+6.9 [+3.7, +10.0]</td><td class="num">1.07</td></tr>
+        <tr><td>context-aware 2-word chunks, no lookahead</td><td class="num">2.0</td><td class="num">21.3%</td><td class="num">–</td><td class="num">–</td></tr>
+        <tr><td>context-aware 1-word chunks, lookahead 2</td><td class="num">3.0</td><td class="num"><strong>12.5%</strong></td><td class="num">+1.6 [−1.0, +4.1]</td><td class="num">0.99</td></tr>
+        <tr><td>context-aware 2-word chunks, lookahead 2</td><td class="num">3.9</td><td class="num"><strong>12.2%</strong></td><td class="num">+1.3 [−1.1, +3.5]</td><td class="num">0.99</td></tr>
+        <tr><td>context-aware 4-word chunks, lookahead 2</td><td class="num">5.7</td><td class="num">11.8%</td><td class="num">–</td><td class="num">–</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Whisper medium, ASR protocol v2; intervals from 2,000 paired bootstrap resamples; “–” where the value was not recorded before the GPU Lab instance was released.</p>
+  <figure class="task-figure" style="margin-bottom:18px">
+    <img src="assets/tts011-chunk-tradeoff.png" alt="Whisper WER against the words waited for, TTS_0.11 at 100,000 steps: independent chunks fall from 53% at one word to about 14% at 7.5 words; context-aware chunks with lookahead 2 stay near 11–12% from three words on, close to the whole sentence at 10.9%." loading="lazy" decoding="async">
+    <figcaption>Whisper WER against the words the TTS must wait for; TTS_0.11 at 100,000 steps, 100 held-out sentences. <a href="assets/tts011-chunk-tradeoff.png">Open the full-size figure</a>.</figcaption>
+  </figure>
+  <p>The findings on R0 hold for TTS_0.11 at a lower error level: context-aware chunks with two words of lookahead are not distinguishable from whole sentences while waiting for 3–4 words instead of 11.9, and at equal waiting (about 3.9 words) context-aware 2-word chunks with lookahead 2 beat independent 4-word chunks by 5.6 points [−8.7, −2.7].</p>
+
+  <h3 id="tts011-finetune">Chunk-aware fine-tuning, two seeds</h3>
+  <p>The full-size version of the <a href="#voice-agent-finetune">local check</a>: TTS_0.11 at 100,000 steps fine-tuned for 20,000 steps with chunk-aware training (probability 0.5, 1–8 words, cut points from the 100k model's alignment), against a control trained the same 20,000 steps on whole clips. Optimizer state carried. Repeated with a second seed (2027), which changes the data order and the crops.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Condition</th><th class="num">Wait</th><th class="num">Seed 2026: control → chunk<br><span class="small">difference [95% CI]</span></th><th class="num">Seed 2027: control → chunk<br><span class="small">difference [95% CI]</span></th></tr></thead>
+      <tbody>
+        <tr><td>independent 1-word chunks</td><td class="num">1.0</td><td class="num">44.4% → 25.8%<br><span class="small"><strong>−18.7 [−22.8, −14.5]</strong></span></td><td class="num">46.5% → 22.1%<br><span class="small"><strong>−24.4 [−28.8, −19.8]</strong></span></td></tr>
+        <tr><td>independent 2-word chunks</td><td class="num">2.0</td><td class="num">23.0% → 12.5%<br><span class="small"><strong>−10.5 [−13.6, −7.5]</strong></span></td><td class="num">24.3% → 13.7%<br><span class="small"><strong>−10.6 [−14.5, −6.6]</strong></span></td></tr>
+        <tr><td>independent 4-word chunks</td><td class="num">3.9</td><td class="num">14.5% → 12.4%<br><span class="small">−2.1 [−4.8, +0.5]</span></td><td class="num">14.1% → 10.0%<br><span class="small"><strong>−4.1 [−6.8, −1.4]</strong></span></td></tr>
+        <tr><td>context-aware 2-word chunks, no lookahead</td><td class="num">2.0</td><td class="num">18.0% → 16.0%<br><span class="small">−2.0 [−5.2, +1.1]</span></td><td class="num">18.4% → 12.2%<br><span class="small"><strong>−6.2 [−9.2, −3.4]</strong></span></td></tr>
+        <tr><td>context-aware 1-word chunks, lookahead 2</td><td class="num">3.0</td><td class="num">11.3% → 10.9%<br><span class="small">[−2.7, +1.9]</span></td><td class="num">11.4% → 10.7%<br><span class="small">[−2.9, +1.7]</span></td></tr>
+        <tr><td>whole sentence</td><td class="num">11.9</td><td class="num">9.8% → 10.3%<br><span class="small">[−1.7, +2.7]</span></td><td class="num">9.4% → 9.3%<br><span class="small">[−2.0, +1.9]</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Chunk study, 100 held-out sentences, Whisper medium, ASR protocol v2; bold: the interval excludes 0.</p>
+  <figure class="task-figure" style="margin-bottom:18px">
+    <img src="assets/tts011-ftchunk-tradeoff.png" alt="Whisper WER against the words waited for after chunk-aware fine-tuning (seed 2026): independent chunks start at 26% for one word and reach whole-sentence levels from about four words." loading="lazy" decoding="async">
+    <figcaption>After chunk-aware fine-tuning (seed 2026). Compare the independent-chunk curve with the figure above. <a href="assets/tts011-ftchunk-tradeoff.png">Open the full-size figure</a>.</figcaption>
+  </figure>
+  <ol class="list">
+    <li><strong>Without context, chunk-aware fine-tuning roughly halves the errors of 1- and 2-word chunks</strong>, in both seeds, against a control with the same extra steps.</li>
+    <li><strong>With two words of lookahead, and for whole sentences, it makes no detectable difference</strong> (both seeds; intervals include 0). On the held-out evaluation the fine-tuned models score 10.5% and 9.9%, the controls 9.8% and 9.4%.</li>
+    <li><strong>Independent chunks come out slightly fast:</strong> 2-word chunks last 0.90× and 0.88× the recording after chunk-aware fine-tuning, 1.14× and 1.13× for the controls; whole sentences 0.96–0.97× for all four.</li>
+  </ol>
+
+  <h3 id="tts011-latency">Synthesis time</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Call</th><th class="num">RTX 4070 Ti SUPER</th><th class="num">CPU, 8 threads</th></tr></thead>
+      <tbody>
+        <tr><td>whole sentence (12.6 words on average)</td><td class="num">30 ms · real-time factor 0.007</td><td class="num">237 ms · real-time factor 0.05</td></tr>
+        <tr><td>first chunk: 1 word, lookahead 2</td><td class="num">14 ms</td><td class="num">38 ms</td></tr>
+        <tr><td>first chunk: 2 words, lookahead 2</td><td class="num">14 ms</td><td class="num">51 ms</td></tr>
+        <tr><td>any chunk, 1 word, lookahead 2: mean (p95)</td><td class="num">14 ms (30 ms)</td><td class="num">42 ms (61 ms)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">TTS_0.11 + chunk-aware fine-tune (seed 2026); 30 held-out sentences, 3 warm-up calls, idle machine, 26/10. TTS compute only: no language model in the loop.</p>
+  <figure class="task-figure">
+    <img src="assets/webui-agent-tts011.jpg" alt="WebUI Agent mode with the TTS_0.11 chunk-aware checkpoint: a reply streamed at 10 words per second; whole-sentence synthesis starts after 0.87 s and stalls once, context-aware 1-word chunks with lookahead 2 start after 0.58 s without stalls." loading="lazy" decoding="async">
+    <figcaption>WebUI Agent mode with the TTS_0.11 chunk-aware checkpoint (local <code>webui/config.json</code>), 26/10: first audio after 0.87 s for whole sentences (one 0.15 s stall), 0.49 s for independent 2-word chunks, 0.58 s for context-aware 1-word chunks with lookahead 2.</figcaption>
+  </figure>
+</section>
+
+<section class="doc-section" id="version-tts020">
+  <span class="eyebrow">25/10 · Turino · Candidate options</span>
+  <h2>25/10 · TTS_0.20 candidates — options screened, none adopted</h2>
+  <div class="exp-head">
+    <span class="chip">Author: Turino</span>
+    <span class="chip">Trained: 25/10 · UQ GPU Lab, NVIDIA L40S</span>
+    <span class="chip warn">No option beat TTS_0.11</span>
+  </div>
+  <p class="small muted">Source: <code>TTS020_OPTIONS</code> and arms V1–V4 in <code>notebooks/vits-full-train.ipynb</code>, commit <a href="https://github.com/liquidtoy001/STS2026/commit/e78b52d"><code>e78b52d</code></a>; LibriTTS-R preprocessing (<code>tools/prepare_libritts_r.py</code>) and speaker folding are in the working tree and not yet on GitHub. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.20.md">TTS_0.20.md</a>.</p>
+  <p>Agreed with the team lead on 25/10: screen options aimed at streaming on LJSpeech first (arms V1–V5, each compared with TTS_0.11 at the same 40,000 steps), then test LibriTTS-R. Every option is off by default, so earlier arms keep their switches.</p>
+
+  <h3 id="tts020-options">Streaming options on LJSpeech</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Arm</th><th>Option</th><th class="num">100 test sentences</th><th class="num">100 long sentences</th></tr></thead>
+      <tbody>
+        <tr><td>T011</td><td>TTS_0.11 at 40,000 steps (reference)</td><td class="num"><strong>12.6%</strong></td><td class="num"><strong>10.3%</strong></td></tr>
+        <tr><td>V1</td><td>windowed text encoder: 12 words back, 0–4 ahead; chunked synthesis equals whole-sentence synthesis by construction</td><td class="num">17.8%</td><td class="num">13.3%</td></tr>
+        <tr><td>V2</td><td>phoneme input (g2p_en)</td><td class="num">19.9%</td><td class="num">11.9%</td></tr>
+        <tr><td>V3</td><td>phoneme input + windowed text encoder</td><td class="num">18.0%</td><td class="num">14.1%</td></tr>
+        <tr><td>V4</td><td>stochastic duration predictor (VITS)</td><td class="num">17.8%</td><td class="num">13.4%</td></tr>
+        <tr><td>V5</td><td>V3 + 20,000 steps chunk-aware fine-tune with crops ending at punctuation</td><td class="num">17.8%</td><td class="num">13.0%</td></tr>
+        <tr><td>V5 control</td><td>V3 + 20,000 steps on whole clips</td><td class="num">14.7%</td><td class="num">11.4%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Whisper medium, ASR protocol v2; one seed per arm; the TTS_0.10 seed noise floor is 3.3 points. In the chunk study (whole sentence / 1-word chunks with lookahead 2 / independent 2-word chunks): V1 18.9% / 18.7% / 41.8%, V2 16.7% / 17.3% / 37.6%, V3 24.9% / 22.5% / 49.1%, V4 17.3% / 19.9% / 34.1%, V5 15.3% / 14.9% / 37.5%, V5 control 15.9% / 17.8% / 42.8%.</p>
+  <p>All four options score at least 5 points worse than TTS_0.11 on the 100 test sentences, beyond the seed noise floor; on long sentences the differences are 1.6–3.8 points. None was adopted.</p>
+
+  <h3 id="tts020-libritts">LibriTTS-R pretraining</h3>
+  <p>Decided with the team lead on 25/10: the agent needs one voice, so LibriTTS-R (Koizumi et al., 2023; restored multi-speaker audiobook speech) serves only as pretraining data. No LibriTTS-R reader has more than about 40 minutes of speech, so pretraining uses speaker IDs; the fine-tuned model has the single LJSpeech voice.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Manifest</th><th>Subsets</th><th class="num">Kept</th><th class="num">Hours</th><th class="num">Readers</th></tr></thead>
+      <tbody>
+        <tr><td><code>train-clean-100</code></td><td>train-clean-100</td><td class="num">29,270 of 33,232</td><td class="num">43.7</td><td class="num">246</td></tr>
+        <tr><td><code>train-clean-460</code></td><td>train-clean-100 + train-clean-360</td><td class="num">131,244 of 149,694</td><td class="num">198.1</td><td class="num">1,144</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Resampled from 24 kHz to 22,050 Hz. Dropped: utterances on the corpus authors' list of failed speech restorations, texts with characters outside the model's character table, and clips outside 1–15 s. Test set: one utterance from each of 100 train-clean-100 readers (<code>sts_eval/splits/libritts_r_heldout_100.txt</code>). Records: <code>docs/records/tts-0.20/libritts-r/</code>.</p>
+  <p>Run: TTS_0.11's recipe pretrained on <code>train-clean-100</code> for 40,000 steps, then the mean speaker vector was folded into a single-speaker model (exact for every component except two tokens at each end of the deterministic duration predictor) and fine-tuned on LJSpeech for 20,000 steps.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>60,000 steps in total</th><th class="num">100 test sentences</th><th class="num">100 long sentences</th><th class="num">2-word chunks, no context</th></tr></thead>
+      <tbody>
+        <tr><td>LJSpeech only (TTS_0.11 at 60,000 steps)</td><td class="num">12.8%</td><td class="num">9.9%</td><td class="num">–</td></tr>
+        <tr><td>LibriTTS-R 40,000 + LJSpeech 20,000</td><td class="num">15.2%</td><td class="num">7.8%</td><td class="num">31.6%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Both differences are within the seed noise floor and point in opposite directions: no clear gain from pretraining. One seed. The larger <code>train-clean-460</code> manifest was prepared but not trained on.</p>
 </section>
 
 </article>

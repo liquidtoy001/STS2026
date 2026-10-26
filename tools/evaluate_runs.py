@@ -25,6 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from tools.asr_wer import PROTOCOLS  # noqa: E402
 from tools.notebook_defs import literal_assignment  # noqa: E402
 
 ORDER = ["R0", "R0b", "G1", "G2", "G3", "A1", "A2", "L1", "O1", "D1", "E0", "T011"]
@@ -89,13 +90,13 @@ def evaluate(label, checkpoint, args):
         subprocess.run([sys.executable, str(ROOT / "tools" / "eval_tts010.py"), "--checkpoint", str(checkpoint),
                         "--label", label, "--data-dir", args.data_dir, "--out", args.eval_dir,
                         "--split", args.split], check=True)
-    if not args.skip_asr and not (out / "asr.json").is_file():
+    if not args.skip_asr and not (out / PROTOCOLS[args.asr_protocol][2]).is_file():
         print(f"[asr]  {label}", flush=True)
-        subprocess.run([args.asr_python, str(ROOT / "tools" / "asr_wer.py"), str(out), "--model", args.asr_model],
-                       check=True)
+        subprocess.run([args.asr_python, str(ROOT / "tools" / "asr_wer.py"), str(out), "--model", args.asr_model,
+                        "--protocol", args.asr_protocol], check=True)
 
 
-def read_label(directory):
+def read_label(directory, asr_protocol="v1"):
     metrics = json.loads((directory / "metrics.json").read_text(encoding="utf-8"))
     row = {"label": directory.name, "step": metrics.get("checkpoint_step"),
            "full_log_mel_l1": metrics["heldout_full"]["log_mel_l1"],
@@ -111,7 +112,7 @@ def read_label(directory):
         prefix = directory.name.split("_", 1)[0]
         row["arm"] = prefix if prefix in literal_assignment("ARMS") and switches else None
     row["switches"] = switches
-    asr_path = directory / "asr.json"
+    asr_path = directory / PROTOCOLS[asr_protocol][2]
     if asr_path.is_file():
         asr = json.loads(asr_path.read_text(encoding="utf-8"))
         summary = asr["summary"]
@@ -121,10 +122,10 @@ def read_label(directory):
     return row
 
 
-def build_table(eval_dir, split=DEFAULT_SPLIT):
+def build_table(eval_dir, split=DEFAULT_SPLIT, asr_protocol="v1"):
     """Rows of one test set only, so R0 and R0b are compared on the same sentences."""
     arms = literal_assignment("ARMS")
-    rows = [read_label(d) for d in sorted(Path(eval_dir).iterdir()) if (d / "metrics.json").is_file()]
+    rows = [read_label(d, asr_protocol) for d in sorted(Path(eval_dir).iterdir()) if (d / "metrics.json").is_file()]
     rows = [row for row in rows if row["split"] == split]
     rank = {arm: i for i, arm in enumerate(ORDER)}
     rows.sort(key=lambda r: (rank.get(r["arm"], len(ORDER)), r["label"]))
@@ -156,12 +157,13 @@ def fmt(value, key):
     return f"{value:.3f}"
 
 
-def write_outputs(rows, has_r0, has_r0b, eval_dir, split=DEFAULT_SPLIT):
+def write_outputs(rows, has_r0, has_r0b, eval_dir, split=DEFAULT_SPLIT, asr_protocol="v1"):
     eval_dir = Path(eval_dir)
-    stem = "summary" + split_suffix(split)
+    stem = "summary" + split_suffix(split) + ("" if asr_protocol == "v1" else f"_asr{asr_protocol}")
     lines = ["# TTS_0.10 central evaluation", "",
              f"Generated {datetime.now(timezone.utc).isoformat(timespec='seconds')} from {eval_dir}. "
-             f"Held-out set: sts_eval/splits/{split}; reference checkpoints are not TTS_0.10 runs.", ""]
+             f"Held-out set: sts_eval/splits/{split}; reference checkpoints are not TTS_0.10 runs. "
+             f"ASR protocol {asr_protocol} (tools/asr_wer.py).", ""]
     header = ["Label", "Arm", "What it is"] + [h for _, h, _ in METRICS]
     lines += ["| " + " | ".join(header) + " |", "|" + "---|" * len(header)]
     for row in rows:
@@ -208,6 +210,8 @@ def main():
                         help="reference checkpoint to evaluate as well (repeatable)")
     parser.add_argument("--asr-python", default=sys.executable, help="Python with openai-whisper installed")
     parser.add_argument("--asr-model", default="medium")
+    parser.add_argument("--asr-protocol", choices=sorted(PROTOCOLS), default="v1",
+                        help="v2: whisper's temperature fallback for repetition loops (asr_v2.json, summary*_asrv2)")
     parser.add_argument("--skip-asr", action="store_true")
     parser.add_argument("--table-only", action="store_true", help="only rebuild the summary table")
     parser.add_argument("--dry-run", action="store_true", help="list what would be evaluated")
@@ -226,14 +230,14 @@ def main():
             jobs.append((label, Path(checkpoint)))
         for label, checkpoint in jobs:
             out = eval_dir / label
-            done = (out / "metrics.json").is_file() and (args.skip_asr or (out / "asr.json").is_file())
+            done = (out / "metrics.json").is_file() and (args.skip_asr or (out / PROTOCOLS[args.asr_protocol][2]).is_file())
             print(f"{'done ' if done else 'todo '} {label:24s} {checkpoint}", flush=True)
             if not done and not args.dry_run:
                 evaluate(label, checkpoint, args)
         if args.dry_run:
             return
-    rows, has_r0, has_r0b = build_table(eval_dir, args.split)
-    print(write_outputs(rows, has_r0, has_r0b, eval_dir, args.split))
+    rows, has_r0, has_r0b = build_table(eval_dir, args.split, args.asr_protocol)
+    print(write_outputs(rows, has_r0, has_r0b, eval_dir, args.split, args.asr_protocol))
 
 
 if __name__ == "__main__":

@@ -15,6 +15,14 @@ training (durations from tools/chunk_alignments.py); --steps counts the new run'
     python tools/train_tts010.py --arm R0 --data-dir /data/LJSpeech-1.1 --tag ftchunk
         --init-from R0/checkpoints/vits_step_40000.pt --steps 5000
         --chunk-prob 0.5 --chunk-durations chunk_durations_R0_40k.json
+
+Pretrain on a speaker manifest (tools/prepare_libritts_r.py), then fine-tune on LJSpeech with
+the speakers folded into a single-speaker model (VITSTrainer.init_from_speaker_checkpoint):
+
+    python tools/train_tts010.py --arm T011 --data-dir corpus --speaker-manifest corpus/speakers_train-clean-100.csv
+        --speaker-heldout sts_eval/splits/libritts_r_heldout_100.txt --tag pretrain-lttsr100
+    python tools/train_tts010.py --arm T011 --data-dir /data/LJSpeech-1.1 --tag ft-lttsr100
+        --init-from <pretrain run>/checkpoints/vits_step_40000.pt --fold-speaker mean --steps 20000
 """
 
 import argparse
@@ -38,7 +46,12 @@ def main():
     arms = literal_assignment("ARMS")
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--arm", required=True, choices=sorted(arms))
-    parser.add_argument("--data-dir", required=True, help="LJSpeech-1.1 folder with metadata.csv and wavs/")
+    parser.add_argument("--data-dir", required=True,
+                        help="LJSpeech-1.1 folder with metadata.csv and wavs/ (or a speaker corpus with wavs/)")
+    parser.add_argument("--speaker-manifest", default=None,
+                        help="speaker manifest (file_name|normalized_transcription|speaker_name) under --data-dir")
+    parser.add_argument("--speaker-heldout", default=None, help="test-utterance IDs kept out of manifest training")
+    parser.add_argument("--gin-channels", type=int, default=None, help="speaker vector width (default 64)")
     parser.add_argument("--run-root", default=str(ROOT / "output" / "full-train"))
     parser.add_argument("--resume", default=None, help="run folder of a stopped run of the same arm")
     parser.add_argument("--num-workers", type=int, default=4)
@@ -48,9 +61,13 @@ def main():
     parser.add_argument("--steps", type=int, default=None, help="training steps of this run (default 40000)")
     parser.add_argument("--keep-every", type=int, default=None,
                         help="keep the checkpoints at multiples of this step (default 10000; the latest is always kept)")
+    parser.add_argument("--seed", type=int, default=None, help="override the arm's training seed")
     parser.add_argument("--tag", default="", help="added to the run folder name, e.g. ftchunk")
     parser.add_argument("--init-from", default=None,
                         help="checkpoint of a finished run of the same arm: start a NEW run from its weights")
+    parser.add_argument("--fold-speaker", default=None, metavar="mean|NAME",
+                        help="with --init-from of a speaker-conditioned checkpoint: fold this speaker's vector "
+                             "(or the mean) into a single-speaker model; optimizers start fresh")
     parser.add_argument("--fresh-optimizer", action="store_true",
                         help="with --init-from: new optimizer moments and fp16 scaler instead of the checkpoint's")
     parser.add_argument("--chunk-prob", type=float, default=0.0,
@@ -75,6 +92,10 @@ def main():
         parser.error("--chunk-prob needs --chunk-durations")
     if args.chunk_boundaries != "words" and args.chunk_prob <= 0:
         parser.error("--chunk-boundaries needs --chunk-prob")
+    if (args.speaker_heldout or args.gin_channels) and not args.speaker_manifest:
+        parser.error("--speaker-heldout and --gin-channels need --speaker-manifest")
+    if args.fold_speaker and (not args.init_from or args.speaker_manifest):
+        parser.error("--fold-speaker needs --init-from and a single-speaker run (no --speaker-manifest)")
 
     for key in [key for key in os.environ if key.startswith("STS_")]:
         del os.environ[key]  # never inherit a stale arm, resume path or smoke-test setting
@@ -94,11 +115,21 @@ def main():
         os.environ["STS_KEEP_EVERY"] = str(args.keep_every)
     if args.tag:
         os.environ["STS_RUN_TAG"] = args.tag
+    if args.seed is not None:
+        os.environ["STS_SEED"] = str(args.seed)
     if args.chunk_prob > 0:
         os.environ.update(STS_CHUNK_PROB=str(args.chunk_prob), STS_CHUNK_WORDS=args.chunk_words,
                           STS_CHUNK_DURATIONS=str(Path(args.chunk_durations).resolve()),
                           STS_CHUNK_PREFIX_SHARE=str(args.chunk_prefix_share),
                           STS_CHUNK_BOUNDARIES=args.chunk_boundaries)
+    if args.speaker_manifest:
+        os.environ["STS_SPEAKER_MANIFEST"] = str(Path(args.speaker_manifest).resolve())
+    if args.speaker_heldout:
+        os.environ["STS_SPEAKER_HELDOUT"] = str(Path(args.speaker_heldout).resolve())
+    if args.gin_channels:
+        os.environ["STS_GIN_CHANNELS"] = str(args.gin_channels)
+    if args.fold_speaker:
+        os.environ.update(STS_INIT_FOLD_SPEAKER=args.fold_speaker, STS_INIT_OPTIMIZER="fresh")
     if args.phoneme_cache:
         os.environ["STS_PHONEME_CACHE"] = str(Path(args.phoneme_cache).resolve())
     if args.smoke_steps:

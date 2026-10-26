@@ -8,10 +8,12 @@
     { group: "Project", defaultOpen: true, items: [
       { href: "#overview", label: "Overview" },
       { href: "#direction", label: "Project direction: TTS for voice agents", ver: "20/10" },
-      { href: "#webui", label: "WebUI: how to use it", ver: "20/10" }
+      { href: "#webui", label: "WebUI: how to use it", ver: "20/10" },
+      { href: "#evaluation", label: "Evaluation framework", ver: "26/10" }
     ]},
     { group: "To-do", defaultOpen: true, items: [
-      { href: "#task-tts010-ablation", label: "TTS_0.10 ablation training", ver: "12/10" }
+      { href: "#task-tts010-ablation", label: "TTS_0.10 ablation training", ver: "12/10" },
+      { href: "#task-seminar", label: "Seminar", ver: "30/10" }
     ]},
     { group: "Versions", defaultOpen: true, groups: [
       { group: "17/9 · Original", items: [
@@ -34,6 +36,16 @@
       { group: "12/10 · TTS_0.10", items: [
         { href: "#version-tts010", label: "benlu's model, switchable components" },
         { href: "#voice-agent-tts", label: "TTS for voice agents: chunked synthesis" }
+      ]},
+      { group: "25/10 · TTS_0.11", items: [
+        { href: "#version-tts011", label: "No length filter, 100k steps" },
+        { href: "#tts011-chunk", label: "Chunked synthesis" },
+        { href: "#tts011-finetune", label: "Chunk-aware fine-tuning, two seeds" },
+        { href: "#tts011-latency", label: "Synthesis time" }
+      ]},
+      { group: "25/10 · TTS_0.20 candidates", items: [
+        { href: "#version-tts020", label: "Streaming options V1–V5" },
+        { href: "#tts020-libritts", label: "LibriTTS-R pretraining" }
       ]}
     ]}
   ];

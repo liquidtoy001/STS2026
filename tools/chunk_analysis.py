@@ -60,9 +60,10 @@ def wait_words(channel, words):
     return sum(min(n + k, count) for count in words.values()) / len(words)
 
 
-def analyze(study):
+def analyze(study, asr_protocol="v1"):
     study = Path(study)
-    rows = rows_by_channel(json.loads((study / "asr.json").read_text(encoding="utf-8")))
+    suffix = "" if asr_protocol == "v1" else f"_{asr_protocol}"
+    rows = rows_by_channel(json.loads((study / f"asr{suffix}.json").read_text(encoding="utf-8")))
     timing = json.loads((study / "timing.json").read_text(encoding="utf-8"))
     ids = sorted(rows["full"])
     words = {i: rows["full"][i][1] for i in ids}
@@ -79,8 +80,8 @@ def analyze(study):
     matched = {f"{a} vs {b}": paired(rows[a], rows[b], ids, boots) for a, b in pairs if a in rows}
     result = {"sentences": len(ids), "natural_wer": wer(rows["natural"], ids) if "natural" in rows else None,
               "conditions": conditions, "matched_wait": matched}
-    (study / "analysis.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
-    plot(result, study / "tradeoff.png")
+    (study / f"analysis{suffix}.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
+    plot(result, study / f"tradeoff{suffix}.png")
     return result
 
 
@@ -123,10 +124,11 @@ def compare_channels(models, channels, ids, reference="R0"):
     return out
 
 
-def compare(study_dirs, eval_dirs, reference="R0"):
-    result = {"reference": reference}
+def compare(study_dirs, eval_dirs, reference="R0", asr_protocol="v1"):
+    asr_file = "asr.json" if asr_protocol == "v1" else f"asr_{asr_protocol}.json"
+    result = {"reference": reference, "asr_protocol": asr_protocol}
     if study_dirs:
-        asr = {n: json.loads((Path(d) / "asr.json").read_text(encoding="utf-8")) for n, d in study_dirs.items()}
+        asr = {n: json.loads((Path(d) / asr_file).read_text(encoding="utf-8")) for n, d in study_dirs.items()}
         models = {n: rows_by_channel(a) for n, a in asr.items()}
         channels = [c for c in models[reference] if c != "natural" and all(c in m for m in models.values())]
         ids = sorted(models[reference]["full"])
@@ -142,7 +144,7 @@ def compare(study_dirs, eval_dirs, reference="R0"):
             "duration_ratio": {c: {n: timing[n][c]["duration_ratio_mean"] for n in models} for c in channels},
         }
     if eval_dirs:
-        models = {n: rows_by_channel(json.loads((Path(d) / "asr.json").read_text(encoding="utf-8")))
+        models = {n: rows_by_channel(json.loads((Path(d) / asr_file).read_text(encoding="utf-8")))
                   for n, d in eval_dirs.items()}
         metrics = {n: json.loads((Path(d) / "metrics.json").read_text(encoding="utf-8")) for n, d in eval_dirs.items()}
         ids = sorted(models[reference]["synthesized"])
@@ -189,20 +191,22 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     one = commands.add_parser("analyze", help="one study folder")
     one.add_argument("study")
+    one.add_argument("--asr-protocol", choices=("v1", "v2"), default="v1", help="reads asr.json or asr_v2.json")
     many = commands.add_parser("compare", help="several checkpoints, paired per sentence")
     many.add_argument("--study", nargs="*", default=[], help="NAME=chunk-study folder (the first-named reference: R0)")
     many.add_argument("--eval", nargs="*", default=[], help="NAME=tools/eval_tts010.py folder")
     many.add_argument("--reference", default="R0")
+    many.add_argument("--asr-protocol", choices=("v1", "v2"), default="v1", help="reads asr.json or asr_v2.json")
     many.add_argument("--out", required=True, help="comparison JSON; a Markdown table is written next to it")
     args = parser.parse_args()
     if args.command == "analyze":
-        result = analyze(args.study)
+        result = analyze(args.study, args.asr_protocol)
         print(json.dumps({c: {"wer": round(100 * v["wer"], 1), "wait": round(v["wait_words"], 1),
                               "vs_full_ci95": [round(100 * x, 1) for x in v["vs_full_ci95"]]}
                           for c, v in result["conditions"].items()}, indent=0))
     else:
         parse = lambda items: dict(item.split("=", 1) for item in items)
-        result = compare(parse(args.study), parse(args.eval), args.reference)
+        result = compare(parse(args.study), parse(args.eval), args.reference, args.asr_protocol)
         out = Path(args.out)
         out.write_text(json.dumps(result, indent=1), encoding="utf-8")
         out.with_suffix(".md").write_text(markdown(result), encoding="utf-8")
