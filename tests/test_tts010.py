@@ -1,4 +1,7 @@
-"""TTS_0.10 checks against benlu's archived source and the tts-v0.02 release.
+"""TTS_0.10 checks against benlu's original source and the tts-v0.02 release.
+
+The original source is not in the repository. The checks against it run only where a local copy
+exists (docs/records/tts-0.10/benlu-source/, git-ignored, or the folder in STS_BENLU_SOURCE).
 
 Synthetic tones and random weights establish equivalence and wiring only, never speech quality.
 """
@@ -9,6 +12,7 @@ import csv
 import hashlib
 import importlib
 import json
+import os
 from pathlib import Path
 import random
 import subprocess
@@ -27,7 +31,9 @@ from tools.convert_benlu_checkpoint import convert, convert_generator_state
 from tools.notebook_defs import literal_assignment, load_definitions
 
 ROOT = Path(__file__).resolve().parents[1]
-BENLU = ROOT / "docs/records/tts-0.10/benlu-source"
+BENLU = Path(os.environ.get("STS_BENLU_SOURCE") or ROOT / "docs/records/tts-0.10/benlu-source")
+needs_benlu = unittest.skipUnless((BENLU / "final-vits.ipynb").is_file(),
+                                  "benlu's original source is not in this repository")
 BENLU_MODULES = ("blocks", "util", "flow", "modules", "monotonic_align", "mel_process")
 
 
@@ -80,12 +86,14 @@ class TTS010Tests(unittest.TestCase):
         cls.ns["PAD_ID"] = 0
         cls.ns["symbol_to_id"] = {s: i for i, s in enumerate(
             ["_"] + list(literal_assignment("PUNCTUATION")) + list(literal_assignment("LETTERS")))}
-        cls.benlu = benlu_namespace()
+        cls.benlu = benlu_namespace() if (BENLU / "final-vits.ipynb").is_file() else None
         cls.batch = tone_batch(cls.ns)
 
+    @needs_benlu
     def test_symbols_match_benlu(self):
         self.assertEqual(list(self.ns["symbol_to_id"]), self.benlu["symbols"])
 
+    @needs_benlu
     def test_mas_matches_benlu_loop_including_ties(self):
         rng = np.random.default_rng(3)
         for trial in range(40):
@@ -100,6 +108,7 @@ class TTS010Tests(unittest.TestCase):
             expected = self.benlu["monotonic_align"].maximum_path(score.clone(), mask)
             self.assertTrue(torch.equal(self.ns["maximum_path"](score.clone(), mask), expected), trial)
 
+    @needs_benlu
     def test_spectrogram_and_slaney_mel_match_benlu_and_librosa_definition(self):
         wave = self.batch[4][:, 0]
         self.assertTrue(torch.equal(self.ns["waveform_to_spectrogram"](wave),
@@ -125,6 +134,7 @@ class TTS010Tests(unittest.TestCase):
         torch.testing.assert_close(self.ns["slaney_mel_basis"](), torch.from_numpy(weights).float(),
                                    rtol=1e-4, atol=1e-7)
 
+    @needs_benlu
     def test_tts010_generator_matches_benlu_audiosyn(self):
         torch.manual_seed(11)
         reference = self.benlu["AudioSyn"](76, 192, 192, 768, 513).eval()
@@ -149,6 +159,7 @@ class TTS010Tests(unittest.TestCase):
             result = model.infer(x, x_lengths, noise_scale=0.667)
         self.assertTrue(torch.equal(result["generated_audio"], expected))
 
+    @needs_benlu
     def test_tts010_discriminator_and_adversarial_losses_match_benlu(self):
         torch.manual_seed(2)
         reference = self.benlu["MultiPeriodDiscriminator"]()
@@ -664,6 +675,7 @@ class TTS010Tests(unittest.TestCase):
             summary = er.write_outputs(rows, has_r0, has_r0b, root / "eval").read_text(encoding="utf-8")
             self.assertIn("+20.0 pt*", summary)
 
+    @needs_benlu
     def test_converter_round_trip(self):
         torch.manual_seed(13)
         generator = self.benlu["AudioSyn"](76, 192, 192, 768, 513)

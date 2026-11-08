@@ -85,15 +85,15 @@
       <section class="doc-section" id="webui">
         <span class="eyebrow">20/10 · Turino · Tool</span>
         <h2>WebUI: live TTS and the voice-agent demo</h2>
-        <p class="small muted">Source: <code>webui/</code> on branch <code>Turino</code>, commits <a href="https://github.com/liquidtoy001/STS2026/commit/9107730"><code>9107730</code></a> and <a href="https://github.com/liquidtoy001/STS2026/commit/cb12459"><code>cb12459</code></a>; not merged to <code>main</code>. Full reference: the Web UI section of the <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/README.md">README</a>.</p>
+        <p class="small muted">Source: <code>webui/</code>, commits <a href="https://github.com/liquidtoy001/STS2026/commit/9107730"><code>9107730</code></a> and <a href="https://github.com/liquidtoy001/STS2026/commit/cb12459"><code>cb12459</code></a>. Full reference: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/WEBUI.md">docs/WEBUI.md</a>.</p>
         <h3 id="webui-start">Start it</h3>
         <ol class="list">
-          <li>Check out branch <code>Turino</code> and pull.</li>
-          <li>Put the run folders from the team Drive anywhere under <code>output/</code>, for example <code>output/runs/tts010_R0_…/checkpoints/vits_step_40000.pt</code>. The model list (<code>webui/config.example.json</code>) finds checkpoints by glob pattern and uses the newest match; a checkpoint that is not found is listed as unavailable.</li>
+          <li>Clone the repository.</li>
+          <li>Put trained run folders (checkpoints are not in this repository) anywhere under <code>output/</code>, for example <code>output/runs/tts010_R0_…/checkpoints/vits_step_40000.pt</code>. The model list (<code>webui/config.example.json</code>) finds checkpoints by glob pattern and uses the newest match; a checkpoint that is not found is listed as unavailable.</li>
           <li>With the project environment active (PyTorch, TorchAudio, NumPy), run the server from the repository root. It loads the default checkpoint, serves <code>http://127.0.0.1:8000/</code> and opens it in the browser.</li>
         </ol>
-<pre><code>git checkout Turino
-git pull
+<pre><code>git clone https://github.com/liquidtoy001/STS2026.git
+cd STS2026
 python webui/server.py</code></pre>
         <p>Options: <code>--port</code>, <code>--device cpu</code>, <code>--config PATH</code>, <code>--no-browser</code>, <code>--host</code> (default <code>127.0.0.1</code>; the API has no authentication). To change the model list, copy <code>webui/config.example.json</code> to <code>webui/config.json</code> (ignored by Git) and edit it.</p>
         <h3 id="webui-agent">Agent mode</h3>
@@ -143,13 +143,13 @@ python webui/server.py</code></pre>
             </tbody>
           </table>
         </div>
-        <p class="small muted">22 of 33,696 transcriptions on the GPU Lab exceeded the threshold; the highest ratio of the others was 1.93. v1 results stay in <code>asr.json</code>, v2 in <code>asr_v2.json</code>. The raw evaluation files of the GPU Lab runs were on its temporary disk and were lost when the instance was released on 26/10; the numbers on this site were recorded before. The v2 code is in the working tree and not yet on GitHub.</p>
+        <p class="small muted">22 of 33,696 transcriptions on the GPU Lab exceeded the threshold; the highest ratio of the others was 1.93. v1 results stay in <code>asr.json</code>, v2 in <code>asr_v2.json</code>. The raw evaluation files of the GPU Lab runs were on its temporary disk and were lost when the instance was released on 26/10; the numbers on this site were recorded before. The v2 code: commit <a href="https://github.com/liquidtoy001/STS2026/commit/149b5a4"><code>149b5a4</code></a>.</p>
       </section>
 
       <section class="doc-section task-board" id="tasks">
-        <span class="eyebrow">Team backlog</span>
+        <span class="eyebrow">Tasks</span>
         <h2>To-do</h2>
-        <p class="lede">The TTS_0.10 ablation is complete: all eleven arms are trained and evaluated. Next: the seminar on 30/10.</p>
+        <p class="lede">The TTS_0.10 ablation is complete: all eleven arms are trained and evaluated. Next: the <a href="#task-future-work">future work</a> from the seminar deck.</p>
 
         <article class="task-card" id="task-tts010-ablation">
           <span id="task-tts"></span>
@@ -171,19 +171,36 @@ python webui/server.py</code></pre>
                 <tr><td>A2</td><td>feature-matching loss, weight 2 → off</td><td>15.7% (−1.2 [−4.7, +2.2]) · within noise · RTX PRO 6000</td></tr>
                 <tr><td>L1</td><td>reconstruction loss: Slaney log-mel L1 × 45 → HTK log-mel 1 + multi-resolution STFT 0.5 + waveform L1 10</td><td>98.7% (+81.8); 48 of 100 empty (186.9% under ASR protocol v1) · worse · RTX PRO 6000</td></tr>
                 <tr><td>O1</td><td>optimisation: batch 16, learning rate 2e-4, fp16, no clipping → batch 8, 1e-4, fp32, gradient clipping 1.0</td><td>28.5% (+11.6 [+7.5, +15.9]) · worse · RTX PRO 6000</td></tr>
-                <tr><td>E0</td><td>all eight changes: TTS_0.02 throughout</td><td>100.2% (+83.2) · worse · Turino, RTX 4070 Ti SUPER</td></tr>
-                <tr><td>D1</td><td>text-length filter: clips of 1–100 characters (6,208) → all 13,000 training clips, long ones included</td><td>11.6% (−5.3 [−8.9, −2.0]) · better · Turino, RTX 4070 Ti SUPER</td></tr>
+                <tr><td>E0</td><td>all eight changes: TTS_0.02 throughout</td><td>100.2% (+83.2) · worse · RTX 4070 Ti SUPER</td></tr>
+                <tr><td>D1</td><td>text-length filter: clips of 1–100 characters (6,208) → all 13,000 training clips, long ones included</td><td>11.6% (−5.3 [−8.9, −2.0]) · better · RTX 4070 Ti SUPER</td></tr>
               </tbody>
             </table>
           </div>
-          <p>Central evaluation, 21–22/10: 100 held-out sentences, Whisper medium; the recordings score 3.3%. R0b, which differs from R0 only in the seed, scores 3.3 points lower: the seed noise floor. Intervals: 2,000 paired bootstrap resamples of the sentences; both checks agree for every arm. Four changes have a detectable effect: reverting the reconstruction loss (L1) breaks the model, and reverting the optimisation, posterior encoder or text encoder raises WER by 7–12 points. The discriminator, feature matching and decoder show no detectable effect. Removing the length filter (D1) lowers WER by 5.3 points; D1 ran on a different GPU. One seed per arm. Full table: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md#results-2026-10-21">ABLATION_TTS_0.10.md</a>. Re-scored with <a href="#evaluation-asr-v2">ASR protocol v2</a> on 26/10: only L1 changed. The one helpful change, removing the length filter, became <a href="#version-tts011">TTS_0.11</a>.</p><p>Each run, from release <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10"><code>tts-v0.10</code></a>: <code>python tools/train_tts010.py --arm &lt;arm&gt; --data-dir &lt;LJSpeech-1.1&gt;</code>, 40,000 steps. Upload the run folder to the team Drive; evaluation is run centrally. Step-by-step instructions, the run card and the reading rules: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md">ABLATION_TTS_0.10.md</a>.</p>
+          <p>Central evaluation, 21–22/10: 100 held-out sentences, Whisper medium; the recordings score 3.3%. R0b, which differs from R0 only in the seed, scores 3.3 points lower: the seed noise floor. Intervals: 2,000 paired bootstrap resamples of the sentences; both checks agree for every arm. Four changes have a detectable effect: reverting the reconstruction loss (L1) breaks the model, and reverting the optimisation, posterior encoder or text encoder raises WER by 7–12 points. The discriminator, feature matching and decoder show no detectable effect. Removing the length filter (D1) lowers WER by 5.3 points; D1 ran on a different GPU. One seed per arm. Full table: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md#results-2026-10-21">ABLATION_TTS_0.10.md</a>. Re-scored with <a href="#evaluation-asr-v2">ASR protocol v2</a> on 26/10: only L1 changed. The one helpful change, removing the length filter, became <a href="#version-tts011">TTS_0.11</a>.</p><p>Each run, from release <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10"><code>tts-v0.10</code></a>: <code>python tools/train_tts010.py --arm &lt;arm&gt; --data-dir &lt;LJSpeech-1.1&gt;</code>, 40,000 steps; all checkpoints were evaluated on one machine with one script. Step-by-step instructions and the reading rules: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/ABLATION_TTS_0.10.md">ABLATION_TTS_0.10.md</a>.</p>
         </article>
         <article class="task-card" id="task-seminar">
           <div class="task-card-head">
             <h3>30/10 · Seminar</h3>
             <span class="chip acc">Deck v4 and script ready</span>
           </div>
-          <p>Every member presents (the professor's announcement on 26/10). Deck <code>seminar-ppt.v4</code>: 13 slides, about 8–9 minutes. The story: where the TTS sits in a voice agent and what waiting costs; our solution (context-aware chunks and chunk-aware fine-tuning); building the TTS (TTS_0.01 → TTS_0.10) and its ablation; the <a href="#evaluation">evaluation framework</a>; <a href="#version-tts011">TTS_0.11</a> and the new dataset LibriTTS-R; chunked-synthesis results; the WebUI with recordings; limitations, conclusion and future work. Three- and five-speaker versions of the deck and an English speaker script with talking points are shared with the team directly.</p>
+          <p>Every member presents. Deck <code>seminar-ppt.v4</code>: 13 slides, about 8–9 minutes. The story: where the TTS sits in a voice agent and what waiting costs; our solution (context-aware chunks and chunk-aware fine-tuning); building the TTS (TTS_0.01 → TTS_0.10) and its ablation; the <a href="#evaluation">evaluation framework</a>; <a href="#version-tts011">TTS_0.11</a> and the new dataset LibriTTS-R; chunked-synthesis results; the WebUI with recordings; limitations, conclusion and future work.</p>
+        </article>
+        <article class="task-card" id="task-future-work">
+          <div class="task-card-head">
+            <h3>30/10 · Future work</h3>
+            <span class="chip">Not started</span>
+          </div>
+          <p>From the team's seminar deck.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Work</th><th>What it would do</th><th>Where the project stands</th></tr></thead>
+              <tbody>
+                <tr><td>LLM stream integration</td><td>Feed text from a streaming language model into VITS and measure end-to-end latency, time to first audio (onset latency) and playback stalls under irregular text arrival.</td><td>The <a href="#webui">WebUI</a>'s Agent mode streams a simulated reply at a set rate (10 words per second in the demo); no real language model has been in the loop.</td></tr>
+                <tr><td>Prosody evaluation: MOS and UTMOS</td><td>Evaluate perceived naturalness with human Mean Opinion Score (MOS) listening tests and automatic MOS predictions (UTMOS).</td><td>Whisper WER measures intelligibility only; no listening test has been run.</td></tr>
+                <tr><td>Adaptive chunk policy evaluation</td><td>Compare 1-word chunks with fixed 2-word lookahead, whole-sentence synthesis and a prosody-aware chunking policy (split at punctuation and predicted phrase breaks, with the model trained on such chunks), using the same VITS model, on naturalness and latency, not WER alone.</td><td>Run-time chunks are cut by word count. Training crops ending at punctuation exist (<code>--chunk-boundaries punctuation</code>) and were tried once, in arm V5 (<a href="#version-tts020">TTS_0.20 candidates</a>), scored by WER only. Predicted phrase breaks are not implemented.</td></tr>
+              </tbody>
+            </table>
+          </div>
         </article>
 
       </section>
@@ -367,13 +384,13 @@ python webui/server.py</code></pre>
         <li class="wip"><span class="when">2026-09-23 · Mou and Warneke · gan-group</span><div class="what">GAN loss and discriminator</div><p>LSGAN losses, separate discriminator optimizer, <code>gan_weight = 1.0</code>. Completion commit 07e663d; subsequently used in the full-training pair.</p></li>
         <li class="wip"><span class="when">2026-09-24 · benlu (local notebook)</span><div class="what">GAN merged with the v1 evaluation</div><p>DataParallel and autocast removed. New loss weights: mel 1, STFT 0.5, wave 10, duration 1, KL 1, GAN 1. Used for the subsequent 50,000-iteration GAN-on/off runs.</p></li>
         <li class="done"><span class="when">2026-09-29 · tuirno · Kaggle T4</span><div class="what">GAN vs no-GAN, 50,000 iterations each</div><p>Both runs completed. Spectral probe metrics slightly favour no-GAN; the discriminator overpowers the generator late. See the <a href="#full-train-gan">experiment report</a>.</p></li>
-        <li class="done"><span class="when">2026-10-07 · Turino · tts-v0.02</span><div class="what">TTS_0.02 speaker-ID conditioning</div><p>Optional learned speaker embedding throughout training and inference. Source release; not trained.</p></li>
+        <li class="done"><span class="when">2026-10-07 · benlu, Turino · tts-v0.02</span><div class="what">TTS_0.02 speaker-ID conditioning</div><p>Optional learned speaker embedding throughout training and inference. Source release; not trained.</p></li>
         <li class="done"><span class="when">2026-10-12 · benlu, Turino</span><div class="what">TTS_0.10 integration</div><p>benlu's model and recipe in the project harness with switches back to TTS_0.02, a 100-clip held-out split and one export per ablation arm. See <a href="#version-tts010">TTS_0.10</a>.</p></li>
         <li class="done"><span class="when">2026-10-19 · Turino · 0b11e47</span><div class="what">Chunked-synthesis study and chunk-aware fine-tuning</div><p>R0 at 40,000 steps measured under 17 chunk conditions; <code>--init-from</code> and optional chunk-aware training, off by default. See <a href="#voice-agent-tts">TTS for voice agents</a>.</p></li>
         <li class="done"><span class="when">2026-10-20 · Turino · 2ddbf65</span><div class="what">Chunk study of the local chunk-aware fine-tune</div><p>Without lookahead, short chunks became much easier to understand (independent 2-word chunks 24.2% against 34.1% for the control); whole sentences and chunks with lookahead did not change detectably. See <a href="#voice-agent-finetune">the local check</a>.</p></li>
         <li class="done"><span class="when">2026-10-20 · Turino · 9107730, cb12459</span><div class="what">WebUI with Agent mode</div><p>Live TTS with A/B comparison, and a simulated language model streaming a reply into up to three chunking strategies, with time to first audio and stalls. See <a href="#webui">WebUI</a>.</p></li>
         <li class="done"><span class="when">2026-10-20 · Turino</span><div class="what">Project direction: a VITS TTS for voice agents</div><p>How few words can the TTS wait for and stay as intelligible as with the whole sentence? See <a href="#direction">Project direction</a>.</p></li>
-        <li class="done"><span class="when">2026-10-22 · all members · Turino evaluation</span><div class="what">TTS_0.10 ablation: all eleven arms evaluated</div><p>Seed noise floor 3.3 WER points (R0 against R0b). Reverting the reconstruction loss, optimisation, posterior encoder or text encoder makes the model worse; removing the length filter makes it better. See <a href="#task-tts010-ablation">the ablation</a>.</p></li>
+        <li class="done"><span class="when">2026-10-22 · team runs · Turino evaluation</span><div class="what">TTS_0.10 ablation: all eleven arms evaluated</div><p>Seed noise floor 3.3 WER points (R0 against R0b). Reverting the reconstruction loss, optimisation, posterior encoder or text encoder makes the model worse; removing the length filter makes it better. See <a href="#task-tts010-ablation">the ablation</a>.</p></li>
         <li class="done"><span class="when">2026-10-25 · Turino · e78b52d · UQ GPU Lab L40S</span><div class="what">TTS_0.11 and the TTS_0.20 candidates</div><p>TTS_0.11 (no length filter, 100,000 steps) reaches 11.2% WER; a 100-sentence long test set is held out. Four options aimed at streaming and LibriTTS-R pretraining did not beat it. See <a href="#version-tts011">TTS_0.11</a> and <a href="#version-tts020">TTS_0.20 candidates</a>.</p></li>
         <li class="done"><span class="when">2026-10-26 · Turino</span><div class="what">Chunk-aware fine-tuning confirmed with a second seed; ASR protocol v2</div><p>Without context, 1- and 2-word chunks become about twice as intelligible in both seeds; whole sentences do not change. Whisper's repetition fallback corrects looping transcriptions. See <a href="#tts011-finetune">the fine-tuning results</a> and <a href="#evaluation-asr-v2">ASR protocol v2</a>.</p></li>
       </ul>
@@ -636,17 +653,17 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
   <p class="small muted">Source: <code>notebooks/vits-light_v1.ipynb</code>, GAN component commit <code>07e663d</code>. The earlier evaluated baseline remains the GAN-disabled snapshot at <code>c9f258c</code>.</p>
 </section>
 <section class="doc-section" id="version-full-training">
-  <span class="eyebrow">30/9 · Notebook integration</span>
+  <span class="eyebrow">30/9 · benlu, Turino · Notebook integration</span>
   <h2>30/9 · TTS_0.01</h2>
   <p><code>notebooks/vits-full-train.ipynb</code> extends the GAN/evaluation model to full-corpus LJSpeech training, with duration and KL losses enabled. GAN-on and GAN-off exports use the same source notebook.</p>
-  <p class="small muted">Committed on 30/9 at <code>3a5724b</code>. The results below were run on 29/9 (UTC) using this full-training configuration before notebook integration.</p>
+  <p class="small muted">Prototype: benlu; integration: Turino. Committed on 30/9 at <code>3a5724b</code>. The results below were run on 29/9 (UTC) using this full-training configuration before notebook integration.</p>
   <div id="gan-results"></div>
 </section>
 
 <section class="doc-section" id="version-speaker-conditioning">
-  <span class="eyebrow">7/10 · Turino · Model revision</span>
+  <span class="eyebrow">7/10 · benlu, Turino · Model revision</span>
   <h2>7/10 · TTS_0.02 — Speaker-ID conditioning</h2>
-  <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code>. Commit <a href="https://github.com/liquidtoy001/STS2026/commit/e81f0bde3a0130e32e44f2e60c52358ada5943f6"><code>e81f0bd</code></a> · 7/10/2026 (Australia/Brisbane).</p>
+  <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code>. Commit <a href="https://github.com/liquidtoy001/STS2026/commit/e81f0bde3a0130e32e44f2e60c52358ada5943f6"><code>e81f0bd</code></a> · 7/10/2026 (Australia/Brisbane). Prototype: benlu; integration: Turino.</p>
   <p>Compared with TTS_0.01, this revision adds optional speaker IDs and a learned speaker embedding. The condition is passed to the posterior encoder, flow, duration predictor and waveform decoder; the data loader and checkpoints also retain speaker identities. The existing model structure and default single-speaker mode are retained.</p>
   <p>This gives the model an explicit input for which speaker should speak, providing a basis for learning different voices within one model.</p>
   <p><strong>Training has not started. The effect on voice identity and audio quality has not been evaluated.</strong></p>
@@ -657,7 +674,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
   <h2>12/10 · TTS_0.10 — benlu's model with switchable components</h2>
   <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code>. Commit <a href="https://github.com/liquidtoy001/STS2026/commit/c06d618"><code>c06d618</code></a>, pre-release <a href="https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10"><code>tts-v0.10</code></a>, merged to <code>main</code> · 12/10/2026 (Australia/Brisbane). Model and training recipe: benlu (<code>final-vits</code>, 40,000 steps in about 10 h on Kaggle T4 ×2); integration: Turino.</p>
   <p>Compared with TTS_0.02, TTS_0.10 changes eight things: a text encoder with convolutional feed-forward blocks, a gated WaveNet posterior encoder, a multi-receptive-field decoder, multi-period and scale discriminators, feature matching, a mel × 45 reconstruction loss, batch 16 with fp16 training, and training on transcripts of at most 100 characters. Each change is a switch that can restore the TTS_0.02 component; flow, duration predictor and speaker-ID conditioning are kept.</p>
-  <p>These are the standard VITS/HiFi-GAN components for modelling waveform detail and periodicity. With benlu's weights the integrated model reproduces his original code exactly; with every switch at TTS_0.02 it reproduces the <code>tts-v0.02</code> release.</p>
+  <p>These are the standard VITS/HiFi-GAN components for modelling waveform detail and periodicity. With benlu's weights the integrated model reproduces benlu's original code exactly; with every switch at TTS_0.02 it reproduces the <code>tts-v0.02</code> release.</p>
   <div class="table-wrap">
     <table>
       <thead><tr><th>Checkpoint</th><th class="num">Steps</th><th class="num">Probe log-mel L1</th><th class="num">STFT SC</th><th class="num">STFT log-mag</th></tr></thead>
@@ -685,7 +702,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
     <span class="chip">Measured: 2026-10-19 · Australia/Brisbane</span>
     <span class="chip acc">Project direction since 20/10</span>
   </div>
-  <p class="small muted">Source: commits <a href="https://github.com/liquidtoy001/STS2026/commit/0b11e47"><code>0b11e47</code></a> (study, fine-tuning code) and <a href="https://github.com/liquidtoy001/STS2026/commit/2ddbf65"><code>2ddbf65</code></a> (fine-tune chunk results) on <code>Turino</code>; not merged or released. Model: TTS_0.10 arm R0 at 40,000 steps (run <code>tts010_R0_20261014T070647303632Z</code>). Measurements on one RTX 4070 Ti SUPER; intelligibility by Whisper medium (<code>tools/asr_wer.py</code>).</p>
+  <p class="small muted">Source: commits <a href="https://github.com/liquidtoy001/STS2026/commit/0b11e47"><code>0b11e47</code></a> (study, fine-tuning code) and <a href="https://github.com/liquidtoy001/STS2026/commit/2ddbf65"><code>2ddbf65</code></a> (fine-tune chunk results). Model: TTS_0.10 arm R0 at 40,000 steps (run <code>tts010_R0_20261014T070647303632Z</code>). Measurements on one RTX 4070 Ti SUPER; intelligibility by Whisper medium (<code>tools/asr_wer.py</code>).</p>
   <p>This section records what has been measured for the project's voice-agent direction (<a href="#direction">Project direction</a>).</p>
 
   <h3 id="voice-agent-problem">The problem</h3>
@@ -771,7 +788,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
     <li><strong>The chunk model's independent 4-word chunks (16.1%, about 4 words waited for) are as intelligible as R0's whole sentences (16.7%, about 12 words)</strong>, with the plain inference path and no lookahead.</li>
     <li><strong>The speech became faster.</strong> Short pieces last 0.81–0.89× the recording (control 1.00–1.28×), whole sentences 0.92× (control 0.94×). Whether this is audible or hurts naturalness has not been checked.</li>
   </ol>
-  <p class="small muted">Limits: one seed per run, 5,000 steps, one speaker, Whisper WER as the only intelligibility measure (no listening test), 17 conditions compared without correction for multiple comparisons. The run manual for the full-size runs: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE_RUNBOOK.md">CHUNK_FINETUNE_RUNBOOK.md</a>.</p>
+  <p class="small muted">Limits: one seed per run, 5,000 steps, one speaker, Whisper WER as the only intelligibility measure (no listening test), 17 conditions compared without correction for multiple comparisons. The full-size fine-tuning (20,000 steps, two seeds) was run on TTS_0.11: see <a href="#tts011-finetune">its results</a>.</p>
 
   <h3 id="voice-agent-limits">What this does not show</h3>
   <ul class="list">
@@ -786,7 +803,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
     <div class="callout-title">Decided and open</div>
     <p>On 20/10 the project moved to this direction (<a href="#direction">Project direction</a>). The full-size results on TTS_0.11 are in <a href="#tts011-chunk">Chunked synthesis with TTS_0.11</a> and <a href="#tts011-finetune">Chunk-aware fine-tuning, two seeds</a>. The seminar deck (30/10) presents TTS_0.11 with chunk-aware fine-tuning and 1-word chunks with two words of lookahead as its recommended setup.</p>
   </div>
-  <p>Details, reproduction commands and records: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/VOICE_AGENT_TTS.md">VOICE_AGENT_TTS.md</a> (study), <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE.md">CHUNK_FINETUNE.md</a> (fine-tuning options and local check), <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE_RUNBOOK.md">CHUNK_FINETUNE_RUNBOOK.md</a> (run manual for full-size runs).</p>
+  <p>Details, reproduction commands and records: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/VOICE_AGENT_TTS.md">VOICE_AGENT_TTS.md</a> (study), <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/CHUNK_FINETUNE.md">CHUNK_FINETUNE.md</a> (fine-tuning options and local check).</p>
 <footer class="site-foot">Sources: docs/VOICE_AGENT_TTS.md, docs/CHUNK_FINETUNE.md, docs/records/chunk-study/R0_40k/ and docs/records/chunk-finetune/ at commit 2ddbf65.</footer>
 </section>
 
@@ -798,7 +815,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
     <span class="chip">Trained: 25/10 · UQ GPU Lab, NVIDIA L40S</span>
     <span class="chip">Evaluated: 25–26/10 · ASR protocol v2</span>
   </div>
-  <p class="small muted">Source: arm <code>T011</code> in <code>notebooks/vits-full-train.ipynb</code>, commit <a href="https://github.com/liquidtoy001/STS2026/commit/e78b52d"><code>e78b52d</code></a> on <code>Turino</code>; not merged or released. The <code>--seed</code> option used for the second fine-tune seed and ASR protocol v2 are in the working tree and not yet on GitHub. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.11.md">TTS_0.11.md</a>.</p>
+  <p class="small muted">Source: arm <code>T011</code> in <code>notebooks/vits-full-train.ipynb</code>, commit <a href="https://github.com/liquidtoy001/STS2026/commit/e78b52d"><code>e78b52d</code></a>; the <code>--seed</code> option used for the second fine-tune seed and ASR protocol v2: commit <a href="https://github.com/liquidtoy001/STS2026/commit/149b5a4"><code>149b5a4</code></a>. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.11.md">TTS_0.11.md</a>.</p>
   <p>TTS_0.11 keeps the TTS_0.10 model and recipe and applies the one change the ablation found helpful: the 100-character text filter is removed (arm D1), so the model trains on 12,900 clips instead of 6,208. It trains for 100,000 steps instead of 40,000. The 100 long test sentences (<a href="#evaluation">Evaluation framework</a>) are held out as well, so long sentences are evaluated on text the model has never seen.</p>
 
   <h3 id="tts011-results">Results</h3>
@@ -901,7 +918,7 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
     <span class="chip">Trained: 25/10 · UQ GPU Lab, NVIDIA L40S</span>
     <span class="chip warn">No option beat TTS_0.11</span>
   </div>
-  <p class="small muted">Source: <code>TTS020_OPTIONS</code> and arms V1–V4 in <code>notebooks/vits-full-train.ipynb</code>, commit <a href="https://github.com/liquidtoy001/STS2026/commit/e78b52d"><code>e78b52d</code></a>; LibriTTS-R preprocessing (<code>tools/prepare_libritts_r.py</code>) and speaker folding are in the working tree and not yet on GitHub. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.20.md">TTS_0.20.md</a>.</p>
+  <p class="small muted">Source: <code>TTS020_OPTIONS</code> and arms V1–V4 in <code>notebooks/vits-full-train.ipynb</code>, commit <a href="https://github.com/liquidtoy001/STS2026/commit/e78b52d"><code>e78b52d</code></a>; LibriTTS-R preprocessing (<code>tools/prepare_libritts_r.py</code>) and speaker folding: commit <a href="https://github.com/liquidtoy001/STS2026/commit/149b5a4"><code>149b5a4</code></a>. Details: <a href="https://github.com/liquidtoy001/STS2026/blob/Turino/docs/TTS_0.20.md">TTS_0.20.md</a>.</p>
   <p>Agreed with the team lead on 25/10: screen options aimed at streaming on LJSpeech first (arms V1–V5, each compared with TTS_0.11 at the same 40,000 steps), then test LibriTTS-R. Every option is off by default, so earlier arms keep their switches.</p>
 
   <h3 id="tts020-options">Streaming options on LJSpeech</h3>

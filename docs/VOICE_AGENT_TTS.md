@@ -4,6 +4,11 @@ Turino, 2026-10-19 (Australia/Brisbane). Model: TTS_0.10 arm R0 at 40,000 steps.
 on one RTX 4070 Ti SUPER; intelligibility by Whisper medium (`tools/asr_wer.py`). Since
 2026-10-20 this is the project's direction; this page records what has been measured for it.
 
+> **Later results.** The same chunk study on the final model, TTS_0.11 at 100,000 steps, and the
+> full-size chunk-aware fine-tuning (20,000 steps, two seeds) are in
+> [TTS_0.11](TTS_0.11.md#results-252610). After chunk-aware fine-tuning, context-aware 1-word
+> chunks with lookahead 2 score 10.9% against 10.3% for whole sentences (seed 2026).
+
 ## The problem
 
 A voice agent answers in three stages: speech recognition turns the user's speech into text, a
@@ -101,8 +106,8 @@ on both:
 - Side effect: its speech is faster (short chunks 0.81–0.89× the recording's duration, whole
   sentences 0.92×); not yet checked by listening.
 
-One seed per run and 5,000 steps; the full-size runs (20,000 steps, with checkpoints at 5k for
-replication) are described in [CHUNK_FINETUNE_RUNBOOK.md](CHUNK_FINETUNE_RUNBOOK.md).
+One seed per run and 5,000 steps; the full-size runs (20,000 steps, two seeds, from TTS_0.11)
+are in [TTS_0.11](TTS_0.11.md#results-252610).
 
 ## What this does not show
 
@@ -128,6 +133,16 @@ sentences × 17 conditions); `analyze` reproduces its `analysis.json` exactly. W
 7 s per utterance on a 12-core CPU, so the 1,800 utterances of one study take about 3.5 hours.
 To compare checkpoints sentence by sentence: `tools/chunk_analysis.py compare --study R0=<dir>
 other=<dir> --out comparison.json`.
+
+## Future work
+
+From the team's seminar deck. None of it has been started.
+
+| Work | What it would do | Where the project stands |
+|---|---|---|
+| LLM stream integration | Feed text from a streaming language model into VITS and measure end-to-end latency, time to first audio (onset latency) and playback stalls under irregular text arrival. | The WebUI's Agent mode streams a simulated reply at a set rate (10 words per second in the demo); no real language model has been in the loop. |
+| Prosody evaluation: MOS and UTMOS | Evaluate perceived naturalness with human Mean Opinion Score (MOS) listening tests and automatic MOS predictions (UTMOS). | Whisper WER measures intelligibility only; no listening test has been run. |
+| Adaptive chunk policy evaluation | Compare 1-word chunks with fixed 2-word lookahead, whole-sentence synthesis and a prosody-aware chunking policy (split at punctuation and predicted phrase breaks, with the model trained on such chunks), using the same VITS model, on naturalness and latency, not WER alone. | Run-time chunks are cut by word count. Training crops ending at punctuation exist (`--chunk-boundaries punctuation`) and were tried once, in arm V5 ([TTS_0.20.md](TTS_0.20.md)), scored by WER only. Predicted phrase breaks are not implemented. |
 
 ## Team decisions
 

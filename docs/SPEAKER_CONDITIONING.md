@@ -8,7 +8,7 @@
 > speaker vector is added inside every gated residual block instead of once at the input; with
 > `posterior_encoder = tts002` the behaviour below is unchanged. See [TTS_0.10](TTS_0.10.md).
 
-Owner: Turino. Version date: 2026-10-07 (Australia/Brisbane).
+Prototype: benlu. Integration: Turino. Version date: 2026-10-07 (Australia/Brisbane).
 Status: implemented and integration-tested; research source pre-release.
 Release tag: `tts-v0.02`. Real multi-speaker training and speech quality: **not run**.
 

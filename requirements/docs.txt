@@ -1,6 +1,0 @@
-# Handbook build / QA tools, separate from model dependencies.
-# The current PDF builder additionally expects Windows Calibri/Consolas fonts.
-reportlab
-pypdf
-pdfplumber
-Pillow

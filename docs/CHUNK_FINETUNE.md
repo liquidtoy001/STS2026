@@ -1,14 +1,15 @@
 # Chunk-aware fine-tuning of TTS_0.10
 
-Integration: Turino. Date: 2026-10-19 (Australia/Brisbane). Status: implemented and tested on
-branch `Turino`; not merged or released. Model: TTS_0.10 (benlu's recipe), arm R0.
+Integration: Turino. Date: 2026-10-19 (Australia/Brisbane). Status: implemented and tested;
+merged into `main` with pull request #10. Model: TTS_0.10 (benlu's recipe), arm R0. The
+full-size fine-tuning (20,000 steps, two seeds) was run on TTS_0.11:
+[results](TTS_0.11.md#results-252610).
 
 A voice agent can start speaking before the language model has finished a sentence by
 synthesizing the text a few words at a time. Synthesized that way, R0 at 40,000 steps is much
 harder to understand than when it synthesizes the whole sentence
 ([VOICE_AGENT_TTS.md](VOICE_AGENT_TTS.md)). This page describes a way to fine-tune a finished
-checkpoint on word chunks and the local check of that idea, and links the manual for the
-full-size runs.
+checkpoint on word chunks and the local check of that idea.
 
 ## What was added
 
@@ -150,7 +151,6 @@ R0 nor the fine-tunes trained on the held-out sentences.
 
 ## Full-size runs
 
-The step-by-step manual for the two 20,000-step runs (chunk and control) on an L40S or
-RTX PRO 6000 server, Google Colab or Kaggle T4 ×2, with checks, expected time, what to upload
-and a run card: [CHUNK_FINETUNE_RUNBOOK.md](CHUNK_FINETUNE_RUNBOOK.md). Why the line exists and
-what R0 does with chunked text: [VOICE_AGENT_TTS.md](VOICE_AGENT_TTS.md).
+The 20,000-step chunk-aware fine-tune and its control were run from TTS_0.11 at 100,000 steps,
+with two seeds: [TTS_0.11](TTS_0.11.md#results-252610). Why the line exists and what R0 does
+with chunked text: [VOICE_AGENT_TTS.md](VOICE_AGENT_TTS.md).

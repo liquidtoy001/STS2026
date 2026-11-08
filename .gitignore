@@ -49,3 +49,6 @@ generated_samples*/
 
 # Local web UI model list (machine-specific checkpoint paths)
 /webui/config.json
+
+# benlu's original final-vits source: kept locally for the equivalence tests, not published
+/docs/records/tts-0.10/benlu-source/

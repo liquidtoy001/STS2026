@@ -170,7 +170,7 @@
     "LJ005-0142",
     "LJ005-0252"
   ],
-  "data_dir": "/home/s4804070/LJSpeech-1.1",
+  "data_dir": "/home/<user>/LJSpeech-1.1",
   "metadata_sha256": "852bce5c79e5184ba5bf2ea98aad4bcf49a5d787def5fd1f04fa2ab8aa6dc535",
   "notebook_sha256": "278378f5a785ba82059e7cb390928996ca11418a75887f3ea12b04a3f27f86bf",
   "eval_source_sha256": "09d80d91854617761b65cb7c858a5f095e8cd6bd402b9076661d0288d1e55bf6",

@@ -2,8 +2,9 @@
 
 This experiment evaluates `spectrogram -> posterior encoder -> decoder -> waveform`
 on the **same eight utterances used for overfit training**. It is not held-out
-evaluation, text-to-speech evaluation, or evidence of generalization. The new
-encoder/decoder notebook has not been integrated into this branch.
+evaluation, text-to-speech evaluation, or evidence of generalization. This page
+records the September 2026 workflow; the TTS models from TTS_0.10 on are evaluated
+with Whisper on held-out sentences ([central evaluation](ABLATION_TTS_0.10.md#central-evaluation)).
 
 ## Run on Kaggle
 
