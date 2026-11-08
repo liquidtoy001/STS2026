@@ -50,7 +50,7 @@ feature-matching objective is the VITS training recipe.
 
 - With benlu's weights loaded, the TTS_0.10 training forward pass (audio, alignment, segment
   start, prior and posterior statistics) and text-only inference are **identical** to benlu's
-  archived `AudioSyn` (fixed seeds, CPU). Discriminator outputs and adversarial losses match too.
+  original `AudioSyn` (fixed seeds, CPU). Discriminator outputs and adversarial losses match too.
 - With every switch at TTS_0.02, initial weights, training forward pass, inference, discriminator
   and loss terms are identical to the `tts-v0.02` release.
 - Every arm completes training steps on synthetic tones; checkpoints round-trip; mismatched
@@ -154,6 +154,6 @@ the 100 held-out sentences ([results](ABLATION_TTS_0.10.md#results-2026-10-21)).
 
 benlu's inputs (received 2026-10-11): `final-vits.ipynb` (sha256 `633790cb…`), module archive
 `Archive.zip` (`b8434a41…`), checkpoint `weight_tts_epoch5.zip` (`61827f4f…`, step 40,000; the
-file name counts saves every 8,000 steps). The notebook and modules are archived unchanged in
-`docs/records/tts-0.10/benlu-source/`. benlu trained the 40,000 steps in about 10 hours on Kaggle
+file name counts saves every 8,000 steps). The notebook and modules are not included in this
+repository; the tests that compare against them run only where a local copy exists. benlu trained the 40,000 steps in about 10 hours on Kaggle
 with the T4 ×2 accelerator (reported by benlu; that trainer uses one device).

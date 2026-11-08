@@ -384,7 +384,7 @@ python webui/server.py</code></pre>
         <li class="wip"><span class="when">2026-09-23 · Mou and Warneke · gan-group</span><div class="what">GAN loss and discriminator</div><p>LSGAN losses, separate discriminator optimizer, <code>gan_weight = 1.0</code>. Completion commit 07e663d; subsequently used in the full-training pair.</p></li>
         <li class="wip"><span class="when">2026-09-24 · benlu (local notebook)</span><div class="what">GAN merged with the v1 evaluation</div><p>DataParallel and autocast removed. New loss weights: mel 1, STFT 0.5, wave 10, duration 1, KL 1, GAN 1. Used for the subsequent 50,000-iteration GAN-on/off runs.</p></li>
         <li class="done"><span class="when">2026-09-29 · tuirno · Kaggle T4</span><div class="what">GAN vs no-GAN, 50,000 iterations each</div><p>Both runs completed. Spectral probe metrics slightly favour no-GAN; the discriminator overpowers the generator late. See the <a href="#full-train-gan">experiment report</a>.</p></li>
-        <li class="done"><span class="when">2026-10-07 · Turino · tts-v0.02</span><div class="what">TTS_0.02 speaker-ID conditioning</div><p>Optional learned speaker embedding throughout training and inference. Source release; not trained.</p></li>
+        <li class="done"><span class="when">2026-10-07 · benlu, Turino · tts-v0.02</span><div class="what">TTS_0.02 speaker-ID conditioning</div><p>Optional learned speaker embedding throughout training and inference. Source release; not trained.</p></li>
         <li class="done"><span class="when">2026-10-12 · benlu, Turino</span><div class="what">TTS_0.10 integration</div><p>benlu's model and recipe in the project harness with switches back to TTS_0.02, a 100-clip held-out split and one export per ablation arm. See <a href="#version-tts010">TTS_0.10</a>.</p></li>
         <li class="done"><span class="when">2026-10-19 · Turino · 0b11e47</span><div class="what">Chunked-synthesis study and chunk-aware fine-tuning</div><p>R0 at 40,000 steps measured under 17 chunk conditions; <code>--init-from</code> and optional chunk-aware training, off by default. See <a href="#voice-agent-tts">TTS for voice agents</a>.</p></li>
         <li class="done"><span class="when">2026-10-20 · Turino · 2ddbf65</span><div class="what">Chunk study of the local chunk-aware fine-tune</div><p>Without lookahead, short chunks became much easier to understand (independent 2-word chunks 24.2% against 34.1% for the control); whole sentences and chunks with lookahead did not change detectably. See <a href="#voice-agent-finetune">the local check</a>.</p></li>
@@ -653,17 +653,17 @@ t_batch = trainer.overfit_train(total_steps=<span class="c-num">1500</span>, sav
   <p class="small muted">Source: <code>notebooks/vits-light_v1.ipynb</code>, GAN component commit <code>07e663d</code>. The earlier evaluated baseline remains the GAN-disabled snapshot at <code>c9f258c</code>.</p>
 </section>
 <section class="doc-section" id="version-full-training">
-  <span class="eyebrow">30/9 · Notebook integration</span>
+  <span class="eyebrow">30/9 · benlu, Turino · Notebook integration</span>
   <h2>30/9 · TTS_0.01</h2>
   <p><code>notebooks/vits-full-train.ipynb</code> extends the GAN/evaluation model to full-corpus LJSpeech training, with duration and KL losses enabled. GAN-on and GAN-off exports use the same source notebook.</p>
-  <p class="small muted">Committed on 30/9 at <code>3a5724b</code>. The results below were run on 29/9 (UTC) using this full-training configuration before notebook integration.</p>
+  <p class="small muted">Prototype: benlu; integration: Turino. Committed on 30/9 at <code>3a5724b</code>. The results below were run on 29/9 (UTC) using this full-training configuration before notebook integration.</p>
   <div id="gan-results"></div>
 </section>
 
 <section class="doc-section" id="version-speaker-conditioning">
-  <span class="eyebrow">7/10 · Turino · Model revision</span>
+  <span class="eyebrow">7/10 · benlu, Turino · Model revision</span>
   <h2>7/10 · TTS_0.02 — Speaker-ID conditioning</h2>
-  <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code>. Commit <a href="https://github.com/liquidtoy001/STS2026/commit/e81f0bde3a0130e32e44f2e60c52358ada5943f6"><code>e81f0bd</code></a> · 7/10/2026 (Australia/Brisbane).</p>
+  <p class="small muted">Source: <code>notebooks/vits-full-train.ipynb</code>. Commit <a href="https://github.com/liquidtoy001/STS2026/commit/e81f0bde3a0130e32e44f2e60c52358ada5943f6"><code>e81f0bd</code></a> · 7/10/2026 (Australia/Brisbane). Prototype: benlu; integration: Turino.</p>
   <p>Compared with TTS_0.01, this revision adds optional speaker IDs and a learned speaker embedding. The condition is passed to the posterior encoder, flow, duration predictor and waveform decoder; the data loader and checkpoints also retain speaker identities. The existing model structure and default single-speaker mode are retained.</p>
   <p>This gives the model an explicit input for which speaker should speak, providing a basis for learning different voices within one model.</p>
   <p><strong>Training has not started. The effect on voice identity and audio quality has not been evaluated.</strong></p>

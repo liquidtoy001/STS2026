@@ -69,7 +69,9 @@ GPU disk; their numbers were recorded before (see [TTS_0.11](docs/TTS_0.11.md)).
 | TTS_0.11 (arm `T011`) | 2026-10-25 | no text-length filter, 100,000 steps, 100 long sentences held out; chunk-aware fine-tuning |
 | TTS_0.20 candidates (arms `V1`–`V5`) | 2026-10-25 | phoneme input, windowed text encoder, stochastic durations, LibriTTS-R pretraining; none beat TTS_0.11 |
 
-Dates are in Australia/Brisbane time. Trained checkpoints are not included in this repository.
+benlu built the TTS_0.01 and TTS_0.02 prototypes and the TTS_0.10 model and recipe; Turino integrated
+each version into this repository. Dates are in Australia/Brisbane time. Trained checkpoints are not
+included in this repository.
 
 ## Reproduce
 

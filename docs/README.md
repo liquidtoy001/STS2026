@@ -55,7 +55,7 @@ Git. One user name in a data path (`tts-0.10-ablation/R0b/run_config.json`) is r
 | [`tts-0.10-ablation/`](records/tts-0.10-ablation/) | Per-arm run configurations, metrics and Whisper scores; [summary](records/tts-0.10-ablation/summary.md); bootstrap comparisons with R0 |
 | [`chunk-study/R0_40k/`](records/chunk-study/R0_40k/) | Chunk study of R0: analysis, Whisper counts, timing, figure |
 | [`chunk-finetune/`](records/chunk-finetune/) | The local 5,000-step fine-tunes: run configurations, evaluations, comparisons |
-| [`tts-0.10/`](records/tts-0.10/) | TTS_0.10 validation, step-time benchmarks, informal synthesis and ASR checks, the archived `final-vits` source |
+| [`tts-0.10/`](records/tts-0.10/) | TTS_0.10 validation, step-time benchmarks, informal synthesis and ASR checks |
 | [`tts-0.20/libritts-r/`](records/tts-0.20/libritts-r/) | LibriTTS-R preparation records |
 | [`tts-0.02/`](records/tts-0.02/) | TTS_0.02 validation |
 | [`full-train-gan/`](records/full-train-gan/) | TTS_0.01 GAN vs no-GAN runs |

@@ -66,7 +66,7 @@ def convert(source, output):
         "model": model.state_dict(),
         "discriminator": discriminator.state_dict(),
         "source": {
-            "trainer": "benlu final-vits.ipynb (docs/records/tts-0.10/benlu-source/)",
+            "trainer": "benlu final-vits.ipynb",
             "file": Path(source).name,
             "sha256": hashlib.sha256(Path(source).read_bytes()).hexdigest(),
             "note": "no optimizer or scaler state; not resumable",
