@@ -13,7 +13,8 @@
     ]},
     { group: "To-do", defaultOpen: true, items: [
       { href: "#task-tts010-ablation", label: "TTS_0.10 ablation training", ver: "12/10" },
-      { href: "#task-seminar", label: "Seminar", ver: "30/10" }
+      { href: "#task-seminar", label: "Seminar", ver: "30/10" },
+      { href: "#task-future-work", label: "Future work", ver: "30/10" }
     ]},
     { group: "Versions", defaultOpen: true, groups: [
       { group: "17/9 · Original", items: [

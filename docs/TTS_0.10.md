@@ -2,8 +2,9 @@
 
 Integration: Turino. Model and training recipe: benlu (`final-vits`). Version date: 2026-10-12
 (Australia/Brisbane). Status: implemented and integration-tested; released as the research
-pre-release [`tts-v0.10`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10) and merged into `main` on 2026-10-12. The ablation runs
-([ABLATION_TTS_0.10.md](ABLATION_TTS_0.10.md)) have not started.
+pre-release [`tts-v0.10`](https://github.com/liquidtoy001/STS2026/releases/tag/tts-v0.10) and merged into `main` on 2026-10-12. The ablation
+([ABLATION_TTS_0.10.md](ABLATION_TTS_0.10.md)) was trained and evaluated by 2026-10-22; its one
+helpful change became [TTS_0.11](TTS_0.11.md).
 Source: `notebooks/vits-full-train.ipynb`, implementation commit [`c06d618`](https://github.com/liquidtoy001/STS2026/commit/c06d618).
 
 ## What changed from TTS_0.02
@@ -48,7 +49,7 @@ feature-matching objective is the VITS training recipe.
 ## Verification
 
 - With benlu's weights loaded, the TTS_0.10 training forward pass (audio, alignment, segment
-  start, prior and posterior statistics) and text-only inference are **identical** to his
+  start, prior and posterior statistics) and text-only inference are **identical** to benlu's
   archived `AudioSyn` (fixed seeds, CPU). Discriminator outputs and adversarial losses match too.
 - With every switch at TTS_0.02, initial weights, training forward pass, inference, discriminator
   and loss terms are identical to the `tts-v0.02` release.
@@ -128,13 +129,16 @@ The GPU was shared with desktop applications; repeated R0 measurements gave 0.22
 
 With deterministic cuDNN kernels R0 took 0.876 s per step (3.3× slower); TTS_0.10 does not use them.
 
-## Limitations
+## Limitations at release (2026-10-12)
 
-- No TTS_0.10 run has used this harness yet; the only trained TTS_0.10 weights are benlu's
-  40,000-step checkpoint, trained with his notebook on all ≤100-character clips, so the
+Since then, all eleven ablation arms were trained with this harness and evaluated with Whisper on
+the 100 held-out sentences ([results](ABLATION_TTS_0.10.md#results-2026-10-21)).
+
+- No TTS_0.10 run had used this harness yet; the only trained TTS_0.10 weights are benlu's
+  40,000-step checkpoint, trained with benlu's notebook on all ≤100-character clips, so the
   held-out clips were part of its training data.
-- Whisper word error rate (`tools/asr_wer.py`) has not been run on held-out sentences: the complete
-  LJSpeech recordings are not yet on the evaluation machine.
+- Whisper word error rate (`tools/asr_wer.py`) had not been run on held-out sentences: the complete
+  LJSpeech recordings were not yet on the evaluation machine.
 - Single speaker (LJSpeech). Speaker-ID conditioning is wired into the new modules but untrained.
 
 ## Later additions
@@ -143,6 +147,8 @@ With deterministic cuDNN kernels R0 took 0.876 s per step (3.3× slower); TTS_0.
   training for chunked synthesis, both off by default; the off path is identical to the
   `tts-v0.10` release (39 tests). See [CHUNK_FINETUNE.md](CHUNK_FINETUNE.md) and, for the
   voice-agent direction it serves, [VOICE_AGENT_TTS.md](VOICE_AGENT_TTS.md).
+- 2026-10-25: arm `T011` ([TTS_0.11](TTS_0.11.md)) and the off-by-default TTS_0.20 options
+  ([TTS_0.20](TTS_0.20.md)).
 
 ## Provenance
 
@@ -150,4 +156,4 @@ benlu's inputs (received 2026-10-11): `final-vits.ipynb` (sha256 `633790cb…`),
 `Archive.zip` (`b8434a41…`), checkpoint `weight_tts_epoch5.zip` (`61827f4f…`, step 40,000; the
 file name counts saves every 8,000 steps). The notebook and modules are archived unchanged in
 `docs/records/tts-0.10/benlu-source/`. benlu trained the 40,000 steps in about 10 hours on Kaggle
-with the T4 ×2 accelerator (reported by benlu; his trainer uses one device).
+with the T4 ×2 accelerator (reported by benlu; that trainer uses one device).

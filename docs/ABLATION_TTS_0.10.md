@@ -20,30 +20,27 @@ Three reference runs make the result interpretable:
 - **E0** — every switch at TTS_0.02. E0 → R0 is the total improvement under identical training
   conditions (steps, data split, harness).
 
-## Arms and owners
+## Arms
 
 All arms: 40,000 steps, LJSpeech-1.1 minus the 100 held-out clips, the same code commit.
 
-| Arm | Reverts to TTS_0.02 | What it tests | Owner | Hardware |
-|---|---|---|---|---|
-| R0 | nothing (seed 2026) | reference | assigned by the team | L40S 48 GB |
-| R0b | nothing (seed 2027) | noise floor | assigned by the team | same GPU type as R0 |
-| G1 | `text_encoder` | conv-FFN Transformer text encoder | assigned by the team | L40S 48 GB |
-| G2 | `posterior_encoder` | gated WaveNet posterior encoder | assigned by the team | L40S 48 GB |
-| G3 | `decoder` | multi-receptive-field decoder | assigned by the team | L40S 48 GB |
-| A1 | `discriminator` | multi-period + scale discriminator | assigned by the team | L40S 48 GB |
-| A2 | `feature_matching` | feature-matching loss | assigned by the team | L40S 48 GB |
-| L1 | `recon_loss` | mel ×45 instead of mel + STFT + waveform | assigned by the team | L40S 48 GB |
-| O1 | `optim` | batch 16, lr 2e-4, fp16 vs batch 8, lr 1e-4, fp32 | assigned by the team | L40S 48 GB |
-| E0 | all eight | total improvement | Turino | RTX 4070 Ti SUPER 16 GB |
-| D1 | `max_text_chars` | the ≤100-character filter | Turino | RTX 4070 Ti SUPER 16 GB |
+| Arm | Reverts to TTS_0.02 | What it tests |
+|---|---|---|
+| R0 | nothing (seed 2026) | reference |
+| R0b | nothing (seed 2027) | noise floor |
+| G1 | `text_encoder` | conv-FFN Transformer text encoder |
+| G2 | `posterior_encoder` | gated WaveNet posterior encoder |
+| G3 | `decoder` | multi-receptive-field decoder |
+| A1 | `discriminator` | multi-period + scale discriminator |
+| A2 | `feature_matching` | feature-matching loss |
+| L1 | `recon_loss` | mel ×45 instead of mel + STFT + waveform |
+| O1 | `optim` | batch 16, lr 2e-4, fp16 vs batch 8, lr 1e-4, fp32 |
+| E0 | all eight | total improvement |
+| D1 | `max_text_chars` | the ≤100-character filter |
 
-Measure your own GPU with `tools/benchmark_tts010.py` before starting. The team assigns the remaining arms and the central evaluation; Turino runs E0 and D1.
-The report chapters follow the arm groups: reference and noise floor (R0, R0b), generator
-architecture (G1–G3), adversarial training (A1, A2), loss and optimisation (L1, O1), and the
-TTS_0.02 baseline and data filter (E0, D1).
+The GPU each arm ran on is listed with the [results](#results-2026-10-21).
 
-## Before you start (every trainer)
+## Reproduce an arm
 
 1. Get the code: `git fetch origin --tags && git checkout tts-v0.10` (the release every arm uses;
    later commits only change documentation). Check with `git rev-parse --short HEAD`; every arm
@@ -60,8 +57,7 @@ TTS_0.02 baseline and data filter (E0, D1).
    python tools/benchmark_tts010.py --metadata /path/LJSpeech-1.1/metadata.csv --arms G1 G2 G3
    ```
 
-   It prints seconds per step and the expected hours for 40,000 steps. Send the JSON to Turino;
-   it becomes the cost column for your arms.
+   It prints seconds per step and the expected hours for 40,000 steps.
 
 ## Run an arm
 
@@ -103,26 +99,9 @@ and exercises evaluation, checkpointing and sampling. Never report a smoke run.
 
 ## After the run
 
-1. Check `status.json`: `"status": "completed"`, `"step": 40000`.
-2. Upload the **whole run folder** to the team Google Drive under
-   `tts010-ablation/<arm>/` (checkpoints at 10k/20k/30k/40k, samples, both evaluation folders,
-   training history, `curves.png`, your log).
-3. Post the run card below in the team chat (copy, fill, send), including the Drive path.
-4. Listen to `samples/step_40000_sample_{1,2}.wav` and write one or two sentences of notes.
-
-```text
-Arm:                      (e.g. G1)
-Executed by:              (name)
-Hardware:                 (GPU model, memory; machine / Kaggle)
-Commit:                   (git rev-parse --short HEAD)
-Run folder:               (tts010_<arm>_<UTC time>)
-Started / completed UTC:  (from run_config.json / status.json)
-Wall time:                (status.json session_wall_seconds; sum over resumes)
-Status:                   (completed / stopped / failed) at step N
-Resumed:                  (no / yes: from step N)
-Deviations:               (anything that differed from this document, or "none")
-Listening notes:          (optional, English)
-```
+Check `status.json`: `"status": "completed"`, `"step": 40000`. Keep the whole run folder
+(checkpoints at 10k/20k/30k/40k, samples, both evaluation folders, training history,
+`curves.png`, the log); checkpoints and audio are not committed to Git.
 
 ## Central evaluation
 
@@ -135,7 +114,7 @@ python tools/eval_tts010.py --checkpoint <run>/checkpoints/vits_step_40000.pt \
 python tools/asr_wer.py output/tts010-eval/G1_40k --model medium
 ```
 
-To evaluate every finished run in a folder (any depth, e.g. a Drive download) and rebuild the
+To evaluate every finished run in a folder (any depth) and rebuild the
 comparison table in one command, re-runnable as runs arrive:
 
 ```sh
@@ -205,6 +184,8 @@ not seed variation. Both checks give the same verdict for every arm.
 - Removing the length filter (D1) lowers WER by 5.3 points, beyond the floor. D1 ran on a different
   GPU from R0.
 - One R0/R0b pair is a rough estimate of seed variation, and each other arm has one seed.
+- Re-scored with ASR protocol v2 on 2026-10-26 ([TTS_0.11](TTS_0.11.md#asr-protocol-v2)): L1
+  98.7% (186.9% under v1); every other arm unchanged.
 - R0b's run notebook differs from the repository and release notebooks (sha256 `278378f5…`; no
   git commit recorded; time budget 3 h, data path `/home/...`). Its switches, model, data split,
   training clips and evaluation code match R0.
@@ -218,11 +199,3 @@ not seed variation. Both checks give the same verdict for every arm.
   13,000 clips including long ones.
 - One seed per arm except R0; one speaker; one dataset. The result explains this model on
   LJSpeech, not TTS in general.
-
-## Report outline
-
-1. TTS_0.02 does not produce speech-like audio; TTS_0.10 does (spectrograms, samples).
-2. E0 → R0: total improvement under identical conditions.
-3. Leave-one-out bars for each change, with the R0/R0b noise floor marked.
-4. Cost: time and memory per arm.
-5. Limits.

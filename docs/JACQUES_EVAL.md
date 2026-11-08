@@ -1,11 +1,11 @@
 # Jacques: original versus new encoder/decoder reconstruction study
 
-This study belongs in the project report's **Experiments and results** section,
-after the original-model baseline and before the full-training GAN comparison.
-Its component identity is pending verification; interpret the supplied metrics
-as two recorded runs until the executed component source is provided.
+A training-batch reconstruction study from September 2026, run before the TTS work.
+Its component identity is unverified (see
+[Component identity and limitations](#component-identity-and-limitations)):
+interpret the metrics as two recorded runs.
 
-## Purpose and ownership
+## Purpose
 
 Jacques was asked to evaluate `original_eval` and a revised encoder/decoder pair.
 The supplied folders are named `vits-eval-original` and `vits-eval-new-enc-dec`.
@@ -68,19 +68,18 @@ evaluation conditions, but cannot verify a changed encoder/decoder. It may
 reflect stale provenance after editing; it does not prove that the runs were
 duplicates or that the revised components were absent.
 
-Before attributing the difference to architecture, obtain the actually executed
-notebooks or source snapshots, the new component definitions, a checkpoint with
-its configuration, and an explanation of the unchanged variant/hash. Keep the
-supplied metadata intact and add any clarification as a separate dated record.
-If encoder and decoder both changed, this comparison can only assess the pair;
-separate ablations are needed to distinguish their individual effects.
+Attributing the difference to architecture would need the executed notebooks or
+source snapshots, the new component definitions, a checkpoint with its
+configuration, and an explanation of the unchanged variant/hash; none of these
+were supplied. If encoder and decoder both changed, this comparison can only
+assess the pair.
 
 No perceptual verdict is recorded here. The supplied WAVs are short reconstruction
-crops. Team listening notes and full-utterance/held-out evaluation remain separate
-work. These runs must not be combined with the differently configured 50,000-step
-GAN comparison or substituted for the existing local baseline.
+crops, and these runs have no listening notes or held-out evaluation. They are not
+comparable with the differently configured 50,000-step GAN comparison or the local
+baseline.
 
-## Report-ready paragraph
+## Summary
 
 Jacques evaluated two supplied model variants using the shared posterior
 reconstruction protocol on eight fixed LJSpeech training utterances. Both runs
@@ -96,15 +95,12 @@ than held-out synthesis or subjective speech quality.
 ## Storage and reproducibility
 
 - [HTML report](site/report.html#jacques-enc-dec): paired metrics and training
-  curves, interpretation and links to cloud artifacts; English notes.
+  curves, interpretation; English notes.
 - `docs/records/jacques-enc-dec/`: exact source JSON bytes, normalized paths,
   full per-sample/checkpoint records, ZIP checksum and file inventory.
-- [Jacques Eval on Drive](https://drive.google.com/drive/folders/1kNvjpzigLiBSxK3i4NTdo-GwAKNVmYeV):
-  each run contains `records/`, `evaluation/`, `figures/`, `screenshots/`, `_archive/`.
-  Audio remains with its evaluation step. The three duplicate audio downloads
-  per run are preserved in `_archive/`; no source files are deleted.
-- Drive was subsequently reorganized by the project owner. Folder links retain
-  their IDs, but the internal audio paths should be rechecked before listening.
+- The run folders are kept in the team's Google Drive, not in this repository.
+  Each run contains `records/`, `evaluation/`, `figures/`, `screenshots/`, `_archive/`;
+  audio remains with its evaluation step.
 
 Rebuild the data and imported records with:
 
